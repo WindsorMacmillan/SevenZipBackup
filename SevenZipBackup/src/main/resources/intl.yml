@@ -86,41 +86,41 @@ date-format-invalid: "Date format timezone not valid, using UTC"
 debug-log-created: "Debug URL: <url>"
 debug-log-creating: "Generating Debug Log"
 default-google-drive-name: "My Drive"
-drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
-drivebackup-docs-command: |-
+7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
+7zbackup-docs-command: |-
   <header>
   Need help? Check out these helpful resources!
   Wiki: <gold><click:open_url:https://bit.ly/3dDdmwK>https://bit.ly/3dDdmwK</click></gold>
   Discord: <gold><click:open_url:https://bit.ly/3f4VuuT>https://bit.ly/3f4VuuT</click></gold>
-drivebackup-help-command: |-
+7zbackup-help-command: |-
   <header>
-  <gold><click:run_command:/drivebackup>/drivebackup</click></gold> - Displays this menu
-  <gold><click:run_command:/drivebackup help>/drivebackup help</click></gold> - Displays help resources
-  <gold><click:run_command:/drivebackup commands>/drivebackup commands</click></gold> - Displays this command help page
-  <gold><click:run_command:/drivebackup v>/drivebackup [v|version]</click></gold> - Displays the plugin version
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [link|linkaccount] googledrive</click></gold> - Links your Google Drive account for backups
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [link|linkaccount] onedrive</click></gold> - Links your OneDrive account for backups
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [link|linkaccount] dropbox</click></gold> - Links your Dropbox account for backups
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [unlink|unlinkaccount] googledrive</click></gold> - Unlinks your Google Drive account and disables method
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [unlink|unlinkaccount] onedrive</click></gold> - Unlinks your OneDrive account and disables method
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [unlink|unlinkaccount] dropbox</click></gold> - Unlinks your Dropbox account and disables method
-  <gold><click:run_command:/drivebackup reloadconfig>/drivebackup reloadconfig</click></gold> - Reloads the config.yml
-  <gold><click:run_command:/drivebackup debug>/drivebackup debug</click></gold> - Gathers useful info for troubleshooting the plugin
-  <gold><click:run_command:/drivebackup nextbackup>/drivebackup nextbackup</click></gold> - Gets the time/date of the next auto backup
-  <gold><click:run_command:/drivebackup status>/drivebackup status</click></gold> - Gets the status of the running backup
-  <gold><click:run_command:/drivebackup backup>/drivebackup backup</click></gold> - Manually initiates a backup
-  <gold><click:run_command:/drivebackup test ftp>/drivebackup test ftp</click></gold> - Tests the connection to the (S)FTP server
-  <gold><click:run_command:/drivebackup test googledrive>/drivebackup test googledrive</click></gold> - Tests the connection to Google Drive
-  <gold><click:run_command:/drivebackup test onedrive>/drivebackup test onedrive</click></gold> - Tests the connection to OneDrive
-  <gold><click:run_command:/drivebackup test dropbox>/drivebackup test dropbox</click></gold> - Tests the connection to Dropbox
-  <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold> - Updates the plugin if there is a newer version
-drivebackup-version-command: |-
+  <gold><click:run_command:/7zbackup>/7zbackup</click></gold> - Displays this menu
+  <gold><click:run_command:/7zbackup help>/7zbackup help</click></gold> - Displays help resources
+  <gold><click:run_command:/7zbackup commands>/7zbackup commands</click></gold> - Displays this command help page
+  <gold><click:run_command:/7zbackup v>/7zbackup [v|version]</click></gold> - Displays the plugin version
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [link|linkaccount] googledrive</click></gold> - Links your Google Drive account for backups
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [link|linkaccount] onedrive</click></gold> - Links your OneDrive account for backups
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [link|linkaccount] dropbox</click></gold> - Links your Dropbox account for backups
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [unlink|unlinkaccount] googledrive</click></gold> - Unlinks your Google Drive account and disables method
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [unlink|unlinkaccount] onedrive</click></gold> - Unlinks your OneDrive account and disables method
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [unlink|unlinkaccount] dropbox</click></gold> - Unlinks your Dropbox account and disables method
+  <gold><click:run_command:/7zbackup reloadconfig>/7zbackup reloadconfig</click></gold> - Reloads the config.yml
+  <gold><click:run_command:/7zbackup debug>/7zbackup debug</click></gold> - Gathers useful info for troubleshooting the plugin
+  <gold><click:run_command:/7zbackup nextbackup>/7zbackup nextbackup</click></gold> - Gets the time/date of the next auto backup
+  <gold><click:run_command:/7zbackup status>/7zbackup status</click></gold> - Gets the status of the running backup
+  <gold><click:run_command:/7zbackup backup>/7zbackup backup</click></gold> - Manually initiates a backup
+  <gold><click:run_command:/7zbackup test ftp>/7zbackup test ftp</click></gold> - Tests the connection to the (S)FTP server
+  <gold><click:run_command:/7zbackup test googledrive>/7zbackup test googledrive</click></gold> - Tests the connection to Google Drive
+  <gold><click:run_command:/7zbackup test onedrive>/7zbackup test onedrive</click></gold> - Tests the connection to OneDrive
+  <gold><click:run_command:/7zbackup test dropbox>/7zbackup test dropbox</click></gold> - Tests the connection to Dropbox
+  <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> - Updates the plugin if there is a newer version
+7zbackup-version-command: |-
   <header>
   Plugin version: <gold><plugin-version></gold>
   Java version: <gold><java-version></gold>
   Server software: <gold><server-software></gold>
   Server software version: <gold><server-version></gold>
-drivebackup-version-update: <gold>Plugin update available!
+7zbackup-version-update: <gold>Plugin update available!
 external-backup-base-dir-invalid: "Path to base directory key invalid in
   external backup entry <entry>, leaving blank"
 external-backup-format-invalid: "Format invalid, skipping external backup entry <entry>"
@@ -213,7 +213,7 @@ player-join-backup-failed: |-
   Check the console for more info
 player-join-update-available: |-
   An update is available, get it here: <gold><click:open_url:https://bit.ly/2M14uVD>https://bit.ly/2M14uVD</click></gold>
-  or by running <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold>
+  or by running <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 plugin-stop: "Stopping plugin!"
 shared-drive-deprecated: |-
   Due to new restrictions from Google we are no longer able to support shared drives on new account links.
@@ -236,8 +236,8 @@ unlink-provider-complete: "Your <provider> account is unlinked!"
 unlink-provider-failed: "Failed to unlink your <provider> account, please try again"
 update-checker-failed: "There was an issue attempting to check for the latest SevenZipBackup release"
 update-checker-new-release: |-
-  DriveBackup version <latest-version> has been released, You are currently running version <current-version>
-  Update at: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold>" or with <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold>
+  SevenZipBackup version <latest-version> has been released, You are currently running version <current-version>
+  Update at: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold>" or with <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 update-checker-started: "Checking for updates..."
 update-checker-unsupported-release: |-
   You are running an unsupported release!
@@ -251,5 +251,5 @@ updater-successful: "Successfully updated plugin! Please restart your server in
 updater-update-failed: "Plugin update failed, see console for more info"
 upload-error-check: "Checking for upload errors..."
 upload-no-errors: "No upload errors found"
-zip-compression-too-high: "Inputted zip compression more than maximum, using maximum"
-zip-compression-too-low: "Inputted zip compression less than minimum, using minimum"
+7z-compression-too-high: "Inputted zip compression more than maximum, using maximum"
+7z-compression-too-low: "Inputted zip compression less than minimum, using minimum"
