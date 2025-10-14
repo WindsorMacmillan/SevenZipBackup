@@ -266,7 +266,7 @@ public class DropboxUploader extends Uploader {
         response.close();
         for (int i = 0; i < resFiles.length(); i++) {
             JSONObject file = resFiles.getJSONObject(i);
-            if (file.getString("name").endsWith(".zip")) {
+            if (file.getString("name").endsWith(".7z")) {
                 files.put(Instant.parse(file.getString("server_modified")), file.getString("name"));
             }
         }

@@ -64,7 +64,7 @@ backup-schedule-time-invalid: "시간이 잘못되어 스케줄 항목 <entry>�
 backup-start: "백업을 생성하는 중, 서버가 잠시 느려질 수 있습니다..."
 backup-status-compressing: '백업 세트 "<set-name>" 압축 중, 세트 <set-count>개 중 <set-num>'
 backup-status-not-running: "백업이 실행 중이지 않습니다."
-backup-status-pruning: "백업을 정리하는 중"
+backup-status-purging: "백업을 정리하는 중"
 backup-status-starting: "백업을 시작하는 중"
 backup-status-uploading: '백업 세트 "<set-name>" 업로드 중, 세트 <set-count>개 중 <set-num>'
 backup-total-time: "백업이 <time>초 만에 완료되었습니다."
@@ -195,8 +195,8 @@ local-backup-limit-not-reached: "현재 <backup-count>개의 백업이 있으며
 local-backup-limit-reached: "로컬 한도 <backup-limit>개를 초과하는 <backup-count>개의 파일이 있어
   가장 오래된 파일을 삭제합니다."
 local-backup-no-limit: "로컬 백업 한도가 0으로 설정되어 있어 정리를 건너뜁니다."
-local-backup-pruning-complete: '"<location>"에 대한 로컬 백업 정리가 완료되었습니다.'
-local-backup-pruning-start: '"<location>"에 대한 로컬 백업을 정리합니다.'
+local-backup-purging-complete: '"<location>"에 대한 로컬 백업 정리가 완료되었습니다.'
+local-backup-purging-start: '"<location>"에 대한 로컬 백업을 정리합니다.'
 local-keep-count-invalid: "입력한 local keep count가 잘못되어 기본값을 사용합니다."
 local-save-directory-not-relative: "로컬 저장 디렉터리는 상대 경로가 아니므로 서버 디렉터리를 기준으로 합니다."
 location-empty: "<location> 경로가 비어 있어 건너뜁니다."

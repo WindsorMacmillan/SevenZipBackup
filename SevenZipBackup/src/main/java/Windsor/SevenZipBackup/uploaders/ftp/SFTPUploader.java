@@ -240,7 +240,7 @@ public class SFTPUploader {
     private TreeMap<Date, RemoteResourceInfo> getZipFiles() throws Exception {
         TreeMap<Date, RemoteResourceInfo> files = new TreeMap<>();
         for (RemoteResourceInfo file : sftpClient.ls()) {
-            if (file.getName().endsWith(".zip")) {
+            if (file.getName().endsWith(".7z")) {
                 files.put(new Date(file.getAttributes().getMtime()), file);
             }
         }

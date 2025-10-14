@@ -209,7 +209,7 @@ public class WebDAVUploader extends Uploader {
         TreeMap<Date, DavResource> files = new TreeMap<>();
         List<DavResource> resources = sardine.list(new URL(_remoteBaseFolder + "/" + type).toString());
         for (DavResource resource : resources) {
-            if (resource.getName().endsWith(".zip")) {
+            if (resource.getName().endsWith(".7z")) {
                 files.put(resource.getModified(), resource);
             }
         }

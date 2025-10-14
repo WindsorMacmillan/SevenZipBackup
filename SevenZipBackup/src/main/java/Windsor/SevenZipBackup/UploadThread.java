@@ -591,7 +591,7 @@ public class UploadThread implements Runnable {
             case STARTING:
                 return intl("backup-status-starting");
             case PRUNING:
-                return intl("backup-status-pruning");
+                return intl("backup-status-purging");
             default:
                 return intl("backup-status-not-running");
         }

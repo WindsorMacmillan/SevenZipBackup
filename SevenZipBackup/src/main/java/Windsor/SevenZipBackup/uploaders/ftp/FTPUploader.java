@@ -308,7 +308,7 @@ public class FTPUploader extends Uploader {
     private TreeMap<Date, FTPFile> getZipFiles() throws Exception {
         TreeMap<Date, FTPFile> files = new TreeMap<>();
         for (FTPFile file : ftpClient.mlistDir()) {
-            if (file.getName().endsWith(".zip")) {
+            if (file.getName().endsWith(".7z")) {
                 files.put(file.getTimestamp().getTime(), file);
             }
         }

@@ -56,7 +56,6 @@ public class FileUtil {
             return backupList;
         }
         for (File file : files) {
-            // 修改：查找.7z文件而不是.zip文件
             if (file.getName().endsWith(".7z")) {
                 backupList.put((file.lastModified() / 1000), file);
             }
@@ -117,7 +116,7 @@ public class FileUtil {
             fileName = fileName.replace(NAME_KEYWORD, lastFolderName);
         }
         // 修改：输出文件后缀改为.7z
-        sevenZipIt(location, path.getPath() + "/" + fileName + ".7z", fileList);
+        ZipIt(location, path.getPath() + "/" + fileName + ".7z", fileList);
     }
 
     /**
@@ -132,7 +131,7 @@ public class FileUtil {
         if (isBaseFolder(location)) {
             location = "root";
         }
-        logger.log(intl("local-backup-pruning-start"), "location", location);
+        logger.log(intl("local-backup-purging-start"), "location", location);
         int localKeepCount = ConfigParser.getConfig().backupStorage.localKeepCount;
         if (localKeepCount == -1) {
             logger.info(intl("local-backup-no-limit"));
@@ -163,7 +162,7 @@ public class FileUtil {
                     }
                     backupList.remove(dateOfFile);
                 }
-                logger.log(intl("local-backup-pruning-complete"), "location", location);
+                logger.log(intl("local-backup-purging-complete"), "location", location);
             } catch (Exception e) {
                 logger.log(intl("local-backup-failed-to-delete"));
                 MessageUtil.sendConsoleException(e);
@@ -177,7 +176,7 @@ public class FileUtil {
      * @param outputFilePath the path of the folder to put it in
      * @param fileList file to include in the zip
      */
-    private void sevenZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList) throws Exception {
+    private void ZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList) throws Exception {
         byte[] buffer = new byte[1024];
         String formattedInputFolderPath = new File(inputFolderPath).getName();
         if (isBaseFolder(inputFolderPath)) {

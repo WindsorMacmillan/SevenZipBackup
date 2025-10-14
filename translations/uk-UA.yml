@@ -170,8 +170,8 @@ local-backup-in-backup-folder: "Не включено <files-in-backup-folder-co
 local-backup-limit-not-reached: "Локальний ліміт резервних копій не досягнуто, пропускаємо очищення"
 local-backup-limit-reached: "Кількість файлів <backup-count> перевищує локальний ліміт <backup-limit>, видаляємо найстаріші"
 local-backup-no-limit: "Локальний ліміт резервних копій встановлено на 0, пропускаємо очищення"
-local-backup-pruning-complete: 'Очищення локальної резервної копії завершено для "<location>"'
-local-backup-pruning-start: 'Розпочато очищення локальних резервних копій для "<location>"'
+local-backup-purging-complete: 'Очищення локальної резервної копії завершено для "<location>"'
+local-backup-purging-start: 'Розпочато очищення локальних резервних копій для "<location>"'
 local-keep-count-invalid: "Введена недійсна локальна кількість збережених копій, використовуємо значення за замовчуванням"
 location-empty: "Розташування <location> порожнє, пропускаємо"
 metrics-error: "Не вдалося запустити метрики"

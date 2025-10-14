@@ -29,8 +29,8 @@ backup-local-failed: |-
   Skipping backup location
 backup-local-file-complete: 'Local backup for "<location>" created'
 backup-local-file-start: 'Creating local backup for "<location>"'
-backup-local-prune-complete: "Local backup pruning complete"
-backup-local-prune-start: "Pruning local backups"
+backup-local-prune-complete: "Local backup purging complete"
+backup-local-prune-start: "Purging local backups"
 backup-local-start: "Creating local backup(s) and compressing..."
 backup-method-complete: "Backup to <gold><upload-method></gold> complete"
 backup-method-error-occurred: "Failed to backup to <upload-method>, verify all
@@ -64,7 +64,7 @@ backup-schedule-time-invalid: "Time invalid, skipping schedule entry <entry>"
 backup-start: "Creating backups, the server may lag for a little while..."
 backup-status-compressing: 'Compressing backup set "<set-name>", set <set-num> of <set-count>'
 backup-status-not-running: "No backups are running"
-backup-status-pruning: "Pruning backups"
+backup-status-purging: "Purging backups"
 backup-status-starting: "Backup is starting"
 backup-status-uploading: 'Uploading backup set "<set-name>", set <set-num> of <set-count>'
 backup-total-time: "Backup took <time> seconds to complete"
@@ -192,12 +192,12 @@ local-backup-file-deleted: 'Deleted local backup "<local-backup-name>"'
 local-backup-file-failed-to-delete: 'Failed to delete local backup "<local-backup-name>"'
 local-backup-in-backup-folder: "Didn't include <files-in-backup-folder-count>
   file(s) in the backup, as they are in the folder used for backups"
-local-backup-limit-not-reached: "Local backup limit not reached with count of <backup-count> and limit of <backup-limit>, skipping pruning"
+local-backup-limit-not-reached: "Local backup limit not reached with count of <backup-count> and limit of <backup-limit>, skipping purging"
 local-backup-limit-reached: "There are <backup-count> file(s) which exceeds the
   local limit of <backup-limit>, deleting oldest"
-local-backup-no-limit: "Local backup limit is set to 0, skipping pruning"
-local-backup-pruning-complete: 'Local backup pruning complete for "<location>"'
-local-backup-pruning-start: 'Pruning local backups for "<location>"'
+local-backup-no-limit: "Local backup limit is set to 0, skipping purging"
+local-backup-purging-complete: 'Local backup purging complete for "<location>"'
+local-backup-purging-start: 'Purging local backups for "<location>"'
 local-keep-count-invalid: "Inputted local keep count invalid, using default"
 local-save-directory-not-relative: "Local save directory is not relative, making relative to server directory"
 location-empty: "Location <location> is empty, skipping"

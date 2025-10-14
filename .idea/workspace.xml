@@ -4,12 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Reconstructed code">
-      <change beforePath="$PROJECT_DIR$/.idea/SevenZipBackup.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SevenZipBackup.iml" afterDir="false" />
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Update plugin config">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/DriveBackupApi.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/UploadThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/UploadThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/DriveBackup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/dropbox/DropboxUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/dropbox/DropboxUploader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/FTPUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/FTPUploader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/SFTPUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/SFTPUploader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/webdav/WebDAVUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/webdav/WebDAVUploader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/FileUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/de.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/de.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/es-es.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/es-es.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/ko.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/ko.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/uk-UA.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/uk-UA.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,21 +31,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "history": [
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
     {
-      "state": "OPEN"
+      &quot;state&quot;: &quot;OPEN&quot;
     },
     {
-      "state": "OPEN",
-      "author": "WindsorMacmillan"
+      &quot;state&quot;: &quot;OPEN&quot;,
+      &quot;author&quot;: &quot;WindsorMacmillan&quot;
     }
   ],
-  "lastFilter": {
-    "state": "OPEN",
-    "author": "WindsorMacmillan"
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;author&quot;: &quot;WindsorMacmillan&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/WindsorMacmillan/SevenZipBackup.git&quot;,
@@ -52,27 +64,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Maven.SevenZipBackup [package].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.SevenZipBackup [package].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "run.code.analysis.last.selected.profile": "pProject Default"
   }
-}</component>
-  <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
-  </component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="默认任务">
       <changelist id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="" />
@@ -97,7 +99,15 @@
       <option name="project" value="LOCAL" />
       <updated>1760428311749</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Update plugin config">
+      <option name="closed" value="true" />
+      <created>1760439557262</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1760439557264</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -125,6 +135,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Reconstructed code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reconstructed code" />
+    <MESSAGE value="Update plugin config" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update plugin config" />
   </component>
 </project>

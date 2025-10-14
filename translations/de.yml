@@ -57,7 +57,7 @@ backup-schedule-time-invalid: "Zeit ungültig, überspringe Zeitplaneintrag <ent
 backup-start: "Backups werden erstellt, der Server könnte kurzzeitig verzögert reagieren..."
 backup-status-compressing: 'Komprimiere Backup-Satz "<set-name>", Satz <set-num> von <set-count>'
 backup-status-not-running: "Keine Backups laufen"
-backup-status-pruning: "Backups werden gelöscht"
+backup-status-purging: "Backups werden gelöscht"
 backup-status-starting: "Backup wird gestartet"
 backup-status-uploading: 'Backup-Satz "<set-name>" wird hochgeladen, Satz <set-num> von <set-count>'
 backup-total-time: "Backup dauerte <time> Sekunden"
@@ -163,8 +163,8 @@ local-backup-in-backup-folder: 'Die Datei(en) <files-in-backup-folder-count> wur
 local-backup-limit-not-reached: "Lokales Backup-Limit nicht erreicht mit einer Anzahl von <backup-count> und einem Limit von <backup-limit>, Überspringen des Löschens"
 local-backup-limit-reached: "Es gibt <backup-count> Datei(en), die das lokale Limit von <backup-limit> überschreiten, älteste wird gelöscht"
 local-backup-no-limit: "Lokales Backup-Limit ist auf 0 gesetzt, überspringe das Löschen"
-local-backup-pruning-complete: 'Löschen lokaler Backups für "<location>" abgeschlossen'
-local-backup-pruning-start: 'Löschen lokaler Backups für "<location>" wird gestartet'
+local-backup-purging-complete: 'Löschen lokaler Backups für "<location>" abgeschlossen'
+local-backup-purging-start: 'Löschen lokaler Backups für "<location>" wird gestartet'
 local-keep-count-invalid: "Der eingegebene Wert für die lokale Beibehaltung ist ungültig, der Standardwert wird verwendet"
 local-save-directory-not-relative: "Das lokale Speicherverzeichnis ist nicht relativ, mache es relativ zum Serververzeichnis"
 location-empty: "Speicherort <location> ist leer, überspringe"

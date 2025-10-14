@@ -11,8 +11,9 @@ keep-count: -1
 local-keep-count: 0
 
 # The priority of the backup thread [1-10]. Lower value cause less server lag. Increase this value if backup takes too long.
+# WARNING: High value may significantly increase server lag, typically accounting for 10-20 ms tick time.
 backup-thread-priority: 5
-# Compress level for 7zip archive [0-9]. 0 refers to storage. Increasing this value can create smaller backup.
+# Compress level for 7zip archive [0-9]. 0 refers to storage-only. 9 refers to extreme-compression. Increasing this value can create smaller backup.
 # WARNING: High value may consume massive memory and CPU usage.
 7z-compression: 1
 
@@ -24,12 +25,18 @@ scheduled-backups: false
 backup-schedule-list:
 
 backup-list:
-- glob: "world*"
-  format: "Backup-%NAME-%FORMAT.zip"
-  create: true
-- path: "plugins"
-  format: "Backup-plugins-%FORMAT.zip"
-  create: true
+  # Backup all kinds of world
+  - glob: "*world*"
+    format: "Backup-%NAME-%FORMAT.zip"
+    create: true
+  # Backup plugins' data, but exclude jar files and cache
+  - path: "plugins"
+    format: "Backup-plugins-%FORMAT.zip"
+    create: true
+    blacklist:
+      - "*jar"
+      - ".paper-remapped/**"
+      - "*cache*"
 
 external-backup-list:
 

@@ -6,8 +6,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import Windsor.SevenZipBackup.util.Logger;
 
-import java.util.zip.Deflater;
-
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
 public class BackupStorage {
@@ -72,12 +70,12 @@ public class BackupStorage {
             localKeepCount = defaultConfig.getInt("local-keep-count");
         }
         int zipCompression = config.getInt("7z-compression");
-        if (zipCompression < Deflater.BEST_SPEED) {
+        if (zipCompression < 0) {
             logger.log(intl("7z-compression-too-low"));
-            zipCompression = Deflater.BEST_SPEED;
-        } else if (zipCompression > Deflater.BEST_COMPRESSION) {
+            zipCompression = 0;
+        } else if (zipCompression > 9) {
             logger.log(intl("7z-compression-too-high"));
-            zipCompression = Deflater.BEST_COMPRESSION;
+            zipCompression = 9;
         }
         boolean backupsRequirePlayers = config.getBoolean("backups-require-players");
         boolean disableSavingDuringBackups = config.getBoolean("disable-saving-during-backups");
