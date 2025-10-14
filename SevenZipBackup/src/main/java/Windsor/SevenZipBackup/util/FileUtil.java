@@ -1,7 +1,5 @@
 package Windsor.SevenZipBackup.util;
 
-import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
-import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import Windsor.SevenZipBackup.UploadThread.UploadLogger;
@@ -28,6 +26,9 @@ import java.util.stream.Stream;
 // 新增的Apache Commons Compress导入
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
+import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration;
+import org.tukaani.xz.LZMA2Options;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
@@ -181,13 +182,12 @@ public class FileUtil {
         if (isBaseFolder(inputFolderPath)) {
             formattedInputFolderPath = "root";
         }
-
         try (SevenZOutputFile sevenZOutput = new SevenZOutputFile(new File(outputFilePath))) {
-            //SevenZMethodConfiguration methodConfig = new SevenZMethodConfiguration(
-            //        SevenZMethod.LZMA2,
-            //        ConfigParser.getConfig().backupStorage.zipCompression
-            //);
-            //sevenZOutput.setContentMethods(Collections.singletonList(methodConfig));
+            SevenZMethodConfiguration methodConfig = new SevenZMethodConfiguration(
+                    SevenZMethod.LZMA2,
+                    new LZMA2Options(ConfigParser.getConfig().backupStorage.zipCompression)
+            );
+            sevenZOutput.setContentMethods(Collections.singletonList(methodConfig));
             for (String file : fileList.getList()) {
                 String entryName = file.replace(File.separator, "/");
                 String filePath = new File(inputFolderPath, file).getPath();
@@ -224,6 +224,8 @@ public class FileUtil {
                         logger.info(
                                 intl("local-backup-failed-to-include"),
                                 "file-path", filePath);
+                        logger.info("创建7z文件时发生错误: " + e.getMessage());
+                        e.printStackTrace();
                     }
                 }
                 sevenZOutput.closeArchiveEntry();
