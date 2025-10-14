@@ -35,7 +35,7 @@ import static Windsor.SevenZipBackup.config.Localization.intl;
 public class FileUtil {
     private static final String NAME_KEYWORD = "%NAME";
 
-    private UploadLogger logger;
+    private final UploadLogger logger;
 
     public FileUtil(UploadLogger logger) {
         this.logger = logger;
@@ -237,8 +237,8 @@ public class FileUtil {
      */
     private static class BackupFileList {
         private int filesInBackupFolder;
-        private List<String> fileList;
-        private List<BlacklistEntry> blacklist;
+        private final List<String> fileList;
+        private final List<BlacklistEntry> blacklist;
 
         @Contract (pure = true)
         private BackupFileList(List<BlacklistEntry> blacklist) {

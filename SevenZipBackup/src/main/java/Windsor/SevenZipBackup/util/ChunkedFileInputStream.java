@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 public class ChunkedFileInputStream extends InputStream {
     private FileInputStream input;
-    private int chunksize;
+    private final int chunksize;
     private int current_chunk;
     private int position;
 
@@ -68,6 +68,10 @@ public class ChunkedFileInputStream extends InputStream {
         return (long)current_chunk * (long)chunksize;
     }
 
+    /**
+     * @throws IOException
+     */
+    @SuppressWarnings("removal")
     @Override
     protected void finalize() throws IOException {
         this.input = null;

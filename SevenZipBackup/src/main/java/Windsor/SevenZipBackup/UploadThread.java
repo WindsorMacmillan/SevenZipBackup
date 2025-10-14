@@ -67,7 +67,7 @@ import static Windsor.SevenZipBackup.config.Localization.intl;
 
 public class UploadThread implements Runnable {
     
-    private static final String LINK_COMMAND = "/drivebackup linkaccount ";
+    private static final String LINK_COMMAND = "/7zbackup linkaccount ";
     private CommandSender initiator;
     private final UploadLogger logger;
     private final FileUtil fileUtil;
@@ -205,9 +205,9 @@ public class UploadThread implements Runnable {
         } finally {
             backupStatus = BackupStatus.NOT_RUNNING;
             if (lastBackupSuccessful) {
-                DriveBackupApi.backupDone();
+                SevenZipBackupApi.backupDone();
             } else {
-                DriveBackupApi.backupError();
+                SevenZipBackupApi.backupError();
             }
         }
     }
@@ -226,7 +226,7 @@ public class UploadThread implements Runnable {
             updateNextIntervalBackupTime();
         }
         Thread.currentThread().setPriority(config.backupStorage.threadPriority);
-        if (!DriveBackupApi.shouldStartBackup()) {
+        if (!SevenZipBackupApi.shouldStartBackup()) {
             return;
         }
         if (config.backupStorage.backupsRequirePlayers && !PlayerListener.isAutoBackupsActive() && initiator == null) {
@@ -299,7 +299,7 @@ public class UploadThread implements Runnable {
             uploader.close();
             if (uploader.isErrorWhileUploading()) {
                 logger.log(intl("backup-method-error-occurred"),
-                    "diagnose-command", "/drivebackup test " + uploader.getId(),
+                    "diagnose-command", "/7zbackup test " + uploader.getId(),
                     "upload-method", uploader.getName());
                 errorOccurred = true;
             } else {

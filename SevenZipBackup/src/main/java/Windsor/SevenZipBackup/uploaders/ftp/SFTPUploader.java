@@ -6,7 +6,7 @@ import Windsor.SevenZipBackup.UploadThread.UploadLogger;
 import Windsor.SevenZipBackup.config.ConfigParser;
 import Windsor.SevenZipBackup.config.ConfigParser.Config;
 import Windsor.SevenZipBackup.config.configSections.BackupMethods.FTPBackupMethod;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,14 +32,14 @@ import static Windsor.SevenZipBackup.config.Localization.intl;
  */
 
 public class SFTPUploader {
-    private UploadLogger logger;
+    private final UploadLogger logger;
 
     private SSHClient sshClient;
     private StatefulSFTPClient sftpClient;
 
     private String initialRemoteFolder;
-    private String _localBaseFolder;
-    private String _remoteBaseFolder;
+    private final String _localBaseFolder;
+    private final String _remoteBaseFolder;
 
     /**
      * Creates an instance of the {@code SFTPUploader} object using the server credentials specified by the user in the {@code config.yml}
@@ -109,11 +109,11 @@ public class SFTPUploader {
         if (!Strings.isNullOrEmpty(publicKey)) {
             if (!Strings.isNullOrEmpty(passphrase)) {
                 sshAuthMethods.add(new AuthPublickey(sshClient.loadKeys(
-                        DriveBackup.getInstance().getDataFolder().getAbsolutePath() + "/" + publicKey,
+                        SevenZipBackup.getInstance().getDataFolder().getAbsolutePath() + "/" + publicKey,
                         passphrase.toCharArray())));
             } else {
                 sshAuthMethods.add(new AuthPublickey(sshClient.loadKeys(
-                    DriveBackup.getInstance().getDataFolder().getAbsolutePath() + "/" + publicKey)));
+                    SevenZipBackup.getInstance().getDataFolder().getAbsolutePath() + "/" + publicKey)));
             }
         }
         sshClient.auth(username, sshAuthMethods);

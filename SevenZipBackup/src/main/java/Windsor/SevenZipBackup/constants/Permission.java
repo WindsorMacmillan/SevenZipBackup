@@ -2,11 +2,11 @@ package Windsor.SevenZipBackup.constants;
 
 public enum Permission {
     
-    BACKUP("drivebackup.backup"),
-    GET_BACKUP_STATUS("drivebackup.getBackupStatus"),
-    GET_NEXT_BACKUP("drivebackup.getNextBackup"),
-    RELOAD_CONFIG("drivebackup.reloadConfig"),
-    LINK_ACCOUNTS("drivebackup.linkAccounts");
+    BACKUP("7zbackup.backup"),
+    GET_BACKUP_STATUS("7zbackup.getBackupStatus"),
+    GET_NEXT_BACKUP("7zbackup.getNextBackup"),
+    RELOAD_CONFIG("7zbackup.reloadConfig"),
+    LINK_ACCOUNTS("7zbackup.linkAccounts");
     
     private final String permission;
     

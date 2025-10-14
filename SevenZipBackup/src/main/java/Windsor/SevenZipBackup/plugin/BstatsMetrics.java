@@ -14,12 +14,12 @@ import Windsor.SevenZipBackup.util.MessageUtil;
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
 public class BstatsMetrics {
-    private static final int METRICS_ID = 7537;
+    private static final int METRICS_ID = 27583;
 
     public static void initMetrics() {
         if (ConfigParser.getConfig().advanced.metricsEnabled) {
             try {
-                BstatsMetrics metrics = new BstatsMetrics(DriveBackup.getInstance());
+                BstatsMetrics metrics = new BstatsMetrics(SevenZipBackup.getInstance());
                 metrics.updateMetrics();
                 MessageUtil.Builder().mmText(intl("metrics-started")).toConsole(true).send();
             } catch (IOException e) {
@@ -30,7 +30,7 @@ public class BstatsMetrics {
 
     private final Metrics metrics;
 
-    public BstatsMetrics(DriveBackup plugin) {
+    public BstatsMetrics(SevenZipBackup plugin) {
         metrics = new Metrics(plugin, METRICS_ID);
     }
 

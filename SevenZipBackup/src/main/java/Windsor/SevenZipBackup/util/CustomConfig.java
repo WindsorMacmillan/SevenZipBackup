@@ -10,10 +10,10 @@ import java.util.logging.Level;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 
 public class CustomConfig {
-    private String configName;
+    private final String configName;
     private File configFile;
     private FileConfiguration config;
     
@@ -22,7 +22,7 @@ public class CustomConfig {
     }
 
     public void reloadConfig() {
-        DriveBackup instance = DriveBackup.getInstance();
+        SevenZipBackup instance = SevenZipBackup.getInstance();
         config = YamlConfiguration.loadConfiguration(configFile);
         InputStream defConfigStream = instance.getResource(configName);
         if (defConfigStream == null) {
@@ -39,7 +39,7 @@ public class CustomConfig {
     }
 
     public void saveConfig() {
-        DriveBackup instance = DriveBackup.getInstance();
+        SevenZipBackup instance = SevenZipBackup.getInstance();
         try {
             getConfig().save(configFile);
         } catch (IOException ex) {
@@ -48,7 +48,7 @@ public class CustomConfig {
     }
 
     public void saveDefaultConfig() {
-        DriveBackup instance = DriveBackup.getInstance();
+        SevenZipBackup instance = SevenZipBackup.getInstance();
         if (configFile == null) {
             configFile = new File(instance.getDataFolder(), configName);
         }

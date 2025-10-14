@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by Ratismal on 2016-01-20.
- */
-
 public class CommandTabComplete implements TabCompleter {
     
     public static boolean hasPerm(CommandSender player, Permission permission) {
@@ -36,7 +32,7 @@ public class CommandTabComplete implements TabCompleter {
      */
     @Override
     public List<String> onTabComplete(CommandSender player, @NotNull Command cmd, String label, String[] args) {
-        if ("drivebackup".equalsIgnoreCase(cmd.getName())) {
+        if ("7zbackup".equalsIgnoreCase(cmd.getName())) {
             if (args.length == 1) {
                 List<String> commandList = new ArrayList<>(10);
                 commandList.add("v");

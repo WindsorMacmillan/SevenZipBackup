@@ -19,7 +19,7 @@ import Windsor.SevenZipBackup.config.ConfigParser;
 import Windsor.SevenZipBackup.config.ConfigParser.Config;
 import Windsor.SevenZipBackup.config.PermissionHandler;
 import Windsor.SevenZipBackup.constants.Permission;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -173,7 +173,7 @@ public class MessageUtil {
             if (player == null || (!getConfig().messages.sendInChat && player instanceof Player)) {
                 continue;
             }
-            DriveBackup.adventure.sender(player).sendMessage(builtComponent);
+            SevenZipBackup.adventure.sender(player).sendMessage(builtComponent);
         }
     }
 

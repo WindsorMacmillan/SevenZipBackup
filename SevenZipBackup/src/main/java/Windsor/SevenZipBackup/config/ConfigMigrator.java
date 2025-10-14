@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import Windsor.SevenZipBackup.config.ConfigParser.Config;
 import Windsor.SevenZipBackup.util.Logger;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.util.MessageUtil;
 
 public class ConfigMigrator {
@@ -18,9 +18,9 @@ public class ConfigMigrator {
     // may change the intl file. Therefore, we just hardcode any messages.
     private static final String MIGRATING_MESSAGE = "Automatically migrating config to version <version>";
 
-    private FileConfiguration config;
-    private FileConfiguration localizationConfig;
-    private List<CommandSender> initiators;
+    private final FileConfiguration config;
+    private final FileConfiguration localizationConfig;
+    private final List<CommandSender> initiators;
 
     public ConfigMigrator(FileConfiguration config, FileConfiguration localizationConfig,
             List<CommandSender> initiators) {
@@ -40,9 +40,9 @@ public class ConfigMigrator {
         if (backupThreadPriority < 1) {
             config.set("backup-thread-priority", 1);
         }
-        int zipCompression = config.getInt("zip-compression");
+        int zipCompression = config.getInt("7z-compression");
         if (zipCompression < 1) {
-            config.set("zip-compression", 1);
+            config.set("7z-compression", 1);
         }
         migrate("dir", "local-save-directory");
         migrate("destination", "remote-save-directory");
@@ -67,8 +67,8 @@ public class ConfigMigrator {
         migrateIntl("messages.next-schedule-backup", "next-schedule-backup");
         migrateIntl("messages.next-schedule-backup-format", "next-schedule-backup-format");
         migrateIntl("messages.auto-backups-disabled", "auto-backups-disabled");
-        DriveBackup.getInstance().saveConfig();
-        DriveBackup.getInstance().saveIntlConfig();
+        SevenZipBackup.getInstance().saveConfig();
+        SevenZipBackup.getInstance().saveIntlConfig();
     }
 
     /**

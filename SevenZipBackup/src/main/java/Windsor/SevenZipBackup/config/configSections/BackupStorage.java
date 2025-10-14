@@ -71,12 +71,12 @@ public class BackupStorage {
             logger.log(intl("local-keep-count-invalid"));
             localKeepCount = defaultConfig.getInt("local-keep-count");
         }
-        int zipCompression = config.getInt("zip-compression");
+        int zipCompression = config.getInt("7z-compression");
         if (zipCompression < Deflater.BEST_SPEED) {
-            logger.log(intl("zip-compression-too-low"));
+            logger.log(intl("7z-compression-too-low"));
             zipCompression = Deflater.BEST_SPEED;
         } else if (zipCompression > Deflater.BEST_COMPRESSION) {
-            logger.log(intl("zip-compression-too-high"));
+            logger.log(intl("7z-compression-too-high"));
             zipCompression = Deflater.BEST_COMPRESSION;
         }
         boolean backupsRequirePlayers = config.getBoolean("backups-require-players");

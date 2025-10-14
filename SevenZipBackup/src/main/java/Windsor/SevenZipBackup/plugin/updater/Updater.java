@@ -3,7 +3,7 @@ package Windsor.SevenZipBackup.plugin.updater;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.bukkit.command.CommandSender;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.util.Logger;
 import Windsor.SevenZipBackup.util.MessageUtil;
 
@@ -15,11 +15,11 @@ import static Windsor.SevenZipBackup.config.Localization.intl;
 
 public class Updater {
     // Plugin running Updater
-    private DriveBackup plugin;
+    private final SevenZipBackup plugin;
     // The plugin file (jar)
-    private File file;
+    private final File file;
     // The folder that downloads will be placed in
-    private File updateFolder;
+    private final File updateFolder;
 
     /**
      * Initialize the updater.
@@ -27,7 +27,7 @@ public class Updater {
      * @param file The plugin jar file
      */
     public Updater(File file) {
-        plugin = DriveBackup.getInstance();
+        plugin = SevenZipBackup.getInstance();
         this.file = file;
         updateFolder = plugin.getDataFolder().getParentFile();
     }
@@ -38,7 +38,7 @@ public class Updater {
     private void downloadFile() throws IOException  {
         File outputPath = new File(updateFolder, "SevenZipBackup.jar.temp");
         Request request = new Request.Builder().url(UpdateChecker.getLatestDownloadUrl()).addHeader("Accept", "application/octet-stream").build();
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 throw new IOException("Failed to download file: " + response);
             }

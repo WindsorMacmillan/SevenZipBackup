@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -28,11 +29,11 @@ import org.jetbrains.annotations.NotNull;
 import Windsor.SevenZipBackup.util.MessageUtil;
 
 public class MySQLUploader {
-    private String host;
-    private int port;
-    private String username;
-    private String password;
-    private boolean useSsl;
+    private final String host;
+    private final int port;
+    private final String username;
+    private final String password;
+    private final boolean useSsl;
 
     private boolean errorOccurred;
     
@@ -99,7 +100,7 @@ public class MySQLUploader {
                 try (FileOutputStream outputStream = new FileOutputStream(
                         outputPath + File.separator + name + ".sql")) {
                     try (BufferedOutputStream _bos = new BufferedOutputStream(outputStream)) {
-                        try (OutputStreamWriter _osw = new OutputStreamWriter(_bos, "UTF-8")) {
+                        try (OutputStreamWriter _osw = new OutputStreamWriter(_bos, StandardCharsets.UTF_8)) {
                             getInsertStatements(_osw, name, blacklist);
                         }
                     }

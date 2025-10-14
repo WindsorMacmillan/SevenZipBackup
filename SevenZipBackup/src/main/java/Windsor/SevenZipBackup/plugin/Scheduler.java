@@ -32,7 +32,7 @@ public class Scheduler {
     /**
      * List of the IDs of the scheduled backup tasks
      */
-    private static ArrayList<Integer> backupTasks = new ArrayList<>();
+    private static final ArrayList<Integer> backupTasks = new ArrayList<>();
 
     /**
      * ID of the schedule drift correction task
@@ -42,7 +42,7 @@ public class Scheduler {
     /**
      * List of Dates representing each time a scheduled backup will occur.
      */
-    private static ArrayList<ZonedDateTime> backupDatesList = new ArrayList<>();
+    private static final ArrayList<ZonedDateTime> backupDatesList = new ArrayList<>();
 
     /**
      * Starts the backup thread
@@ -75,7 +75,7 @@ public class Scheduler {
                         startingOccurrence = startingOccurrence.plusWeeks(1);
                     }
                     backupTasks.add(taskScheduler.runTaskTimerAsynchronously(
-                        DriveBackup.getInstance(), 
+                        SevenZipBackup.getInstance(),
                         new UploadThread(),
                         SchedulerUtil.sToTicks(ChronoUnit.SECONDS.between(now, startingOccurrence)),
                         SchedulerUtil.sToTicks(ChronoUnit.SECONDS.between(previousOccurrence, nextOccurrence))
@@ -107,7 +107,7 @@ public class Scheduler {
                 Bukkit.getScheduler().cancelTask(scheduleDriftTask);
             }
             long driftInt = SchedulerUtil.sToTicks(SCHEDULE_DRIFT_CORRECTION_INTERVAL);
-            scheduleDriftTask = taskScheduler.runTaskTimer(DriveBackup.getInstance(), () -> startBackupThread(), driftInt, driftInt).getTaskId();
+            scheduleDriftTask = taskScheduler.runTaskTimer(SevenZipBackup.getInstance(), () -> startBackupThread(), driftInt, driftInt).getTaskId();
         } else if (config.backupStorage.delay != -1) {
             SchedulerUtil.cancelTasks(backupTasks);
             if (scheduleDriftTask != -1) {
@@ -119,7 +119,7 @@ public class Scheduler {
                 .send();
             long interval = SchedulerUtil.sToTicks(config.backupStorage.delay * 60);
             backupTasks.add(taskScheduler.runTaskTimerAsynchronously(
-                    DriveBackup.getInstance(),
+                    SevenZipBackup.getInstance(),
                     new UploadThread(),
                     interval,
                     interval
@@ -133,7 +133,7 @@ public class Scheduler {
      */
     public static void stopBackupThread() {
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.cancelTasks(DriveBackup.getInstance());
+        scheduler.cancelTasks(SevenZipBackup.getInstance());
     }
 
     /**

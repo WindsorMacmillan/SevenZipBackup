@@ -8,7 +8,7 @@ import Windsor.SevenZipBackup.TestThread;
 import Windsor.SevenZipBackup.UploadThread;
 import Windsor.SevenZipBackup.config.PermissionHandler;
 import Windsor.SevenZipBackup.constants.Permission;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.uploaders.Authenticator;
 import Windsor.SevenZipBackup.uploaders.Authenticator.AuthenticationProvider;
 import Windsor.SevenZipBackup.util.MessageUtil;
@@ -20,7 +20,7 @@ import static Windsor.SevenZipBackup.config.Localization.intl;
  */
 
 public class CommandHandler implements CommandExecutor {
-    public static final String CHAT_KEYWORD = "drivebackup";
+    public static final String CHAT_KEYWORD = "7zbackup";
 
     /**
      * Handles commands sent by players
@@ -54,19 +54,9 @@ public class CommandHandler implements CommandExecutor {
                     BasicCommands.sendNoPerms(sender);
                     break;
                 }
-                DriveBackup.reloadLocalConfig();
+                SevenZipBackup.reloadLocalConfig();
                 MessageUtil.Builder().mmText(intl("config-reloaded")).to(sender).send();
                 break;
-            /*case "debug":
-                if (!PermissionHandler.hasPerm(sender, PermissionHandler.RELOAD_CONFIG)) break;
-                MessageUtil.Builder().mmText(intl("debug-log-creating")).to(sender).toConsole(false).send();
-                DebugCollector debugInfo = new DebugCollector(DriveBackup.getInstance());
-                String publishedUrl = debugInfo.publish(DriveBackup.getInstance());
-                MessageUtil.Builder()
-                    .mmText(intl("debug-log-created"), "url", publishedUrl)
-                    .to(sender).toConsole(false)
-                    .send();
-                break;*/
             case "linkaccount":
             case "link":
                 if (args.length < 2) {
@@ -153,7 +143,7 @@ public class CommandHandler implements CommandExecutor {
                     BasicCommands.sendNoPerms(sender);
                     break;
                 }
-                DriveBackup.updater.runUpdater(sender);
+                SevenZipBackup.updater.runUpdater(sender);
                 break;
             default:
                 BasicCommands.sendHelp(sender);

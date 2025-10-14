@@ -10,7 +10,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import Windsor.SevenZipBackup.config.ConfigParser;
 import Windsor.SevenZipBackup.config.ConfigParser.Config;
 import Windsor.SevenZipBackup.config.configSections.BackupList.BackupListEntry;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.plugin.updater.UpdateChecker;
 import Windsor.SevenZipBackup.util.MessageUtil;
 
@@ -32,8 +32,8 @@ public final class BasicCommands {
         MessageUtil.Builder()
             .addPrefix(false)
             .mmText(
-                intl("drivebackup-docs-command"), 
-                "header", intl("drivebackup-command-header"))
+                intl("7zbackup-docs-command"), 
+                "header", intl("7zbackup-command-header"))
             .to(player)
             .toConsole(false)
             .send();
@@ -47,15 +47,15 @@ public final class BasicCommands {
         MessageUtil builder = MessageUtil.Builder()
             .addPrefix(false)
             .mmText(
-                intl("drivebackup-version-command"), 
-                "header", intl("drivebackup-command-header"),
-                "plugin-version", DriveBackup.getInstance().getDescription().getVersion(),
+                intl("7zbackup-version-command"), 
+                "header", intl("7zbackup-command-header"),
+                "plugin-version", SevenZipBackup.getInstance().getDescription().getVersion(),
                 "java-version", System.getProperty("java.version"),
                 "server-software", Bukkit.getName(),
                 "server-version", Bukkit.getVersion()
                 );
         if (UpdateChecker.isUpdateAvailable()) {
-            builder.mmText(intl("drivebackup-version-update"));
+            builder.mmText(intl("7zbackup-version-update"));
         }
         builder
             .to(player)
@@ -71,8 +71,8 @@ public final class BasicCommands {
         MessageUtil.Builder()
             .addPrefix(false)
             .mmText(
-                intl("drivebackup-help-command"), 
-                "header", intl("drivebackup-command-header"))
+                intl("7zbackup-help-command"), 
+                "header", intl("7zbackup-command-header"))
             .to(player)
             .toConsole(false)
             .send();

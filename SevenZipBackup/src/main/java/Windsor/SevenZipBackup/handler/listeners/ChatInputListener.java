@@ -7,7 +7,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.jetbrains.annotations.NotNull;
 import Windsor.SevenZipBackup.UploadThread.UploadLogger;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.uploaders.googledrive.GoogleDriveUploader;
 import Windsor.SevenZipBackup.util.MessageUtil;
 
@@ -34,7 +34,7 @@ public class ChatInputListener implements Listener {
      * @return whether the input was handled
      */
     private static boolean handleInput(CommandSender sender, String input) {
-        if (DriveBackup.chatInputPlayers.contains(sender)) {
+        if (SevenZipBackup.chatInputPlayers.contains(sender)) {
             UploadLogger uploadLogger = new UploadLogger() {
                 @Override
                 public void log(String input, String... placeholders) {
@@ -42,7 +42,7 @@ public class ChatInputListener implements Listener {
                 }
             };
             new GoogleDriveUploader(uploadLogger).finalizeSharedDrives(sender, input);
-            DriveBackup.chatInputPlayers.remove(sender);
+            SevenZipBackup.chatInputPlayers.remove(sender);
             return true;
         }
         return false;

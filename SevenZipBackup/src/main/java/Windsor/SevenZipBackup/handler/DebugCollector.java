@@ -19,7 +19,7 @@ import Windsor.SevenZipBackup.config.ConfigParser;
 import Windsor.SevenZipBackup.config.ConfigParser.Config;
 import Windsor.SevenZipBackup.config.configSections.BackupList;
 import Windsor.SevenZipBackup.config.configSections.BackupScheduling;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 
 public class DebugCollector {
     private static final String PASTEBIN_UPLOAD_URL = "https://api.mclo.gs/1/log";
@@ -28,10 +28,10 @@ public class DebugCollector {
     private final String serverVersion;
     private final boolean onlineMode;
     private final ConfigInfo configInfo;
-    private List<PluginInfo> plugins;
+    private final List<PluginInfo> plugins;
     private final RamInfo ramInfo;
 
-    public DebugCollector(@NotNull DriveBackup plugin) {
+    public DebugCollector(@NotNull SevenZipBackup plugin) {
         this.serverType = plugin.getServer().getName();
         this.serverVersion = plugin.getServer().getVersion();
         this.onlineMode = plugin.getServer().getOnlineMode();
@@ -43,7 +43,7 @@ public class DebugCollector {
         }
     }
 
-    public String publish(DriveBackup plugin) {
+    public String publish(SevenZipBackup plugin) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String jsonInString = gson.toJson(this);
         RequestBody formBody = new FormBody.Builder()
@@ -53,7 +53,7 @@ public class DebugCollector {
             .url(PASTEBIN_UPLOAD_URL)
             .post(formBody)
             .build();
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 throw new Exception("Unexpected code " + response);
             }

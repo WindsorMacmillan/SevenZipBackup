@@ -23,8 +23,8 @@ import java.util.Random;
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
 public class TestThread implements Runnable {
-    private UploadLogger logger;
-    private String[] args;
+    private final UploadLogger logger;
+    private final String[] args;
 
     /**
      * Creates an instance of the {@code TestThread} object

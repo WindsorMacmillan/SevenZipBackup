@@ -15,7 +15,7 @@ import Windsor.SevenZipBackup.config.configSections.BackupScheduling;
 import Windsor.SevenZipBackup.config.configSections.BackupStorage;
 import Windsor.SevenZipBackup.config.configSections.ExternalBackups;
 import Windsor.SevenZipBackup.config.configSections.Messages;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.util.Logger;
 import Windsor.SevenZipBackup.util.MessageUtil;
 
@@ -97,7 +97,7 @@ public class ConfigParser {
 
     @NotNull
     public static Config defaultConfig() {
-        FileConfiguration config = DriveBackup.getInstance().getConfig();
+        FileConfiguration config = SevenZipBackup.getInstance().getConfig();
         Logger logger = (input, placeholders) -> {};
 
         return new Config(

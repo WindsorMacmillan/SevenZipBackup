@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import Windsor.SevenZipBackup.handler.commandHandler.BasicCommands;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.util.Logger;
 import Windsor.SevenZipBackup.util.MessageUtil;
 import Windsor.SevenZipBackup.util.NetUtil;
@@ -26,16 +26,16 @@ public class Authenticator {
     /**
      * Endpoints
      */
-    private static String AUTH_URL = "https://auth.SevenZipBackup.com";
-    private static String REQUEST_CODE_ENDPOINT = AUTH_URL + "/pin";
-    private static String POLL_VERIFICATION_ENDPOINT = AUTH_URL + "/token";
-    private static String ONEDRIVE_REQUEST_CODE_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode";
-    private static String ONEDRIVE_POLL_VERIFICATION_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+    private static final String AUTH_URL = "https://auth.drivebackup.com";
+    private static final String REQUEST_CODE_ENDPOINT = AUTH_URL + "/pin";
+    private static final String POLL_VERIFICATION_ENDPOINT = AUTH_URL + "/token";
+    private static final String ONEDRIVE_REQUEST_CODE_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode";
+    private static final String ONEDRIVE_POLL_VERIFICATION_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
 
     /**
      * Authenticator client secret
      */
-    private static String CLIENT_SECRET = "fyKCRZRyJeHW5PzGJvQkL4dr2zRHRmwTaOutG7BBhQM=";
+    private static final String CLIENT_SECRET = "fyKCRZRyJeHW5PzGJvQkL4dr2zRHRmwTaOutG7BBhQM=";
 
     private static int taskId = -1;
 
@@ -67,7 +67,7 @@ public class Authenticator {
         }
 
         public @NotNull String getCredStoreLocation() {
-            return DriveBackup.getInstance().getDataFolder().getAbsolutePath() + credStoreLocation;
+            return SevenZipBackup.getInstance().getDataFolder().getAbsolutePath() + credStoreLocation;
         }
 
         public String getClientId() {
@@ -87,7 +87,7 @@ public class Authenticator {
      * @param initiator user who initiated the authentication
      */
     public static void authenticateUser(final AuthenticationProvider provider, final CommandSender initiator) {
-        DriveBackup plugin = DriveBackup.getInstance();
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
         Logger logger = (input, placeholders) -> MessageUtil.Builder().mmText(input, placeholders).to(initiator).toConsole(false).send();
         cancelPollTask();
         try {
@@ -106,7 +106,7 @@ public class Authenticator {
                 .url(requestEndpoint)
                 .post(requestBody.build())
                 .build();
-            Response response = DriveBackup.httpClient.newCall(request).execute();
+            Response response = SevenZipBackup.httpClient.newCall(request).execute();
             JSONObject parsedResponse = new JSONObject(response.body().string());
             response.close();
             String userCode = parsedResponse.getString("user_code");
@@ -138,7 +138,7 @@ public class Authenticator {
                             .url(requestEndpoint)
                             .post(requestBody.build())
                             .build();
-                        Response response = DriveBackup.httpClient.newCall(request).execute();
+                        Response response = SevenZipBackup.httpClient.newCall(request).execute();
                         JSONObject parsedResponse = new JSONObject(response.body().string());
                         response.close();
                         if (parsedResponse.has("refresh_token")) {
@@ -192,7 +192,7 @@ public class Authenticator {
     public static void linkSuccess(CommandSender initiator, @NotNull AuthenticationProvider provider, @NotNull Logger logger) {
         logger.log(intl("link-provider-complete"), "provider", provider.getName());
         enableBackupMethod(provider, logger);
-        DriveBackup.reloadLocalConfig();
+        SevenZipBackup.reloadLocalConfig();
         BasicCommands.sendBriefBackupList(initiator);
     }
 
@@ -205,7 +205,7 @@ public class Authenticator {
     }
 
     private static void enableBackupMethod(@NotNull AuthenticationProvider provider, Logger logger) {
-        DriveBackup plugin = DriveBackup.getInstance();
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
         if (!plugin.getConfig().getBoolean(provider.getId() + ".enabled")) {
             logger.log("Automatically enabled " + provider.getName() + " backups");
             plugin.getConfig().set(provider.getId() + ".enabled", true);
@@ -214,7 +214,7 @@ public class Authenticator {
     }
 
     private static void disableBackupMethod(@NotNull AuthenticationProvider provider, Logger logger) {
-        DriveBackup plugin = DriveBackup.getInstance();
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
         if (plugin.getConfig().getBoolean(provider.getId() + ".enabled")) {
             logger.log("Disabled " + provider.getName() + " backups");
             plugin.getConfig().set(provider.getId() + ".enabled", false);
@@ -244,7 +244,7 @@ public class Authenticator {
 
     @NotNull
     private static String processCredentialJsonFile(@NotNull AuthenticationProvider provider) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(provider.getCredStoreLocation()));) {
+        try (BufferedReader br = new BufferedReader(new FileReader(provider.getCredStoreLocation()))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
             while (line != null) {

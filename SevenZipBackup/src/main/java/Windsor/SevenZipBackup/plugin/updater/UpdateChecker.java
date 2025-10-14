@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import Windsor.SevenZipBackup.config.ConfigParser;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.util.Logger;
 import Windsor.SevenZipBackup.util.MessageUtil;
 import Windsor.SevenZipBackup.util.NetUtil;
@@ -33,7 +33,7 @@ public class UpdateChecker {
     private static boolean hasSentStartMessage;
 
     public static void updateCheck() {
-        DriveBackup plugin = DriveBackup.getInstance();
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
         UpdateChecker checker = new UpdateChecker();
         if (ConfigParser.getConfig().advanced.updateCheckEnabled) {
             plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
@@ -84,15 +84,15 @@ public class UpdateChecker {
     }
 
     public Version getCurrent() throws Exception {
-        String versionTitle = DriveBackup.getInstance().getDescription().getVersion().split("-")[0];
+        String versionTitle = SevenZipBackup.getInstance().getDescription().getVersion().split("-")[0];
         return Version.parse(versionTitle);
     }
 
     public Version getLatest() throws Exception {
-        final String LATEST_URL = "https://api.github.com/repos/MaxMaeder/SevenZipBackup/releases/latest";
+        final String LATEST_URL = "https://api.github.com/WindsorMacmillan/SevenZipBackup/releases/latest";
         Request request = new Request.Builder().url(LATEST_URL).build();
         JSONObject pluginVersions;
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             if (response.code() != 200) {
                 throw new IOException("Unexpected response: " + response.code() + " : " + response.message());
             }
@@ -109,7 +109,7 @@ public class UpdateChecker {
         String assetsUrl = pluginVersions.getString("assets_url");
         Request request2 = new Request.Builder().url(assetsUrl).build();
         JSONArray assets;
-        try (Response response = DriveBackup.httpClient.newCall(request2).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request2).execute()) {
             if (response.code() != 200) {
                 throw new IOException("Unexpected response: " + response.code() + " : " + response.message());
             }

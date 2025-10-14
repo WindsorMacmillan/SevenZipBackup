@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import Windsor.SevenZipBackup.UploadThread.UploadLogger;
 import Windsor.SevenZipBackup.config.ConfigParser;
 import Windsor.SevenZipBackup.config.ConfigParser.Config;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.uploaders.Authenticator;
 import Windsor.SevenZipBackup.uploaders.Authenticator.AuthenticationProvider;
 import Windsor.SevenZipBackup.uploaders.Obfusticate;
@@ -60,7 +60,7 @@ public class DropboxUploader extends Uploader {
                 .url("https://content.dropboxapi.com/2/files/upload")
                 .post(requestBody)
                 .build();
-            Response response = DriveBackup.httpClient.newCall(request).execute();
+            Response response = SevenZipBackup.httpClient.newCall(request).execute();
             int statusCode = response.code();
             response.close();
             if (statusCode != 200) {
@@ -75,7 +75,7 @@ public class DropboxUploader extends Uploader {
                 .url("https://api.dropboxapi.com/2/files/delete_v2")
                 .post(deleteRequestBody)
                 .build();
-            response = DriveBackup.httpClient.newCall(request).execute();
+            response = SevenZipBackup.httpClient.newCall(request).execute();
             statusCode = response.code();
             response.close();
             if (statusCode != 200) {
@@ -124,7 +124,7 @@ public class DropboxUploader extends Uploader {
                         .post(requestBody)
                         .url("https://content.dropboxapi.com/2/files/upload_session/start")
                         .build();
-                    Response response = DriveBackup.httpClient.newCall(request).execute();
+                    Response response = SevenZipBackup.httpClient.newCall(request).execute();
                     JSONObject parsedResponse = new JSONObject(response.body().string());
                     sessionId = parsedResponse.getString("session_id");
                     response.close();
@@ -146,7 +146,7 @@ public class DropboxUploader extends Uploader {
                         .post(requestBody)
                         .url("https://content.dropboxapi.com/2/files/upload_session/append_v2")
                         .build();
-                    Response response = DriveBackup.httpClient.newCall(request).execute();
+                    Response response = SevenZipBackup.httpClient.newCall(request).execute();
                     response.close();
                     uploaded += CHUNKED_UPLOAD_CHUNK_SIZE;
                 }
@@ -170,7 +170,7 @@ public class DropboxUploader extends Uploader {
                     .post(requestBody)
                     .url("https://content.dropboxapi.com/2/files/upload_session/finish")
                     .build();
-                Response response = DriveBackup.httpClient.newCall(request).execute();
+                Response response = SevenZipBackup.httpClient.newCall(request).execute();
                 response.close();
             } else {
                 // Single upload
@@ -186,7 +186,7 @@ public class DropboxUploader extends Uploader {
                     .url("https://content.dropboxapi.com/2/files/upload")
                     .post(requestBody)
                     .build();
-                Response response = DriveBackup.httpClient.newCall(request).execute();
+                Response response = SevenZipBackup.httpClient.newCall(request).execute();
                 response.close();
             }
             try {
@@ -237,7 +237,7 @@ public class DropboxUploader extends Uploader {
                     .url("https://api.dropboxapi.com/2/files/delete_v2")
                     .post(deleteRequestBody)
                     .build();
-                Response deleteResponse = DriveBackup.httpClient.newCall(deleteRequest).execute();
+                Response deleteResponse = SevenZipBackup.httpClient.newCall(deleteRequest).execute();
                 deleteResponse.close();
                 files.remove(files.firstKey());
             }
@@ -260,7 +260,7 @@ public class DropboxUploader extends Uploader {
             .url("https://api.dropboxapi.com/2/files/list_folder")
             .post(requestBody)
             .build();
-        Response response = DriveBackup.httpClient.newCall(request).execute();
+        Response response = SevenZipBackup.httpClient.newCall(request).execute();
         JSONObject parsedResponse = new JSONObject(response.body().string());
         JSONArray resFiles = parsedResponse.getJSONArray("entries");
         response.close();
@@ -303,7 +303,7 @@ public class DropboxUploader extends Uploader {
             .url("https://api.dropbox.com/oauth2/token")
             .post(requestBody)
             .build();
-        Response response = DriveBackup.httpClient.newCall(request).execute();
+        Response response = SevenZipBackup.httpClient.newCall(request).execute();
         JSONObject parsedResponse = new JSONObject(response.body().string());
         response.close();
         if (!response.isSuccessful()) {

@@ -12,7 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import Windsor.SevenZipBackup.UploadThread.UploadLogger;
 import Windsor.SevenZipBackup.config.ConfigParser;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.uploaders.Authenticator;
 import Windsor.SevenZipBackup.uploaders.Authenticator.AuthenticationProvider;
 import Windsor.SevenZipBackup.uploaders.Obfusticate;
@@ -86,7 +86,7 @@ public class OneDriveUploader extends Uploader {
             .url("https://login.microsoftonline.com/common/oauth2/v2.0/token")
             .post(requestBody)
             .build();
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             JSONObject parsedResponse = new JSONObject(response.body().string());
             if (!response.isSuccessful()) {
                 String error = parsedResponse.optString("error");
@@ -262,7 +262,7 @@ public class OneDriveUploader extends Uploader {
             .url("https://graph.microsoft.com/v1.0/drives/" + root.driveId + "/items/" + root.itemId + "/children")
             .post(requestBody)
             .build();
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             if (response.code() != 201) {
                 throw new GraphApiErrorException(response);
             }
@@ -294,7 +294,7 @@ public class OneDriveUploader extends Uploader {
             .url("https://graph.microsoft.com/v1.0/me/drive/root/children")
             .post(requestBody)
             .build();
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             if (response.code() != 201) {
                 throw new GraphApiErrorException(response);
             }
@@ -321,7 +321,7 @@ public class OneDriveUploader extends Uploader {
             .url("https://graph.microsoft.com/v1.0/me/drive/root" + folderUrl + "?$select=id,parentReference,remoteItem")
             .build();
         JSONObject parsedResponse;
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             if (response.code() == 404) {
                 return null;
             }
@@ -385,7 +385,7 @@ public class OneDriveUploader extends Uploader {
                     .addHeader("Authorization", "Bearer " + accessToken)
                     .url(targetUrl)
                     .build();
-            try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+            try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
                     throw new GraphApiErrorException(response);
                 }
@@ -417,7 +417,7 @@ public class OneDriveUploader extends Uploader {
             .url("https://graph.microsoft.com/v1.0/drives/" + driveId + "/items/" + itemId)
             .delete()
             .build();
-        try (Response response = DriveBackup.httpClient.newCall(delteRequest).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(delteRequest).execute()) {
             if (response.code() != 204 && response.code() != 404) {
                 throw new GraphApiErrorException(response);
             }
@@ -440,7 +440,7 @@ public class OneDriveUploader extends Uploader {
                 + ":/" + file.getName() + ":/content")
             .put(RequestBody.create(file, textMediaType))
             .build();
-        try (Response response = DriveBackup.httpClient.newCall(uploadRequest).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(uploadRequest).execute()) {
             if (response.code() != 201) {
                 throw new GraphApiErrorException(response);
             }
@@ -467,7 +467,7 @@ public class OneDriveUploader extends Uploader {
                 + "/items/" + destinationFolder.itemId + ":/" + fileName + ":/createUploadSession")
             .post(RequestBody.create("{}", jsonMediaType))
             .build();
-        try (Response response = DriveBackup.httpClient.newCall(request).execute()) {
+        try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 throw new GraphApiErrorException(response);
             }
@@ -500,7 +500,7 @@ public class OneDriveUploader extends Uploader {
                 .url(uploadURL)
                 .put(RequestBody.create(bytesToUpload, zipMediaType))
                 .build();
-            try (Response uploadResponse = DriveBackup.httpClient.newCall(uploadRequest).execute()) {
+            try (Response uploadResponse = SevenZipBackup.httpClient.newCall(uploadRequest).execute()) {
                 if (uploadResponse.code() == 202) {
                     JSONObject responseObject = new JSONObject(uploadResponse.body().string());
                     JSONArray expectedRanges = responseObject.getJSONArray("nextExpectedRanges");
@@ -512,13 +512,13 @@ public class OneDriveUploader extends Uploader {
                 } else {
                     if (retryCount > MAX_RETRY_ATTEMPTS || uploadResponse.code() == 409) {
                         Request cancelRequest = new Request.Builder().url(uploadURL).delete().build();
-                        DriveBackup.httpClient.newCall(cancelRequest).execute().close();
+                        SevenZipBackup.httpClient.newCall(cancelRequest).execute().close();
                         throw new GraphApiErrorException(uploadResponse);
                     } else if (uploadResponse.code() == 404) {
                         throw new GraphApiErrorException(uploadResponse);
                     } else if (uploadResponse.code() == 416) {
                         Request statusRequest = new Request.Builder().url(uploadURL).build();
-                        try (Response statusResponse = DriveBackup.httpClient.newCall(statusRequest).execute()) {
+                        try (Response statusResponse = SevenZipBackup.httpClient.newCall(statusRequest).execute()) {
                             JSONObject responseObject = new JSONObject(statusResponse.body().string());
                             JSONArray expectedRanges = responseObject.getJSONArray("nextExpectedRanges");
                             range = new Range(expectedRanges.getString(0), UPLOAD_CHUNK_SIZE);

@@ -3,8 +3,8 @@ package Windsor.SevenZipBackup.util;
 import java.nio.file.PathMatcher;
 
 public class BlacklistEntry {
-    private String globPattern;
-    private PathMatcher pathMatcher;
+    private final String globPattern;
+    private final PathMatcher pathMatcher;
     private int blacklistedFiles;
 
     public BlacklistEntry(String globPattern, PathMatcher pathMatcher) {

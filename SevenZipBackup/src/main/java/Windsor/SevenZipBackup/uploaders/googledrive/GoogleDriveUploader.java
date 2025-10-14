@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import Windsor.SevenZipBackup.UploadThread.UploadLogger;
 import Windsor.SevenZipBackup.config.ConfigParser;
-import Windsor.SevenZipBackup.plugin.DriveBackup;
+import Windsor.SevenZipBackup.plugin.SevenZipBackup;
 import Windsor.SevenZipBackup.uploaders.Authenticator;
 import Windsor.SevenZipBackup.uploaders.Authenticator.AuthenticationProvider;
 import Windsor.SevenZipBackup.uploaders.Obfusticate;
@@ -114,7 +114,7 @@ public class GoogleDriveUploader extends Uploader {
             .url("https://oauth2.googleapis.com/token")
             .post(requestBody)
             .build();
-        Response response = DriveBackup.httpClient.newCall(request).execute();
+        Response response = SevenZipBackup.httpClient.newCall(request).execute();
         JSONObject parsedResponse = new JSONObject(response.body().string());
         response.close();
         if (!response.isSuccessful()) {
@@ -273,9 +273,9 @@ public class GoogleDriveUploader extends Uploader {
             }
             if (initiator instanceof Player) {
                 Player player = (Player) initiator;
-                DriveBackup.chatInputPlayers.add(player);
+                SevenZipBackup.chatInputPlayers.add(player);
             } else {
-                DriveBackup.chatInputPlayers.add(initiator);
+                SevenZipBackup.chatInputPlayers.add(initiator);
             }
         } else {
             Authenticator.linkSuccess(initiator, getAuthProvider(), logger);
@@ -283,7 +283,7 @@ public class GoogleDriveUploader extends Uploader {
     }
 
     public void finalizeSharedDrives(CommandSender initiator, String input) {
-        DriveBackup instance = DriveBackup.getInstance();
+        SevenZipBackup instance = SevenZipBackup.getInstance();
         final String idKey = "googledrive.shared-drive-id";
         for (com.google.api.services.drive.model.Drive drive : drives) {
             if (input.equals(drive.getId())) {
@@ -441,7 +441,7 @@ public class GoogleDriveUploader extends Uploader {
         try {
             Drive.Files.List request = service.files().list()
                 .setQ("mimeType='application/vnd.google-apps.folder' and trashed=false and 'root' in parents");
-            FileList files = request.execute();;
+            FileList files = request.execute();
             for (File folderfiles : files.getItems()) {
                 if (folderfiles.getTitle().equals(name)) {
                     return folderfiles;
@@ -464,11 +464,6 @@ public class GoogleDriveUploader extends Uploader {
     private List<ChildReference> getFiles(@NotNull File folder) throws Exception {
         //Create a List to store results
         List<ChildReference> result = new ArrayList<>();
-        //Set up a request to query all files from all pages.
-        //We are also making sure the files are sorted by created Date.
-        //Oldest at the beginning of List.
-        //Drive.Files.List request = service.files().list().setOrderBy("createdDate");
-        //folder.getId();
         Drive.Children.List request = service.children().list(folder.getId()).setOrderBy("createdDate");
         //While there is a page available, request files and add them to the Result List.
         do {
@@ -481,7 +476,7 @@ public class GoogleDriveUploader extends Uploader {
                 request.setPageToken(null);
             }
         } while (request.getPageToken() != null &&
-                request.getPageToken().length() > 0);
+                !request.getPageToken().isEmpty());
         return result;
     }
 
