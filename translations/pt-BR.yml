@@ -8,8 +8,8 @@ metrics-started: "Inicializando métrica"
 metrics-error: "Falha ao iniciar métrica"
 update-checker-started: "Procurando por atualizações..."
 update-checker-new-release: |-
-  DriveBackup foi atualizado para a versão <latest-version>, você está usando a versão <current-version>
-  Atualize em: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" ou utilize <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold>
+  SevenZipbackup foi atualizado para a versão <latest-version>, você está usando a versão <current-version>
+  Atualize em: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" ou utilize <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 update-checker-unsupported-release: |-
   Você está executando um lançamento sem suporte!
   A versão recomendada é <latest-version>, você está usando a versão <current-version>
@@ -40,8 +40,8 @@ thread-priority-too-low: "Prioridade de rosca entrada menor que o mínimo, usand
 thread-priority-too-high: "Prioridade de rosca entrada mais que o máximo, usando o máximo"
 keep-count-invalid: "Manter a contagem inválida, usando o padrão"
 local-keep-count-invalid: "A contagem local de entradas mantém inválida, usando o padrão"
-zip-compression-too-low: "Entrada de compressão de zíper menor que o mínimo, usando o mínimo"
-zip-compression-too-high: "Compressão de zíper entrada mais que o máximo, usando o máximo"
+7z-compression-too-low: "Entrada de compressão de zíper menor que o mínimo, usando o mínimo"
+7z-compression-too-high: "Compressão de zíper entrada mais que o máximo, usando o máximo"
 external-backup-type-invalid: "Tipo de backup inválido, pulando a entrada externa de backup <entry>"
 external-backup-host-port-invalid: "Hostname/porta inválido, pulando a entrada externa de backup <entry>"
 external-backup-user-pass-invalid: "Nome de usuário/senha inválida, pulando a entrada externa de backup <entry>"
@@ -138,7 +138,7 @@ test-method-successful: "O teste <upload-method> foi bem sucedido"
 player-join-backup-enable: "Habilitando backups automáticos"
 player-join-update-available: |-
   Uma atualização está disponível, obtenha-a aqui: <gold><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></gold>
-  ou rodando <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold>
+  ou rodando <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 player-join-backup-failed: |-
   <red>O último backup falhou!<red>
   Verifique o console para mais informações
@@ -149,39 +149,39 @@ brief-backup-list: "O SevenZipBackup atualmente fará o backup <list>"
 brief-backup-list-empty: "nada"
 brief-backup-list-external-backups: "alguns backups externos"
 brief-backup-list-help: "Deseja apoiar algo mais? Veja <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
-drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
-drivebackup-docs-command: |-
+7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
+7zbackup-docs-command: |-
   <header>
   Precisa de ajuda? Confira estes recursos úteis!
   Wiki: <gold><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></gold>
   Discord: <gold><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></gold>
-drivebackup-version-command: |-
+7zbackup-version-command: |-
   <header>
   Versão do Plugin: <gold><plugin-version></gold>
   Versão do Java: <gold><java-version></gold>
   Server software: <gold><server-software></gold>
   Server software version: <gold><server-version></gold>
-drivebackup-version-update: <gold>Plugin update available!
-drivebackup-help-command: |-
+7zbackup-version-update: <gold>Plugin update available!
+7zbackup-help-command: |-
   <header>
-  <gold><click:run_command:/drivebackup>/drivebackup</click></gold> - Exibe este menu
-  <gold><click:run_command:/drivebackup help>/drivebackup help</click></gold> - Exibe recursos de ajuda
-  <gold><click:run_command:/drivebackup commands>/drivebackup commands</click></gold> - Exibe esta página de ajuda de comando
-  <gold><click:run_command:/drivebackup v>/drivebackup [v|version]</click></gold> - Exibe a versão plugin
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [link|linkaccount] googledrive</click></gold> - Vincula sua conta Google Drive para backups
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [link|linkaccount] onedrive</click></gold> - Vincula para sua conta OneDrive para backups
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [link|linkaccount] dropbox</click></gold> - Vincula para sua conta Dropbox para backups
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [unlink|unlinkaccount] googledrive</click></gold> - Desvincula sua conta Google Drive e desabilita o método
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [unlink|unlinkaccount] onedrive</click></gold> - Desvincula sua conta OneDrive e desabilita o método
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [unlink|unlinkaccount] dropbox</click></gold> - Desvincula sua conta Dropbox e desabilita o método
-  <gold><click:run_command:/drivebackup reloadconfig>/drivebackup reloadconfig</click></gold> - Recarrega a config.yml
-  <gold><click:run_command:/drivebackup nextbackup>/drivebackup nextbackup</click></gold> - Obtém a hora/data do próximo backup automático
-  <gold><click:run_command:/drivebackup status>/drivebackup status</click></gold> - Obtém o status do backup em execução
-  <gold><click:run_command:/drivebackup backup>/drivebackup backup</click></gold> - Inicia manualmente um backup
-  <gold><click:run_command:/drivebackup test ftp>/drivebackup test ftp</click></gold> - Testa a conexão com o servidor (S)FTP
-  <gold><click:run_command:/drivebackup test googledrive>/drivebackup test googledrive</click></gold> - Testa a conexão com o Google Drive
-  <gold><click:run_command:/drivebackup test onedrive>/drivebackup test onedrive</click></gold> - Testa a conexão com a OneDrive
-  <gold><click:run_command:/drivebackup test dropbox>/drivebackup test dropbox</click></gold> - Testa a conexão com o Dropbox
-  <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold> - Atualiza o plugin se houver uma versão mais recente
+  <gold><click:run_command:/7zbackup>/7zbackup</click></gold> - Exibe este menu
+  <gold><click:run_command:/7zbackup help>/7zbackup help</click></gold> - Exibe recursos de ajuda
+  <gold><click:run_command:/7zbackup commands>/7zbackup commands</click></gold> - Exibe esta página de ajuda de comando
+  <gold><click:run_command:/7zbackup v>/7zbackup [v|version]</click></gold> - Exibe a versão plugin
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [link|linkaccount] googledrive</click></gold> - Vincula sua conta Google Drive para backups
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [link|linkaccount] onedrive</click></gold> - Vincula para sua conta OneDrive para backups
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [link|linkaccount] dropbox</click></gold> - Vincula para sua conta Dropbox para backups
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [unlink|unlinkaccount] googledrive</click></gold> - Desvincula sua conta Google Drive e desabilita o método
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [unlink|unlinkaccount] onedrive</click></gold> - Desvincula sua conta OneDrive e desabilita o método
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [unlink|unlinkaccount] dropbox</click></gold> - Desvincula sua conta Dropbox e desabilita o método
+  <gold><click:run_command:/7zbackup reloadconfig>/7zbackup reloadconfig</click></gold> - Recarrega a config.yml
+  <gold><click:run_command:/7zbackup nextbackup>/7zbackup nextbackup</click></gold> - Obtém a hora/data do próximo backup automático
+  <gold><click:run_command:/7zbackup status>/7zbackup status</click></gold> - Obtém o status do backup em execução
+  <gold><click:run_command:/7zbackup backup>/7zbackup backup</click></gold> - Inicia manualmente um backup
+  <gold><click:run_command:/7zbackup test ftp>/7zbackup test ftp</click></gold> - Testa a conexão com o servidor (S)FTP
+  <gold><click:run_command:/7zbackup test googledrive>/7zbackup test googledrive</click></gold> - Testa a conexão com o Google Drive
+  <gold><click:run_command:/7zbackup test onedrive>/7zbackup test onedrive</click></gold> - Testa a conexão com a OneDrive
+  <gold><click:run_command:/7zbackup test dropbox>/7zbackup test dropbox</click></gold> - Testa a conexão com o Dropbox
+  <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> - Atualiza o plugin se houver uma versão mais recente
 list-delimiter: ", "
 list-last-delimiter: " e "

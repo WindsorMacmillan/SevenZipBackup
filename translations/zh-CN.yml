@@ -8,8 +8,8 @@ metrics-started: "Metrics 已启用"
 metrics-error: "Metrics 启动失败了"
 update-checker-started: "检查更新中..."
 update-checker-new-release: |-
-  DriveBackup <latest-version> 已经发布啦, 你目前正在使用 <current-version>
-  从这里下载更新: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" 或者点击 <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold> 来更新
+  SevenZipbackup <latest-version> 已经发布啦, 你目前正在使用 <current-version>
+  从这里下载更新: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" 或者点击 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 来更新
 update-checker-unsupported-release: |-
   你正在运行一个不支持的版本!
   推荐的版本是 <latest-version>，而你正在运行 <current-version>。
@@ -40,8 +40,8 @@ thread-priority-too-low: "填入的线程优先级小于最小值，使用默认
 thread-priority-too-high: "填入的线程优先级超过最大值，使用默认值"
 keep-count-invalid: "保留份数无效，使用默认值"
 local-keep-count-invalid: "本地保留份数无效，使用默认值"
-zip-compression-too-low: "填入的 zip 压缩等级小于最小值，使用默认值"
-zip-compression-too-high: "填入的 zip 压缩等级大于最大值，使用默认值"
+7z-compression-too-low: "填入的 zip 压缩等级小于最小值，使用默认值"
+7z-compression-too-high: "填入的 zip 压缩等级大于最大值，使用默认值"
 external-backup-type-invalid: "备份类型无效，跳过外部备份策略 <entry>"
 external-backup-host-port-invalid: "主机名/端口无效，跳过外部备份策略 <entry>"
 external-backup-user-pass-invalid: "用户名/密码无效，跳过外部备份策略 <entry>"
@@ -138,7 +138,7 @@ test-method-successful: "备份策略 <upload-method> 测试成功啦"
 player-join-backup-enable: "正在启用自动备份"
 player-join-update-available: |-
   有更新啦，点击链接下载: <gold><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></gold>
-  或者运行 <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold> 来更新
+  或者运行 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 来更新
 player-join-backup-failed: |-
   <red>最后一次备份失败！<red>。
   检查控制台以获得更多信息
@@ -149,39 +149,39 @@ brief-backup-list: "SevenZipBackup 目前将备份 <list>。"
 brief-backup-list-empty: "什么都没有？！"
 brief-backup-list-external-backups: "一些外部备份"
 brief-backup-list-help: "想备份其他东西吗？参见： <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
-drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> <gold>|</gold> <yellow><click:open_url:http://github.com/JohnsonRan>JohnsonRan</click> 汉化</yellow> ======|</gold>
-drivebackup-docs-command: |-
+7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> <gold>|</gold> <yellow><click:open_url:http://github.com/JohnsonRan>JohnsonRan</click> 汉化</yellow> ======|</gold>
+7zbackup-docs-command: |-
   <header>
   需要帮助？ 下方了解更多！
   Wiki: <gold><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></gold>
   Discord: <gold><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></gold>
-drivebackup-version-command: |-
+7zbackup-version-command: |-
   <header>
   插件版本: <gold><plugin-version></gold>
   Java 版本: <gold><java-version></gold>
   服务端类型: <gold><server-software></gold>
   服务端版本: <gold><server-version></gold>
-drivebackup-version-update: <gold>有更新可用咯！
-drivebackup-help-command: |-
+7zbackup-version-update: <gold>有更新可用咯！
+7zbackup-help-command: |-
   <header>
-  <gold><click:run_command:/drivebackup>/drivebackup</click></gold> - 显示此菜单
-  <gold><click:run_command:/drivebackup help>/drivebackup help</click></gold> - 显示帮助资源
-  <gold><click:run_command:/drivebackup commands>/drivebackup commands</click></gold> - 显示此命令的帮助页面
-  <gold><click:run_command:/drivebackup v>/drivebackup [v|version]</click></gold> - 显示插件版本
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [link|linkaccount] googledrive</click></gold> - 链接你的 Google 云盘账户进行备份
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [link|linkaccount] onedrive</click></gold> - 链接你的 OneDrive 账户进行备份
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [link|linkaccount] dropbox</click></gold> - 链接你的 Dropbox 账户进行备份
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [unlink|unlinkaccount] googledrive</click></gold> - 解除链接你的 Google 云盘账户并禁用备份策略
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [unlink|unlinkaccount] onedrive</click></gold> - 解除链接你的 OneDrive 账户并禁用备份策略
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [unlink|unlinkaccount] dropbox</click></gold> - 解除链接你的 Dropbox 账户并禁用备份策略
-  <gold><click:run_command:/drivebackup reloadconfig>/drivebackup reloadconfig</click></gold> - 重载配置文件
-  <gold><click:run_command:/drivebackup nextbackup>/drivebackup nextbackup</click></gold> - 获取下一次自动备份的时间/日期
-  <gold><click:run_command:/drivebackup status>/drivebackup status</click></gold> - 获取运行中的备份的状态
-  <gold><click:run_command:/drivebackup backup>/drivebackup backup</click></gold> - 手动运行备份
-  <gold><click:run_command:/drivebackup test ftp>/drivebackup test ftp</click></gold> - 测试与 (S)FTP 服务器的连接
-  <gold><click:run_command:/drivebackup test googledrive>/drivebackup test googledrive</click></gold> - 测试与 Google 云盘的连接
-  <gold><click:run_command:/drivebackup test onedrive>/drivebackup test onedrive</click></gold> - 测试与 OneDrive 的连接
-  <gold><click:run_command:/drivebackup test dropbox>/drivebackup test dropbox</click></gold> - 测试与 Dropbox 的连接
-  <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold> - 如果有新的版本，则下载并更新此插件
+  <gold><click:run_command:/7zbackup>/7zbackup</click></gold> - 显示此菜单
+  <gold><click:run_command:/7zbackup help>/7zbackup help</click></gold> - 显示帮助资源
+  <gold><click:run_command:/7zbackup commands>/7zbackup commands</click></gold> - 显示此命令的帮助页面
+  <gold><click:run_command:/7zbackup v>/7zbackup [v|version]</click></gold> - 显示插件版本
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [link|linkaccount] googledrive</click></gold> - 链接你的 Google 云盘账户进行备份
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [link|linkaccount] onedrive</click></gold> - 链接你的 OneDrive 账户进行备份
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [link|linkaccount] dropbox</click></gold> - 链接你的 Dropbox 账户进行备份
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [unlink|unlinkaccount] googledrive</click></gold> - 解除链接你的 Google 云盘账户并禁用备份策略
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [unlink|unlinkaccount] onedrive</click></gold> - 解除链接你的 OneDrive 账户并禁用备份策略
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [unlink|unlinkaccount] dropbox</click></gold> - 解除链接你的 Dropbox 账户并禁用备份策略
+  <gold><click:run_command:/7zbackup reloadconfig>/7zbackup reloadconfig</click></gold> - 重载配置文件
+  <gold><click:run_command:/7zbackup nextbackup>/7zbackup nextbackup</click></gold> - 获取下一次自动备份的时间/日期
+  <gold><click:run_command:/7zbackup status>/7zbackup status</click></gold> - 获取运行中的备份的状态
+  <gold><click:run_command:/7zbackup backup>/7zbackup backup</click></gold> - 手动运行备份
+  <gold><click:run_command:/7zbackup test ftp>/7zbackup test ftp</click></gold> - 测试与 (S)FTP 服务器的连接
+  <gold><click:run_command:/7zbackup test googledrive>/7zbackup test googledrive</click></gold> - 测试与 Google 云盘的连接
+  <gold><click:run_command:/7zbackup test onedrive>/7zbackup test onedrive</click></gold> - 测试与 OneDrive 的连接
+  <gold><click:run_command:/7zbackup test dropbox>/7zbackup test dropbox</click></gold> - 测试与 Dropbox 的连接
+  <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> - 如果有新的版本，则下载并更新此插件
 list-delimiter: ", "
 list-last-delimiter: " 和 "

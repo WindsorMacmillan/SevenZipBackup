@@ -76,40 +76,40 @@ date-format-invalid: "El formato de fecha de la zona horaria no es válido, usan
 debug-log-created: "URL de Depuración: <url>"
 debug-log-creating: "Generando Registro de Depuración"
 default-google-drive-name: "Mi unidad"
-drivebackup-command-header: <yellow><strikethrough>          <dark_red>SevenZipBackup</dark_red>          </yellow></strikethrough>
-drivebackup-docs-command: |-
+7zbackup-command-header: <yellow><strikethrough>          <dark_red>SevenZipBackup</dark_red>          </yellow></strikethrough>
+7zbackup-docs-command: |-
   <header>
   ¿Necesitas ayuda? Puedes consultar los siguientes recursos.
   Wiki: <yellow><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></yellow>
   Discord: <yellow><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></yellow>
-drivebackup-help-command: |-
+7zbackup-help-command: |-
   <header>
-  <yellow><click:run_command:/drivebackup>/drivebackup</click></yellow> <gray>► Muestra este menú.</gray>
-  <yellow><click:run_command:/drivebackup help>/drivebackup help</click></yellow> <gray>► Muestra los recursos de ayuda.</gray>
-  <yellow><click:run_command:/drivebackup commands>/drivebackup commands</click></yellow> <gray>► Muestra ayuda sobre este comando.</gray>
-  <yellow><click:run_command:/drivebackup v>/drivebackup [v|version]</click></yellow> <gray>► Muestra la versión del plugin.</gray>
-  <yellow><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [link|linkaccount] googledrive</click></yellow> <gray>► Vincula tu cuenta de Google Drive para realizar CdS.</gray>
-  <yellow><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [link|linkaccount] onedrive</click></yellow> <gray>► Vincula tu cuenta de OneDrive para realizar CdS.</gray>
-  <yellow><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [link|linkaccount] dropbox</click></yellow> <gray>► Vincula tu cuenta de Dropbox para realizar CdS.</gray>
-  <yellow><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [unlink|unlinkaccount] googledrive</click></yellow> <gray>► Desvincula tu cuenta de Google Drive y desactiva el método.</gray>
-  <yellow><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [unlink|unlinkaccount] onedrive</click></yellow> <gray>► Desvincula tu cuenta de OneDrive y desactiva el método.</gray>
-  <yellow><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [unlink|unlinkaccount] dropbox</click></yellow> <gray>► Desvincula tu cuenta de Dropbox y desactiva el método.</gray>
-  <yellow><click:run_command:/drivebackup reloadconfig>/drivebackup reloadconfig</click></yellow> <gray>► Recarga el archivo 'config.yml'.</gray>
-  <yellow><click:run_command:/drivebackup nextbackup>/drivebackup nextbackup</click></yellow> <gray>► Obtén la fecha/hora de la siguiente CdS automática.</gray>
-  <yellow><click:run_command:/drivebackup status>/drivebackup status</click></yellow> <gray>► Obtén el estado de la CdS en curso.</gray>
-  <yellow><click:run_command:/drivebackup backup>/drivebackup backup</click></yellow> <gray>► Inicia una CdS manualmente.</gray>
-  <yellow><click:run_command:/drivebackup test ftp>/drivebackup test ftp</click></yellow> <gray>► Comprueba la conexión del servidor FTP.</gray>
-  <yellow><click:run_command:/drivebackup test googledrive>/drivebackup test googledrive</click></yellow> <gray>► Comprueba la conexión de Google Drive.</gray>
-  <yellow><click:run_command:/drivebackup test onedrive>/drivebackup test onedrive</click></yellow> <gray>► Comprueba la conexión de OneDrive.</gray>
-  <yellow><click:run_command:/drivebackup test dropbox>/drivebackup test dropbox</click></yellow> <gray>► Comprueba la conexión de Dropbox.</gray>
-  <yellow><click:run_command:/drivebackup update>/drivebackup update</click></yellow> <gray>► Actualiza el plugin si existe una versión más reciente.</gray>
-drivebackup-version-command: |-
+  <yellow><click:run_command:/7zbackup>/7zbackup</click></yellow> <gray>► Muestra este menú.</gray>
+  <yellow><click:run_command:/7zbackup help>/7zbackup help</click></yellow> <gray>► Muestra los recursos de ayuda.</gray>
+  <yellow><click:run_command:/7zbackup commands>/7zbackup commands</click></yellow> <gray>► Muestra ayuda sobre este comando.</gray>
+  <yellow><click:run_command:/7zbackup v>/7zbackup [v|version]</click></yellow> <gray>► Muestra la versión del plugin.</gray>
+  <yellow><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [link|linkaccount] googledrive</click></yellow> <gray>► Vincula tu cuenta de Google Drive para realizar CdS.</gray>
+  <yellow><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [link|linkaccount] onedrive</click></yellow> <gray>► Vincula tu cuenta de OneDrive para realizar CdS.</gray>
+  <yellow><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [link|linkaccount] dropbox</click></yellow> <gray>► Vincula tu cuenta de Dropbox para realizar CdS.</gray>
+  <yellow><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [unlink|unlinkaccount] googledrive</click></yellow> <gray>► Desvincula tu cuenta de Google Drive y desactiva el método.</gray>
+  <yellow><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [unlink|unlinkaccount] onedrive</click></yellow> <gray>► Desvincula tu cuenta de OneDrive y desactiva el método.</gray>
+  <yellow><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [unlink|unlinkaccount] dropbox</click></yellow> <gray>► Desvincula tu cuenta de Dropbox y desactiva el método.</gray>
+  <yellow><click:run_command:/7zbackup reloadconfig>/7zbackup reloadconfig</click></yellow> <gray>► Recarga el archivo 'config.yml'.</gray>
+  <yellow><click:run_command:/7zbackup nextbackup>/7zbackup nextbackup</click></yellow> <gray>► Obtén la fecha/hora de la siguiente CdS automática.</gray>
+  <yellow><click:run_command:/7zbackup status>/7zbackup status</click></yellow> <gray>► Obtén el estado de la CdS en curso.</gray>
+  <yellow><click:run_command:/7zbackup backup>/7zbackup backup</click></yellow> <gray>► Inicia una CdS manualmente.</gray>
+  <yellow><click:run_command:/7zbackup test ftp>/7zbackup test ftp</click></yellow> <gray>► Comprueba la conexión del servidor FTP.</gray>
+  <yellow><click:run_command:/7zbackup test googledrive>/7zbackup test googledrive</click></yellow> <gray>► Comprueba la conexión de Google Drive.</gray>
+  <yellow><click:run_command:/7zbackup test onedrive>/7zbackup test onedrive</click></yellow> <gray>► Comprueba la conexión de OneDrive.</gray>
+  <yellow><click:run_command:/7zbackup test dropbox>/7zbackup test dropbox</click></yellow> <gray>► Comprueba la conexión de Dropbox.</gray>
+  <yellow><click:run_command:/7zbackup update>/7zbackup update</click></yellow> <gray>► Actualiza el plugin si existe una versión más reciente.</gray>
+7zbackup-version-command: |-
   <header>
   Versión del Plugin: <yellow><plugin-version></yellow>
   Versión de Java: <yellow><java-version></yellow>
   Sistema del Servidor: <yellow><server-software></yellow>
   Versión del Servidor: <yellow><server-version></yellow>
-drivebackup-version-update: <yellow>¡Hay una actualización disponible!
+7zbackup-version-update: <yellow>¡Hay una actualización disponible!
 external-backup-base-dir-invalid: "La ruta del directorio raíz de la clave de la CdS externa <entry> no es válida, dejando en blanco."
 external-backup-format-invalid: "Formato no válido, omitiendo la CdS externa de <entry>."
 external-backup-host-port-invalid: "El Nombre del Alojamiento o el Puerto no es válido, omitiendo la CdS externa de <entry>."
@@ -177,7 +177,7 @@ player-join-backup-failed: |-
   Comprueba la consola para obtener más información.
 player-join-update-available: |-
   Existe una actualización disponible, puedes obtenerla en: <yellow><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></yellow>
-  o usando <yellow><click:run_command:/drivebackup update>/drivebackup update</click></yellow>
+  o usando <yellow><click:run_command:/7zbackup update>/7zbackup update</click></yellow>
 plugin-stop: "<dark_red>❗</dark_red> <red>¡Deteniendo el plugin!</red>"
 test-file-creation-failed: "Error al crear el archivo de prueba, vuelve a intentarlo."
 test-method-begin: "Iniciando la prueba en '<upload-method>'."
@@ -192,8 +192,8 @@ unlink-provider-complete: "<dark_red>❗</dark_red> No se ha vinculado la cuenta
 unlink-provider-failed: "<dark_red>❗</dark_red> Problema al desvincular la cuenta de '<provider>'. Por favor, vuelve a intentarlo."
 update-checker-failed: "<dark_red>❗</dark_red> <red>Ha surgido un problema al intentar comprobar cual es la última versión de SevenZipBackup.</red>"
 update-checker-new-release: |-
-  Se ha publicado la nueva versión <latest-version> de DriveBackup y se está ejecutando la versión <current-version>
-  Actualiza en: <yellow><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></yellow>" o usando <yellow><click:run_command:/drivebackup update>/drivebackup update</click></yellow>
+  Se ha publicado la nueva versión <latest-version> de SevenZipbackup y se está ejecutando la versión <current-version>
+  Actualiza en: <yellow><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></yellow>" o usando <yellow><click:run_command:/7zbackup update>/7zbackup update</click></yellow>
 update-checker-started: "<yellow>Comprobando actualizaciones...</yellow>"
 update-checker-unsupported-release: |-
   ¡Se está ejecutando la versión <current-version> incompatible!
@@ -206,5 +206,5 @@ updater-successful: "¡El plugin se ha actualizado! Reinicia el servidor para ap
 updater-update-failed: "Ha surgido un problema al actualizar el plugin, consulta la consola para obtener más información."
 upload-error-check: "Comprobando si la subida de ha realizado correctamente..."
 upload-no-errors: "La subida se ha realizado correctamente sin problemas."
-zip-compression-too-high: "Factor de compresión mayor que la máxima, usando la máxima."
-zip-compression-too-low: "Factor de compresión menor que la mínima, usando la mínima."
+7z-compression-too-high: "Factor de compresión mayor que la máxima, usando la máxima."
+7z-compression-too-low: "Factor de compresión menor que la mínima, usando la mínima."

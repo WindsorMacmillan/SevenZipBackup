@@ -76,41 +76,41 @@ date-format-invalid: "Datumsformat-Zeitzone ungültig, UTC wird verwendet"
 debug-log-created: "Debug-URL: <url>"
 debug-log-creating: "Debug-Protokoll wird erstellt"
 default-google-drive-name: "Meine Ablage"
-drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
-drivebackup-docs-command: |-
+7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
+7zbackup-docs-command: |-
   <header>
   Brauchst du Hilfe? Sieh dir diese nützlichen Ressourcen an!
   Wiki: <gold><click:open_url:https://bit.ly/3dDdmwK>https://bit.ly/3dDdmwK</click></gold>
   Discord: <gold><click:open_url:https://bit.ly/3f4VuuT>https://bit.ly/3f4VuuT</click></gold>
-drivebackup-help-command: |-
+7zbackup-help-command: |-
   <header>
-  <gold><click:run_command:/drivebackup>/drivebackup</click></gold> - Zeigt dieses Menü an
-  <gold><click:run_command:/drivebackup help>/drivebackup help</click></gold> - Zeigt Hilferessourcen an
-  <gold><click:run_command:/drivebackup commands>/drivebackup commands</click></gold> - Zeigt diese Befehlshilfeseite an
-  <gold><click:run_command:/drivebackup v>/drivebackup [v|version]</click></gold> - Zeigt die Plugin-Version an
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [link|linkaccount] googledrive</click></gold> - Verknüpft dein Google Drive-Konto für Backups
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [link|linkaccount] onedrive</click></gold> - Verknüpft dein OneDrive-Konto für Backups
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [link|linkaccount] dropbox</click></gold> - Verknüpft dein Dropbox-Konto für Backups
-  <gold><click:run_command:/drivebackup linkaccount googledrive>/drivebackup [unlink|unlinkaccount] googledrive</click></gold> - Hebt die Verknüpfung zu deinem Google Drive-Konto auf und deaktiviert diese Methode
-  <gold><click:run_command:/drivebackup linkaccount onedrive>/drivebackup [unlink|unlinkaccount] onedrive</click></gold> - Hebt die Verknüpfung zu deinem OneDrive-Konto auf und deaktiviert diese Methode
-  <gold><click:run_command:/drivebackup linkaccount dropbox>/drivebackup [unlink|unlinkaccount] dropbox</click></gold> - Hebt die Verknüpfung zu deinem Dropbox-Konto auf und deaktiviert diese Methode
-  <gold><click:run_command:/drivebackup reloadconfig>/drivebackup reloadconfig</click></gold> - Läd config.yml neu
-  <gold><click:run_command:/drivebackup debug>/drivebackup debug</click></gold> - Sammelt nützliche Informationen zur Fehlerbehebung des Plugins
-  <gold><click:run_command:/drivebackup nextbackup>/drivebackup nextbackup</click></gold> - Ruft Datum und Uhrzeit des nächsten automatischen Backups ab
-  <gold><click:run_command:/drivebackup status>/drivebackup status</click></gold> - Ruft den Status des laufenden Backups ab
-  <gold><click:run_command:/drivebackup backup>/drivebackup backup</click></gold> - Startet manuell ein Backup
-  <gold><click:run_command:/drivebackup test ftp>/drivebackup test ftp</click></gold> - Testet die Verbindung zum (S)FTP Server
-  <gold><click:run_command:/drivebackup test googledrive>/drivebackup test googledrive</click></gold> - Testet die Verbindung zu Google Drive
-  <gold><click:run_command:/drivebackup test onedrive>/drivebackup test onedrive</click></gold> - Testet die Verbindung zu OneDrive
-  <gold><click:run_command:/drivebackup test dropbox>/drivebackup test dropbox</click></gold> - Testet die Verbindung zu Dropbox
-  <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold> - Aktualisiert das Plugin falls eine neue Version verfügbar ist
-drivebackup-version-command: |-
+  <gold><click:run_command:/7zbackup>/7zbackup</click></gold> - Zeigt dieses Menü an
+  <gold><click:run_command:/7zbackup help>/7zbackup help</click></gold> - Zeigt Hilferessourcen an
+  <gold><click:run_command:/7zbackup commands>/7zbackup commands</click></gold> - Zeigt diese Befehlshilfeseite an
+  <gold><click:run_command:/7zbackup v>/7zbackup [v|version]</click></gold> - Zeigt die Plugin-Version an
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [link|linkaccount] googledrive</click></gold> - Verknüpft dein Google Drive-Konto für Backups
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [link|linkaccount] onedrive</click></gold> - Verknüpft dein OneDrive-Konto für Backups
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [link|linkaccount] dropbox</click></gold> - Verknüpft dein Dropbox-Konto für Backups
+  <gold><click:run_command:/7zbackup linkaccount googledrive>/7zbackup [unlink|unlinkaccount] googledrive</click></gold> - Hebt die Verknüpfung zu deinem Google Drive-Konto auf und deaktiviert diese Methode
+  <gold><click:run_command:/7zbackup linkaccount onedrive>/7zbackup [unlink|unlinkaccount] onedrive</click></gold> - Hebt die Verknüpfung zu deinem OneDrive-Konto auf und deaktiviert diese Methode
+  <gold><click:run_command:/7zbackup linkaccount dropbox>/7zbackup [unlink|unlinkaccount] dropbox</click></gold> - Hebt die Verknüpfung zu deinem Dropbox-Konto auf und deaktiviert diese Methode
+  <gold><click:run_command:/7zbackup reloadconfig>/7zbackup reloadconfig</click></gold> - Läd config.yml neu
+  <gold><click:run_command:/7zbackup debug>/7zbackup debug</click></gold> - Sammelt nützliche Informationen zur Fehlerbehebung des Plugins
+  <gold><click:run_command:/7zbackup nextbackup>/7zbackup nextbackup</click></gold> - Ruft Datum und Uhrzeit des nächsten automatischen Backups ab
+  <gold><click:run_command:/7zbackup status>/7zbackup status</click></gold> - Ruft den Status des laufenden Backups ab
+  <gold><click:run_command:/7zbackup backup>/7zbackup backup</click></gold> - Startet manuell ein Backup
+  <gold><click:run_command:/7zbackup test ftp>/7zbackup test ftp</click></gold> - Testet die Verbindung zum (S)FTP Server
+  <gold><click:run_command:/7zbackup test googledrive>/7zbackup test googledrive</click></gold> - Testet die Verbindung zu Google Drive
+  <gold><click:run_command:/7zbackup test onedrive>/7zbackup test onedrive</click></gold> - Testet die Verbindung zu OneDrive
+  <gold><click:run_command:/7zbackup test dropbox>/7zbackup test dropbox</click></gold> - Testet die Verbindung zu Dropbox
+  <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> - Aktualisiert das Plugin falls eine neue Version verfügbar ist
+7zbackup-version-command: |-
   <header>
   Plugin-Version: <gold><plugin-version></gold>
   Java-Version: <gold><java-version></gold>
   Server-Software: <gold><server-software></gold>
   Server-Software-Version: <gold><server-version></gold>
-drivebackup-version-update: <gold>Plugin-Update verfügbar!
+7zbackup-version-update: <gold>Plugin-Update verfügbar!
 external-backup-base-dir-invalid: "Pfad zum Basisverzeichnis ungültig im externen Backup-Eintrag <entry>, bleibt leer"
 external-backup-format-invalid: "Format ungültig, überspringe externen Backup-Eintrag <entry>"
 external-backup-host-port-invalid: "Hostname/Port ungültig, überspringe externen Backup-Eintrag <entry>"
@@ -180,7 +180,7 @@ player-join-backup-failed: |-
   Sieh in der Konsole für weitere Informationen nach.
 player-join-update-available: |-
   Ein Update ist verfügbar, hole es dir hier: <gold><click:open_url:https://bit.ly/2M14uVD>https://bit.ly/2M14uVD</click></gold>
-  oder durch Ausführen von <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold>
+  oder durch Ausführen von <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 plugin-stop: "Plugin wird gestoppt!"
 shared-drive-deprecated: |-
   Aufgrund neuer Beschränkungen von Google können wir keine geteilten Laufwerke bei neuen Kontoverknüpfungen mehr unterstützen.
@@ -201,8 +201,8 @@ unlink-provider-complete: "Verknüpfung zu deinem <provider>-Konto wurde aufgeho
 unlink-provider-failed: "Fehler beim aufheben der Verknüpfung zu deinem <provider>-Konto, bitte versuche es erneut"
 update-checker-failed: "Es gab ein Problem beim Versuch, die neueste Version von SevenZipBackup zu überprüfen"
 update-checker-new-release: |-
-  DriveBackup-Version <latest-version> wurde veröffentlicht, du verwendest derzeit Version <current-version>.
-  Aktualisiere hier: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold> oder durch Ausführen von <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold>
+  SevenZipbackup-Version <latest-version> wurde veröffentlicht, du verwendest derzeit Version <current-version>.
+  Aktualisiere hier: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold> oder durch Ausführen von <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 update-checker-started: "Suche nach Updates..."
 update-checker-unsupported-release: |-
   Du verwendest eine nicht unterstützte Version!
@@ -215,5 +215,5 @@ updater-successful: "Plugin erfolgreich aktualisiert! Bitte starte deinen Server
 updater-update-failed: "Plugin-Update fehlgeschlagen, siehe Konsole für weitere Informationen"
 upload-error-check: "Überprüfung auf Upload-Fehler..."
 upload-no-errors: "Keine Upload-Fehler gefunden"
-zip-compression-too-high: "Der eingegebene ZIP-Komprimierungswert ist höher als das Maximum, das Maximum wird verwendet"
-zip-compression-too-low: "Der eingegebene ZIP-Komprimierungswert ist niedriger als das Minimum, das Minimum wird verwendet"
+7z-compression-too-high: "Der eingegebene ZIP-Komprimierungswert ist höher als das Maximum, das Maximum wird verwendet"
+7z-compression-too-low: "Der eingegebene ZIP-Komprimierungswert ist niedriger als das Minimum, das Minimum wird verwendet"
