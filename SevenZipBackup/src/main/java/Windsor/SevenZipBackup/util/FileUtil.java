@@ -1,5 +1,7 @@
 package Windsor.SevenZipBackup.util;
 
+import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
+import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import Windsor.SevenZipBackup.UploadThread.UploadLogger;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -180,10 +183,14 @@ public class FileUtil {
         }
 
         try (SevenZOutputFile sevenZOutput = new SevenZOutputFile(new File(outputFilePath))) {
-
+            //SevenZMethodConfiguration methodConfig = new SevenZMethodConfiguration(
+            //        SevenZMethod.LZMA2,
+            //        ConfigParser.getConfig().backupStorage.zipCompression
+            //);
+            //sevenZOutput.setContentMethods(Collections.singletonList(methodConfig));
             for (String file : fileList.getList()) {
-                String entryName = formattedInputFolderPath + "/" + file;
-                String filePath = inputFolderPath + "/" + file;
+                String entryName = file.replace(File.separator, "/");
+                String filePath = new File(inputFolderPath, file).getPath();
 
                 SevenZArchiveEntry entry = new SevenZArchiveEntry();
                 entry.setName(entryName);
