@@ -45,10 +45,6 @@ import java.util.concurrent.TimeUnit;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
-/**
- * Created by Ratismal on 2016-01-20.
- */
-
 public class GoogleDriveUploader extends Uploader {
     
     public static final String APPLICATION_VND_GOOGLE_APPS_FOLDER = "application/vnd.google-apps.folder";

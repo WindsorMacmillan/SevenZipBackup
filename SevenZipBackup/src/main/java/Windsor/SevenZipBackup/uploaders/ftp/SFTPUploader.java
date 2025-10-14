@@ -27,10 +27,6 @@ import net.schmizz.sshj.userauth.method.AuthPublickey;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
-/**
- * Created by Ratismal on 2016-03-30.
- */
-
 public class SFTPUploader {
     private final UploadLogger logger;
 

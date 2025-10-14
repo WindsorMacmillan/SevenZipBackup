@@ -61,10 +61,6 @@ import java.util.TreeMap;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
-/**
- * Created by Ratismal on 2016-01-22.
- */
-
 public class UploadThread implements Runnable {
     
     private static final String LINK_COMMAND = "/7zbackup linkaccount ";

@@ -15,10 +15,6 @@ import Windsor.SevenZipBackup.util.MessageUtil;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
-/**
- * Created by Ratismal on 2016-01-20.
- */
-
 public class CommandHandler implements CommandExecutor {
     public static final String CHAT_KEYWORD = "7zbackup";
 

@@ -28,10 +28,6 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
-/**
- * Created by Ratismal on 2016-01-20.
- */
-
 public class FileUtil {
     private static final String NAME_KEYWORD = "%NAME";
 
@@ -116,7 +112,7 @@ public class FileUtil {
             fileName = fileName.replace(NAME_KEYWORD, lastFolderName);
         }
         // 修改：输出文件后缀改为.7z
-        ZipIt(location, path.getPath() + "/" + fileName + ".7z", fileList);
+        ZipIt(location, path.getPath() + "/" + fileName.replace(".zip", ".7z"), fileList);
     }
 
     /**

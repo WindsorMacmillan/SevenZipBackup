@@ -26,10 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
-/**
- * Created by Ratismal on 2016-03-30.
- */
-
 public class FTPUploader extends Uploader {
 
     public static final String UPLOADER_NAME = "(S)FTP";
