@@ -2,7 +2,7 @@ const { db } = require('../app.js');
 const express = require('express');
 const router = express.Router();
 
-const AUTH_URL = "https://auth.drivebackupv2.com";
+const AUTH_URL = "https://auth.SevenZipBackup.com";
 
 router.post('/', async function (req, res) {
   if (req.body.device_code === undefined || req.body.user_code === undefined) return res.send({

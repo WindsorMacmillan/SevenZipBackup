@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/DriveBackupV2/tree/master/translations
+# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
 #
 # If not, feel free to contribute!
 
@@ -14,10 +14,10 @@ update-checker-unsupported-release: |-
   Вы используете неподдерживаемый выпуск!
   Рекомендуемый выпуск <latest-version>, и ты бежишь <current-version>
   Если плагин был недавно обновлен, игнорируйте это сообщение.
-update-checker-failed: "Возникла проблема при попытке проверить наличие последней версии DriveBackupV2."
-updater-start: "Попытка загрузить последнюю версию DriveBackupV2"
-updater-no-updates: "Вы используете последнюю версию DriveBackupV2.!"
-updater-fetch-failed: "Не удалось загрузить последнюю версию DriveBackupV2."
+update-checker-failed: "Возникла проблема при попытке проверить наличие последней версии SevenZipBackup."
+updater-start: "Попытка загрузить последнюю версию SevenZipBackup"
+updater-no-updates: "Вы используете последнюю версию SevenZipBackup.!"
+updater-fetch-failed: "Не удалось загрузить последнюю версию SevenZipBackup."
 updater-update-failed: "Не удалось обновить плагин, см. консоль для получения дополнительной информации."
 updater-successful: "Плагин успешно обновлен! Пожалуйста, перезапустите сервер, чтобы изменения вступили в силу"
 config-loaded: "Конфигурация загружена!"
@@ -145,11 +145,11 @@ player-join-backup-failed: |-
 debug-log-creating: "Создание журнала отладки"
 debug-log-created: "URL-адрес отладки: <url>"
 connection-error: "Не удалось подключиться к <domain>, проверьте ваше сетевое соединение и брандмауэр сервера"
-brief-backup-list: "DriveBackupV2 в настоящее время будет выполнять резервное копирование <list>"
+brief-backup-list: "SevenZipBackup в настоящее время будет выполнять резервное копирование <list>"
 brief-backup-list-empty: "ничего"
 brief-backup-list-external-backups: "некоторые внешние резервные копии"
 brief-backup-list-help: "Хотите создать резервную копию чего-то еще? Видеть <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
-drivebackup-command-header: <gold>|====== <dark_red>DriveBackupV2</dark_red> ======|</gold>
+drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
 drivebackup-docs-command: |-
   <header>
   Нужна помощь? Ознакомьтесь с этими полезными ресурсами!

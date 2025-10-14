@@ -1,5 +1,5 @@
 {
-  "name": "drivebackupv2-authenticator",
+  "name": "SevenZipBackup-authenticator",
   "private": true,
   "version": "1.2.0",
   "engines": {

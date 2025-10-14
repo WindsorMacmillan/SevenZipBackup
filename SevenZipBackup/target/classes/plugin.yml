@@ -1,0 +1,10 @@
+name: SevenZipBackup
+version: 1.8.0
+api-version: 1.13
+description: Uploads backups to Google Drive/OneDrive or by (S)FTP
+main: ratismal.drivebackup.plugin.DriveBackup
+author: MaxTheGinus
+commands:
+  drivebackup:
+    description: View all SevenZipBackup commands
+    usage: /drivebackup

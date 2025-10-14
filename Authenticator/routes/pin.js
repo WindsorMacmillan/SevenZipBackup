@@ -4,7 +4,7 @@ const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const express = require('express');
 const router = express.Router();
 
-const AUTH_URL = "https://auth.drivebackupv2.com";
+const AUTH_URL = "https://auth.SevenZipBackup.com";
 
 const interval = 5;
 

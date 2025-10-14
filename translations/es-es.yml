@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/DriveBackupV2/tree/master/translations
+# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
 #
 # If not, feel free to contribute!
 
@@ -65,18 +65,18 @@ backup-upload-complete: "Completado el proceso de Subida."
 backup-upload-start: "<white>►► <bold>Procesando la Subida de CdS...</bold></white>"
 backups-interval-scheduled: "<green>Se ha programado la creación de una Copia de Seguridad cada</green> <dark_green><delay></dark_green> <green>minutos.</green>"
 backups-scheduled: "<green>Hay programada una CdS a las <dark_green><time></dark_green> <green>de cada</green> <dark_green><days></dark_green>.</green>"
-brief-backup-list: "DriveBackupV2 tiene programado realizar la CdS de <list>"
+brief-backup-list: "SevenZipBackup tiene programado realizar la CdS de <list>"
 brief-backup-list-empty: "nada"
 brief-backup-list-external-backups: "algunas copias externas"
 brief-backup-list-help: "¿Quieres realizar una Copia de Seguridad de alguna otra cosa? Mira en <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
 config-loaded: "¡Se ha cargado el archivo de configuración!"
-config-reloaded: "<gold>⚠</gold> <yellow>Se han recargado todos los archivos del plugin DriveBackupV2.</yellow>"
+config-reloaded: "<gold>⚠</gold> <yellow>Se han recargado todos los archivos del plugin SevenZipBackup.</yellow>"
 connection-error: "Problema al conectar con <domain>, comprueba tu conexión y tu cortafuegos."
 date-format-invalid: "El formato de fecha de la zona horaria no es válido, usando UTC."
 debug-log-created: "URL de Depuración: <url>"
 debug-log-creating: "Generando Registro de Depuración"
 default-google-drive-name: "Mi unidad"
-drivebackup-command-header: <yellow><strikethrough>          <dark_red>DriveBackupV2</dark_red>          </yellow></strikethrough>
+drivebackup-command-header: <yellow><strikethrough>          <dark_red>SevenZipBackup</dark_red>          </yellow></strikethrough>
 drivebackup-docs-command: |-
   <header>
   ¿Necesitas ayuda? Puedes consultar los siguientes recursos.
@@ -190,7 +190,7 @@ thread-priority-too-high: "La prioridad de subprocesamiento es mayor a la máxim
 thread-priority-too-low: "La prioridad de subprocesamiento es menor que la mínima, usando la mínima."
 unlink-provider-complete: "<dark_red>❗</dark_red> No se ha vinculado la cuenta de '<provider>'."
 unlink-provider-failed: "<dark_red>❗</dark_red> Problema al desvincular la cuenta de '<provider>'. Por favor, vuelve a intentarlo."
-update-checker-failed: "<dark_red>❗</dark_red> <red>Ha surgido un problema al intentar comprobar cual es la última versión de DriveBackupV2.</red>"
+update-checker-failed: "<dark_red>❗</dark_red> <red>Ha surgido un problema al intentar comprobar cual es la última versión de SevenZipBackup.</red>"
 update-checker-new-release: |-
   Se ha publicado la nueva versión <latest-version> de DriveBackup y se está ejecutando la versión <current-version>
   Actualiza en: <yellow><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></yellow>" o usando <yellow><click:run_command:/drivebackup update>/drivebackup update</click></yellow>
@@ -199,9 +199,9 @@ update-checker-unsupported-release: |-
   ¡Se está ejecutando la versión <current-version> incompatible!
   Se recomienda usar la versión <latest-version>.
   Si el plugin se ha actualizado recientemente, ignora este mensaje.
-updater-fetch-failed: "<dark_red>❗</dark_red> No se ha podido comprobar cual es la última versión de DriveBackupV2."
-updater-no-updates: "¡Estás usando la última versión de DriveBackupV2!"
-updater-start: "Intentando descargar la última versión de DriveBackupV2."
+updater-fetch-failed: "<dark_red>❗</dark_red> No se ha podido comprobar cual es la última versión de SevenZipBackup."
+updater-no-updates: "¡Estás usando la última versión de SevenZipBackup!"
+updater-start: "Intentando descargar la última versión de SevenZipBackup."
 updater-successful: "¡El plugin se ha actualizado! Reinicia el servidor para aplicar la actualización."
 updater-update-failed: "Ha surgido un problema al actualizar el plugin, consulta la consola para obtener más información."
 upload-error-check: "Comprobando si la subida de ha realizado correctamente..."

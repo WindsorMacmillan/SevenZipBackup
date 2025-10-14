@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/DriveBackupV2/tree/master/translations
+# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
 #
 # If not, feel free to contribute!
 
@@ -14,10 +14,10 @@ update-checker-unsupported-release: |-
   Você está executando um lançamento sem suporte!
   A versão recomendada é <latest-version>, você está usando a versão <current-version>
   Se o plugin foi atualizado recentemente, ignore esta mensagem.
-update-checker-failed: "Houve um problema na tentativa de verificar o último lançamento do DriveBackupV2"
-updater-start: "Tentando fazer o download da última versão do DriveBackupV2"
-updater-no-updates: "Você está usando a última versão do DriveBackupV2!"
-updater-fetch-failed: "Incapaz de buscar a última versão do DriveBackupV2"
+update-checker-failed: "Houve um problema na tentativa de verificar o último lançamento do SevenZipBackup"
+updater-start: "Tentando fazer o download da última versão do SevenZipBackup"
+updater-no-updates: "Você está usando a última versão do SevenZipBackup!"
+updater-fetch-failed: "Incapaz de buscar a última versão do SevenZipBackup"
 updater-update-failed: "A atualização do plugin falhou, veja o console para mais informações"
 updater-successful: "Plugin atualizado com sucesso! Por favor, reinicie seu servidor para que as mudanças tenham efeito"
 config-loaded: "Config carregado!"
@@ -145,11 +145,11 @@ player-join-backup-failed: |-
 debug-log-creating: "Gerando Registro de Depuração"
 debug-log-created: "URL de depuração: <url>"
 connection-error: "Falha na conexão com <domain>, verifique sua conexão de rede e firewall do servidor"
-brief-backup-list: "O DriveBackupV2 atualmente fará o backup <list>"
+brief-backup-list: "O SevenZipBackup atualmente fará o backup <list>"
 brief-backup-list-empty: "nada"
 brief-backup-list-external-backups: "alguns backups externos"
 brief-backup-list-help: "Deseja apoiar algo mais? Veja <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
-drivebackup-command-header: <gold>|====== <dark_red>DriveBackupV2</dark_red> ======|</gold>
+drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
 drivebackup-docs-command: |-
   <header>
   Precisa de ajuda? Confira estes recursos úteis!

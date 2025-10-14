@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/DriveBackupV2/tree/master/translations
+# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
 #
 # If not, feel free to contribute!
 
@@ -14,10 +14,10 @@ update-checker-unsupported-release: |-
   你正在运行一个不支持的版本!
   推荐的版本是 <latest-version>，而你正在运行 <current-version>。
   如果你最近才更新此插件，请忽略此信息
-update-checker-failed: "在尝试检查 DriveBackupV2 的更新时出现了问题"
-updater-start: "尝试下载 DriveBackupV2 最新版"
-updater-no-updates: "你正在使用最新版 DriveBackupV2！"
-updater-fetch-failed: "无法获取最新版 DriveBackupV2"
+update-checker-failed: "在尝试检查 SevenZipBackup 的更新时出现了问题"
+updater-start: "尝试下载 SevenZipBackup 最新版"
+updater-no-updates: "你正在使用最新版 SevenZipBackup！"
+updater-fetch-failed: "无法获取最新版 SevenZipBackup"
 updater-update-failed: "插件更新失败，更多信息请查看控制台"
 updater-successful: "成功更新了插件! 重启您的服务器以生效。"
 config-loaded: "配置已加载！"
@@ -145,11 +145,11 @@ player-join-backup-failed: |-
 debug-log-creating: "生成调试日志中"
 debug-log-created: "日志链接: <url>"
 connection-error: "连接到 <domain> 失败，检查您的网络连接和服务器防火墙"
-brief-backup-list: "DriveBackupV2 目前将备份 <list>。"
+brief-backup-list: "SevenZipBackup 目前将备份 <list>。"
 brief-backup-list-empty: "什么都没有？！"
 brief-backup-list-external-backups: "一些外部备份"
 brief-backup-list-help: "想备份其他东西吗？参见： <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
-drivebackup-command-header: <gold>|====== <dark_red>DriveBackupV2</dark_red> <gold>|</gold> <yellow><click:open_url:http://github.com/JohnsonRan>JohnsonRan</click> 汉化</yellow> ======|</gold>
+drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> <gold>|</gold> <yellow><click:open_url:http://github.com/JohnsonRan>JohnsonRan</click> 汉化</yellow> ======|</gold>
 drivebackup-docs-command: |-
   <header>
   需要帮助？ 下方了解更多！

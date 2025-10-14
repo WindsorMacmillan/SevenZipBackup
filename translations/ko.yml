@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/DriveBackupV2/tree/master/translations
+# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
 #
 # If not, feel free to contribute!
 
@@ -72,7 +72,7 @@ backup-upload-complete: "백업 업로드 완료"
 backup-upload-start: "백업을 업로드합니다..."
 backups-interval-scheduled: "매 <delay>분마다 백업을 실행하도록 스케줄링합니다."
 backups-scheduled: "매 <days>마다 <time>에 백업을 실행하도록 스케줄링합니다."
-brief-backup-list: "DriveBackupV2는 현재 <list>을(를) 백업합니다."
+brief-backup-list: "SevenZipBackup는 현재 <list>을(를) 백업합니다."
 brief-backup-list-empty: "아무것도 없음"
 brief-backup-list-external-backups: "일부의 외부 백업"
 brief-backup-list-help: "다른 어떤 것을 백업하고 싶나요? 해당 링크를 확인하세요.
@@ -86,7 +86,7 @@ date-format-invalid: "날짜 형식 및 시간대가 올바르지 않아 UTC를 
 debug-log-created: "디버그 URL: <url>"
 debug-log-creating: "디버그 로그를 생성하는 중"
 default-google-drive-name: "내 드라이브"
-drivebackup-command-header: <gold>|====== <dark_red>DriveBackupV2</dark_red> ======|</gold>
+drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
 drivebackup-docs-command: |-
   <header>
   도움이 필요하신가요? 유용한 자료들을 확인해 보세요!
@@ -227,7 +227,7 @@ thread-priority-too-high: "입력한 스레드 우선 순위가 최대값을 초
 thread-priority-too-low: "입력한 스레드 우선 순위가 최소값보다 낮아 최소값을 사용합니다."
 unlink-provider-complete: "<provider> 계정이 연동 해제되었습니다!"
 unlink-provider-failed: "<provider> 계정을 연동 해제하지 못했습니다. 다시 시도하세요."
-update-checker-failed: "DriveBackupV2의 최신 버전을 확인하는 동안 문제가 발생했습니다."
+update-checker-failed: "SevenZipBackup의 최신 버전을 확인하는 동안 문제가 발생했습니다."
 update-checker-new-release: |-
   DriveBackup <latest-version> 버전이 출시되었습니다. 현재 <current-version> 버전을 실행 중입니다.
   업데이트: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold>" 또는 <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold> 명령을 실행하세요.
@@ -236,9 +236,9 @@ update-checker-unsupported-release: |-
   지원되지 않는 버전을 실행 중입니다!
   권장 버전은 <latest-version> 입니다. 현재 버전은 <current-version> 입니다.
   플러그인을 최근에 업데이트한 경우 이 메시지를 무시하세요.
-updater-fetch-failed: "DriveBackupV2의 최신 버전을 불러오지 못했습니다."
-updater-no-updates: "DriveBackupV2의 최신 버전을 사용하고 있습니다!"
-updater-start: "DriveBackupV2의 최신 버전을 다운로드 시도하는 중입니다."
+updater-fetch-failed: "SevenZipBackup의 최신 버전을 불러오지 못했습니다."
+updater-no-updates: "SevenZipBackup의 최신 버전을 사용하고 있습니다!"
+updater-start: "SevenZipBackup의 최신 버전을 다운로드 시도하는 중입니다."
 updater-successful: "성공적으로 플러그인을 업데이트했습니다! 변경 사항을 적용하기 위해
   서버를 다시 시작하세요."
 updater-update-failed: "플러그인 업데이트에 실패했습니다. 자세한 내용은 콘솔을 확인하세요."

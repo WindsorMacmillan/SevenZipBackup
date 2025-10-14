@@ -65,7 +65,7 @@ backup-upload-complete: "Backup(s) hochgeladen"
 backup-upload-start: "Backup(s) werden hochgeladen..."
 backups-interval-scheduled: "Backup wird geplant, um alle <delay> Minuten zu laufen"
 backups-scheduled: "Backup wird geplant, um um <time> jeden <days> zu laufen"
-brief-backup-list: "DriveBackupV2 sichert derzeit <list>"
+brief-backup-list: "SevenZipBackup sichert derzeit <list>"
 brief-backup-list-empty: "nichts"
 brief-backup-list-external-backups: "einige externe Backups"
 brief-backup-list-help: "Möchtest du etwas anderes sichern? Sieh dir <gold><click:open_url:https://bit.ly/3xoHRAs>https://bit.ly/3xoHRAs</click></gold> an"
@@ -76,7 +76,7 @@ date-format-invalid: "Datumsformat-Zeitzone ungültig, UTC wird verwendet"
 debug-log-created: "Debug-URL: <url>"
 debug-log-creating: "Debug-Protokoll wird erstellt"
 default-google-drive-name: "Meine Ablage"
-drivebackup-command-header: <gold>|====== <dark_red>DriveBackupV2</dark_red> ======|</gold>
+drivebackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
 drivebackup-docs-command: |-
   <header>
   Brauchst du Hilfe? Sieh dir diese nützlichen Ressourcen an!
@@ -199,7 +199,7 @@ thread-priority-too-high: "Der eingegebene Thread-Prioritätswert ist höher als
 thread-priority-too-low: "Der eingegebene Thread-Prioritätswert ist niedriger als das Minimum, das Minimum wird verwendet"
 unlink-provider-complete: "Verknüpfung zu deinem <provider>-Konto wurde aufgehoben!"
 unlink-provider-failed: "Fehler beim aufheben der Verknüpfung zu deinem <provider>-Konto, bitte versuche es erneut"
-update-checker-failed: "Es gab ein Problem beim Versuch, die neueste Version von DriveBackupV2 zu überprüfen"
+update-checker-failed: "Es gab ein Problem beim Versuch, die neueste Version von SevenZipBackup zu überprüfen"
 update-checker-new-release: |-
   DriveBackup-Version <latest-version> wurde veröffentlicht, du verwendest derzeit Version <current-version>.
   Aktualisiere hier: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold> oder durch Ausführen von <gold><click:run_command:/drivebackup update>/drivebackup update</click></gold>
@@ -208,9 +208,9 @@ update-checker-unsupported-release: |-
   Du verwendest eine nicht unterstützte Version!
   Die empfohlene Version ist <latest-version>, und du verwendest <current-version>.
   Wenn das Plugin gerade aktualisiert wurde, kannst du diese Nachricht ignorieren.
-updater-fetch-failed: "Die neueste Version von DriveBackupV2 konnte nicht abgerufen werden"
-updater-no-updates: "Du verwendest die neueste Version von DriveBackupV2!"
-updater-start: "Versuche, die neueste Version von DriveBackupV2 herunterzuladen"
+updater-fetch-failed: "Die neueste Version von SevenZipBackup konnte nicht abgerufen werden"
+updater-no-updates: "Du verwendest die neueste Version von SevenZipBackup!"
+updater-start: "Versuche, die neueste Version von SevenZipBackup herunterzuladen"
 updater-successful: "Plugin erfolgreich aktualisiert! Bitte starte deinen Server neu, um die Änderungen zu übernehmen"
 updater-update-failed: "Plugin-Update fehlgeschlagen, siehe Konsole für weitere Informationen"
 upload-error-check: "Überprüfung auf Upload-Fehler..."
