@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Reconstructed code" />
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Reconstructed code">
+      <change beforePath="$PROJECT_DIR$/.idea/SevenZipBackup.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SevenZipBackup.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

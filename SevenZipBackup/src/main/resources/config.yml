@@ -2,18 +2,23 @@
 # SevenZipBackup   -   by Windsor Macmillan
 #################################################
 
-# DOCUMENTATION HAS MOVED
-# Now available online at: https://github.com/MaxMaeder/SevenZipBackup/wiki
-
 version: 2
 
+# Backup interval in minutes.
 delay: 60
-backup-thread-priority: 1
-keep-count: 20
+# How many backups to keep before deleting the oldest one. Set this to -1 to disable automatic deletes.
+keep-count: -1
 local-keep-count: 0
+
+# The priority of the backup thread [1-10]. Lower value cause less server lag. Increase this value if backup takes too long.
+backup-thread-priority: 5
+# Compress level for 7zip archive [0-9]. 0 refers to storage. Increasing this value can create smaller backup.
+# WARNING: High value may consume massive memory and CPU usage.
 7z-compression: 1
+
 backups-require-players: true
 disable-saving-during-backups: true
+
 
 scheduled-backups: false
 backup-schedule-list:
@@ -69,7 +74,7 @@ ftp:
 
 messages:
   send-in-chat: true
-  prefix: "&6[&4SevenZipBackup&6] "
+  prefix: "&6[&47zBackup&6] "
   default-color: "&3"
 
 advanced:
@@ -77,6 +82,6 @@ advanced:
   update-check: true
   suppress-errors: false
   debug: false
-  date-language: "en"
-  date-timezone: "-00:00"
+  date-language: "cn"
+  date-timezone: "+80:00"
   ftp-file-separator: "/"

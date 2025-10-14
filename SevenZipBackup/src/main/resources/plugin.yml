@@ -2,7 +2,7 @@ name: SevenZipBackup
 version: ${project.version}
 api-version: 0.0.1
 description: Uploads backups to Google Drive/OneDrive or by (S)FTP
-main: plugin.Windsor.SevenZipBackup.SevenZipBackup
+main: Windsor.SevenZipBackup.plugin.SevenZipBackup
 author: WindsorMacmillan
 commands:
   7zbackup:
