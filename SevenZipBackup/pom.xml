@@ -46,51 +46,51 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.apis</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okhttp3</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okio</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>kotlin</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.json</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.apache.commons</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>commons-net</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.hierynomus</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.github.lookfirst</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>net.kyori</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.fasterxml</pattern>
-                            <shadedPattern>ratismal.drivebackup.DriveBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
