@@ -22,7 +22,7 @@ jobs:
         java-version: '8'
         distribution: 'adopt'
     - name: Build with Maven
-      run: mvn -s $GITHUB_WORKSPACE/.github/workflows/maven-settings.xml -B package --file SevenZipBackup/pom.xml
+      run: mvn -s $GITHUB_WORKSPACE/.github/workflows/maven-settings.xml -B package --file $GITHUB_WORKSPACE/SevenZipBackup/pom.xml
       env:
         USER_NAME: ${{ secrets.CRED_SERVER_USERNAME }}
         ACCESS_TOKEN: ${{ secrets.CRED_SERVER_PASSWORD }}
