@@ -46,51 +46,51 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.apis</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okhttp3</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okio</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>kotlin</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.json</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.apache.commons</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>commons-net</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.hierynomus</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.github.lookfirst</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>net.kyori</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.fasterxml</pattern>
-                            <shadedPattern>windsor.7zbackup.SevenZipBackup.lib</shadedPattern>
+                            <shadedPattern>windsor.SevenZipBackup.SevenZipBackup.lib</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -193,3 +193,4 @@
         </dependency>
     </dependencies>
 </project>
+
