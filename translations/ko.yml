@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
+# https://github.com/WindsorMacmillan/SevenZipBackup/tree/main/translations
 #
 # If not, feel free to contribute!
 
@@ -76,7 +76,7 @@ brief-backup-list: "SevenZipBackup는 현재 <list>을(를) 백업합니다."
 brief-backup-list-empty: "아무것도 없음"
 brief-backup-list-external-backups: "일부의 외부 백업"
 brief-backup-list-help: "다른 어떤 것을 백업하고 싶나요? 해당 링크를 확인하세요.
-  <gold><click:open_url:https://bit.ly/3xoHRAs>https://bit.ly/3xoHRAs</click></go\
+  <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></go\
   ld>"
 config-loaded: "설정을 불러왔습니다!"
 config-reloaded: "설정을 다시 불러왔습니다!"
@@ -211,7 +211,7 @@ player-join-backup-failed: |-
   <red>마지막 백업을 실패했습니다!<red>
   자세한 내용은 콘솔을 확인하세요.
 player-join-update-available: |-
-  업데이트가 가능합니다. 여기에서 받으세요: <gold><click:open_url:https://bit.ly/2M14uVD>https://bit.ly/2M14uVD</click></gold>
+  업데이트가 가능합니다. 여기에서 받으세요: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>
   또는 해당 명령어를 실행하세요. <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 plugin-stop: "플러그인을 중지하는 중!"
 test-file-creation-failed: "테스트 파일을 생성하지 못했습니다. 다시 시도하세요."
@@ -230,7 +230,7 @@ unlink-provider-failed: "<provider> 계정을 연동 해제하지 못했습니�
 update-checker-failed: "SevenZipBackup의 최신 버전을 확인하는 동안 문제가 발생했습니다."
 update-checker-new-release: |-
   SevenZipbackup <latest-version> 버전이 출시되었습니다. 현재 <current-version> 버전을 실행 중입니다.
-  업데이트: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold>" 또는 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 명령을 실행하세요.
+  업데이트: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>" 또는 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 명령을 실행하세요.
 update-checker-started: "업데이트를 확인하는 중..."
 update-checker-unsupported-release: |-
   지원되지 않는 버전을 실행 중입니다!

@@ -1,10 +1,10 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
+# https://github.com/WindsorMacmillan/SevenZipBackup/tree/main/translations
 #
 # If not, feel free to contribute!
 
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
+# https://github.com/WindsorMacmillan/SevenZipBackup/tree/main/translations
 #
 # If not, feel free to contribute!
 
@@ -73,7 +73,7 @@ brief-backup-list: "SevenZipBackup наразі буде резервно коп
 brief-backup-list-empty: "нічого"
 brief-backup-list-external-backups: "декілька зовнішніх резервних копій"
 brief-backup-list-help: "Хочете зробити резервну копію ще чогось? Перегляньте
-  <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></go\
+  <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></go\
   ld>"
 config-loaded: "Конфігурація завантажена!"
 config-reloaded: "Конфігурацію перезавантажено!"
@@ -87,7 +87,7 @@ default-google-drive-name: "Мій Диск"
 7zbackup-docs-command: |-
   <header>
   Потрібна допомога? Перевірте ці корисні ресурси!
-  Wiki: <gold><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></gold>
+  Wiki: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>
   Discord: <gold><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></gold>
 7zbackup-help-command: |-
   <header>
@@ -185,7 +185,7 @@ player-join-backup-failed: |-
   <red>Останнє резервне копіювання не вдалося!<red>
   Перевірте консоль для отримання додаткової інформації
 player-join-update-available: |-
-  Доступне оновлення, отримайте його тут: <gold><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></gold>
+  Доступне оновлення, отримайте його тут: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>
   або запустивши <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 plugin-stop: "Зупинка плагіна!"
 test-file-creation-failed: "Не вдалося створити тестовий файл, спробуйте ще раз"
@@ -202,7 +202,7 @@ unlink-provider-failed: "Не вдалося відключити ваш обл�
 update-checker-failed: "Виникла проблема зі спробою перевірки останнього випуску SevenZipBackup"
 update-checker-new-release: |-
   Випущено версію SevenZipbackup <latest-version>. Ви зараз використовуєте версію <current-version>.
-  Оновлення за адресою: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" або за допомогою <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
+  Оновлення за адресою: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>" або за допомогою <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 update-checker-started: "Перевірка оновлень..."
 update-checker-unsupported-release: |-
   Ви використовуєте непідтримувану версію!

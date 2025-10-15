@@ -1,23 +1,37 @@
-#################################################
+#    ███████╗███████╗██████╗  █████╗  ██████╗██╗  ██╗██╗   ██╗██████╗ 
+#   ╚════██║╚══███╔╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██║   ██║██╔══██╗
+#      ██╔╝  ███╔╝ ██████╔╝███████║██║     █████╔╝ ██║   ██║██████╔╝
+#    ██╔╝  ███╔╝  ██╔══██╗██╔══██║██║     ██╔═██╗ ██║   ██║██╔═══╝ 
+#   ██║  ███████╗██████╔╝██║  ██║╚██████╗██║  ██╗╚██████╔╝██║     
+#   ╚═╝  ╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     
 # SevenZipBackup   -   by Windsor Macmillan
-#################################################
 
 version: 2
 
 # Backup interval in minutes.
+# 备份间隔，单位分钟
 delay: 60
 # How many backups to keep before deleting the oldest one. Set this to -1 to disable automatic deletes.
+# 保存上限，超过则清理最旧的备份。禁用此项请改为 -1
 keep-count: -1
-local-keep-count: 0
+local-keep-count: -1
 
 # The priority of the backup thread [1-10]. Lower value cause less server lag. Increase this value if backup takes too long.
-# WARNING: High value may significantly increase server lag, typically accounting for 10-20 ms tick time.
+# WARNING: High value may significantly increase server lag, typically accounting for 10-30 ms tick time.
+# 备份线程的优先级[1-10]，更低值会减少服务器卡顿影响，若备份用时过长请酌情增加
+# 警告：过高的值可能会显著增加服务器mspt，实测中影响能达到10~30。
 backup-thread-priority: 5
-# Compress level for 7zip archive [0-9]. 0 refers to storage-only. 9 refers to extreme-compression. Increasing this value can create smaller backup.
-# WARNING: High value may consume massive memory and CPU usage.
+# Compress level for 7zip archive [0-9]. 0 refers to super-fast. 9 refers to extreme-compression. Increasing this value can create smaller backup.
+# Based on actual testing, we STRONGLY RECOMMEND level 5 or lower.
+# WARNING: Beyond this value, compression rate would NOT improve significantly, while time and memory consumption increase exponentially.
+# 7z压缩级别[0-9]，0代表最快速度，9代表极限压缩。提高此值可以获得更小体积的备份。
+# 经过实测强烈建议选用5及以下，超过此值压缩率不会显著改善，但消耗时间和内存成倍增加。
+# 警告：过高的值可能会消耗巨量内存和CPU资源。
 7z-compression: 1
 
+#只在有玩家在线时启用备份
 backups-require-players: true
+#在备份时暂时挂起世界保存
 disable-saving-during-backups: true
 
 
@@ -26,10 +40,12 @@ backup-schedule-list:
 
 backup-list:
   # Backup all kinds of world
+  # 备份所有世界文件夹
   - glob: "*world*"
     format: "Backup-%NAME-%FORMAT.zip"
     create: true
   # Backup plugins' data, but exclude jar files and cache
+  # 备份插件数据，但不包含插件本体和缓存文件
   - path: "plugins"
     format: "Backup-plugins-%FORMAT.zip"
     create: true
@@ -81,7 +97,8 @@ ftp:
 
 messages:
   send-in-chat: true
-  prefix: "&6[&47zBackup&6] "
+  # prefix: "&6[&f7&8z&bBackup&6] "
+  prefix: "&6[&f7&8z&b备份&6] "
   default-color: "&3"
 
 advanced:
@@ -90,5 +107,6 @@ advanced:
   suppress-errors: false
   debug: false
   date-language: "cn"
-  date-timezone: "+80:00"
+  # UTC
+  date-timezone: "+08:00"
   ftp-file-separator: "/"

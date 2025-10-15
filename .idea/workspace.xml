@@ -4,24 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Update plugin config">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Fixed update checker">
+      <change afterPath="$PROJECT_DIR$/translations/en-us.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/SevenZipBackup.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SevenZipBackup.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/DriveBackupApi.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/UploadThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/UploadThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/DriveBackup.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/dropbox/DropboxUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/dropbox/DropboxUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/FTPUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/FTPUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/SFTPUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/SFTPUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/webdav/WebDAVUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/webdav/WebDAVUploader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/SevenZipBackup.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/SevenZipBackup.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/FileUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/translations/de.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/de.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/translations/es-es.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/es-es.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/translations/ko.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/ko.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/pt-BR.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/pt-BR.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/ru.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/ru.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/translations/uk-UA.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/uk-UA.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/zh-CN.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/zh-CN.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/zh-TW.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/zh-TW.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,12 +66,17 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Maven.SevenZipBackup [package].executor": "Run",
+    "Maven.SevenZipBackup [verify].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "run.code.analysis.last.selected.profile": "pProject Default"
+    "project.structure.last.edited": "模块",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
   }
 }]]></component>
   <component name="TaskManager">
@@ -107,7 +111,55 @@
       <option name="project" value="LOCAL" />
       <updated>1760439557264</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Update plugin config">
+      <option name="closed" value="true" />
+      <created>1760442059576</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1760442059576</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Update maven config">
+      <option name="closed" value="true" />
+      <created>1760445194198</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1760445194198</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Update file renaming">
+      <option name="closed" value="true" />
+      <created>1760445886276</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1760445886276</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Fixed directory structures">
+      <option name="closed" value="true" />
+      <created>1760460066571</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1760460066571</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Fixed compression level">
+      <option name="closed" value="true" />
+      <created>1760466426296</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1760466426296</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Fixed update checker">
+      <option name="closed" value="true" />
+      <created>1760514017493</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1760514017493</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -136,6 +188,11 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Reconstructed code" />
     <MESSAGE value="Update plugin config" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update plugin config" />
+    <MESSAGE value="Update maven config" />
+    <MESSAGE value="Update file renaming" />
+    <MESSAGE value="Fixed directory structures" />
+    <MESSAGE value="Fixed compression level" />
+    <MESSAGE value="Fixed update checker" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed update checker" />
   </component>
 </project>

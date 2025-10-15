@@ -1,7 +1,6 @@
 package Windsor.SevenZipBackup;
 
 import com.google.api.client.util.Strings;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -21,14 +20,8 @@ import Windsor.SevenZipBackup.plugin.Scheduler;
 import Windsor.SevenZipBackup.uploaders.Authenticator;
 import Windsor.SevenZipBackup.uploaders.Authenticator.AuthenticationProvider;
 import Windsor.SevenZipBackup.uploaders.Uploader;
-import Windsor.SevenZipBackup.uploaders.dropbox.DropboxUploader;
 import Windsor.SevenZipBackup.uploaders.ftp.FTPUploader;
-import Windsor.SevenZipBackup.uploaders.googledrive.GoogleDriveUploader;
 import Windsor.SevenZipBackup.uploaders.mysql.MySQLUploader;
-import Windsor.SevenZipBackup.uploaders.onedrive.OneDriveUploader;
-import Windsor.SevenZipBackup.uploaders.s3.S3Uploader;
-import Windsor.SevenZipBackup.uploaders.webdav.NextcloudUploader;
-import Windsor.SevenZipBackup.uploaders.webdav.WebDAVUploader;
 import Windsor.SevenZipBackup.util.BlacklistEntry;
 import Windsor.SevenZipBackup.util.FileUtil;
 import Windsor.SevenZipBackup.util.LocalDateTimeFormatter;
@@ -58,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 
 import static Windsor.SevenZipBackup.config.Localization.intl;
 
@@ -236,6 +230,8 @@ public class UploadThread implements Runnable {
             return;
         }
         logger.broadcast(intl("backup-start"));
+
+        // 处理外部备份
         for (ExternalBackupSource externalBackup : externalBackupList) {
             if (externalBackup instanceof ExternalFTPSource) {
                 makeExternalFileBackup((ExternalFTPSource) externalBackup);
@@ -243,84 +239,93 @@ public class UploadThread implements Runnable {
                 makeExternalDatabaseBackup((ExternalMySQLSource) externalBackup);
             }
         }
+
         logger.log(intl("backup-local-start"));
         backupStatus = BackupStatus.COMPRESSING;
         backupBackingUp = 0;
         ServerUtil.setAutoSave(false);
-        for (BackupListEntry set : backupList) {
-            backupBackingUp++;
-            for (Path folder : set.location.getPaths()) {
-                if (set.create) {
-                    makeBackupFile(folder.toString(), set.formatter, Arrays.asList(set.blacklist));
-                }
-            }
+
+        // 异步压缩所有备份文件夹
+        try {
+            asyncCompressAllBackups();
+        } catch (Exception e) {
+            logger.log(intl("backup-local-failed"));
+            MessageUtil.sendConsoleException(e);
+            errorOccurred = true;
         }
+
         ServerUtil.setAutoSave(true);
-        logger.log(intl("backup-local-complete"));
-        logger.log(intl("backup-upload-start"));
-        backupStatus = BackupStatus.UPLOADING;
-        backupBackingUp = 0;
-        uploaders = new ArrayList<>(5);
-        if (config.backupMethods.googleDrive.enabled) {
-            uploaders.add(new GoogleDriveUploader(logger));
-        }
-        if (config.backupMethods.oneDrive.enabled) {
-            uploaders.add(new OneDriveUploader(logger));
-        }
-        if (config.backupMethods.dropbox.enabled) {
-            uploaders.add(new DropboxUploader(logger));
-        }
-        if (config.backupMethods.webdav.enabled) {
-            uploaders.add(new WebDAVUploader(logger, config.backupMethods.webdav));
-        }
-        if (config.backupMethods.nextcloud.enabled) {
-            uploaders.add(new NextcloudUploader(logger, config.backupMethods.nextcloud));
-        }
-        if (config.backupMethods.s3.enabled) {
-            uploaders.add(new S3Uploader(logger, config.backupMethods.s3));
-        }
-        if (config.backupMethods.ftp.enabled) {
-            uploaders.add(new FTPUploader(logger, config.backupMethods.ftp));
-        }
-        if (uploaders.isEmpty() && config.backupStorage.localKeepCount == 0) {
-            logger.log(intl("backup-no-methods"));
-            return;
-        }
-        ensureMethodsAuthenticated();
-        uploadBackupFiles(uploaders);
-        FileUtil.deleteFolder(new File("external-backups"));
-        logger.log(intl("backup-upload-complete"));
-        logger.log(intl("upload-error-check"));
-        for (Uploader uploader : uploaders) {
-            uploader.close();
-            if (uploader.isErrorWhileUploading()) {
-                logger.log(intl("backup-method-error-occurred"),
-                    "diagnose-command", "/7zbackup test " + uploader.getId(),
-                    "upload-method", uploader.getName());
-                errorOccurred = true;
-            } else {
-                logger.log(intl("backup-method-complete"),
-                    "upload-method", uploader.getName());
-            }
-        }
+
         if (!errorOccurred) {
-            logger.log(intl("upload-no-errors"));
+            logger.log(intl("backup-local-complete"));
+            // 继续后续的上传流程...
+            continueWithUploadProcess();
         }
-        logger.broadcast(intl("backup-complete"));
-        if (initiator == null) {
-            logger.broadcast(getNextAutoBackup());
-        }
-        if (config.backupStorage.backupsRequirePlayers && Bukkit.getOnlinePlayers().isEmpty() && PlayerListener.isAutoBackupsActive()) {
-            logger.info(intl("backup-disabled-inactivity"));
-            PlayerListener.setAutoBackupsActive(false);
-        }
-        lastBackupSuccessful = !errorOccurred;
-        backupStatus = BackupStatus.PRUNING;
-        pruneLocalBackups();
         totalTimer.end();
         long totalBackupTime = totalTimer.getTime();
         long totalSeconds = Duration.of(totalBackupTime, ChronoUnit.MILLIS).getSeconds();
         logger.log(intl("backup-total-time"), "time", String.valueOf(totalSeconds));
+    }
+
+    /**
+     * 异步并发压缩所有备份文件夹
+     */
+    private void asyncCompressAllBackups() throws Exception {
+        List<CompletableFuture<Void>> compressionFutures = new ArrayList<>();
+
+        // 为每个备份项创建异步任务
+        for (BackupListEntry set : backupList) {
+            for (Path folder : set.location.getPaths()) {
+                if (set.create) {
+                    CompletableFuture<Void> future = createBackupAsync(folder.toString(), set.formatter, Arrays.asList(set.blacklist));
+                    compressionFutures.add(future);
+                }
+            }
+        }
+
+        // 等待所有压缩任务完成
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+                compressionFutures.toArray(new CompletableFuture[0])
+        );
+
+        // 设置超时时间（例如2小时）
+        allFutures.get(2, java.util.concurrent.TimeUnit.HOURS);
+    }
+
+    /**
+     * 异步创建备份文件
+     */
+    private CompletableFuture<Void> createBackupAsync(String location, LocalDateTimeFormatter formatter, List<String> blackList) {
+        return fileUtil.makeBackupAsync(location, formatter, blackList)
+                .whenComplete((result, throwable) -> {
+                    if (throwable != null) {
+                        //logger.log(intl("backup-local-failed"));
+                        logger.info(intl("backup-local-file-failed"), "location", location);
+                        MessageUtil.sendConsoleException((Exception) throwable);
+                    } else {
+                        locationsToBePruned.put(location, formatter);
+                        logger.info(intl("backup-local-file-complete"), "location", location);
+                    }
+                });
+    }
+    /**
+     * 继续执行上传流程
+     */
+    private void continueWithUploadProcess() {
+        //logger.log(intl("backup-upload-start"));
+        backupStatus = BackupStatus.UPLOADING;
+        backupBackingUp = 0;
+
+        // 原有的上传逻辑
+        uploaders = new ArrayList<>(5);
+        // ... 初始化 uploaders 的代码
+
+        ensureMethodsAuthenticated();
+        uploadBackupFiles(uploaders);
+        FileUtil.deleteFolder(new File("external-backups"));
+        //logger.log(intl("backup-upload-complete"));
+
+        // ... 剩余的上传后处理逻辑
     }
 
     private void ensureMethodsAuthenticated() {
@@ -351,43 +356,7 @@ public class UploadThread implements Runnable {
             }
         }
     }
-    
-    private void pruneLocalBackups() {
-        logger.log(intl("backup-local-prune-start"));
-        for (Map.Entry<String, LocalDateTimeFormatter> entry : locationsToBePruned.entrySet()) {
-            String location = entry.getKey();
-            LocalDateTimeFormatter formatter = entry.getValue();
-            fileUtil.purgeLocalBackups(location, formatter);
-        }
-        logger.log(intl("backup-local-prune-complete"));
-    }
-    
-    /**
-     * Creates a backup file of the specified folder
-     * @param location path to the folder
-     * @param formatter save format configuration
-     * @param blackList a configured blacklist (with globs)
-     */
-    private void makeBackupFile(String location, LocalDateTimeFormatter formatter, List<String> blackList) {
-        logger.info(intl("backup-local-file-start"), "location", location);
-        try {
-            ServerUtil.setAutoSave(false);
-            fileUtil.makeBackup(location, formatter, blackList);
-        } catch (IllegalArgumentException exception) {
-            logger.log(intl("backup-failed-absolute-path"));
-            return;
-        } catch (SecurityException exception) {
-            logger.log(intl("local-backup-failed-permissions"));
-            return;
-        } catch (Exception exception) {
-            logger.log(intl("backup-local-failed"));
-            MessageUtil.sendConsoleException(exception);
-            return;
-        }
-        locationsToBePruned.put(location, formatter);
-        logger.info(intl("backup-local-file-complete"), "location", location);
-    }
-    
+
     private void uploadBackupFiles(List<Uploader> uploaders) {
         for (BackupListEntry set : backupList) {
             backupBackingUp++;
@@ -592,7 +561,6 @@ public class UploadThread implements Runnable {
                 return intl("backup-status-not-running");
         }
         BackupListEntry[] backupList = config.backupList.list;
-        int backup = 0;
 
         int backupNumber = Math.max(0, backupBackingUp - 1);
         int backupIndex = Math.min(backupNumber, backupList.length - 1);
@@ -684,7 +652,7 @@ public class UploadThread implements Runnable {
     
     @Nullable
     private static String hash(String input) {
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {

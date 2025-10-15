@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
+# https://github.com/WindsorMacmillan/SevenZipBackup/tree/main/translations
 #
 # If not, feel free to contribute!
 
@@ -9,7 +9,7 @@ metrics-error: "Metrics 啟動失敗了"
 update-checker-started: "檢查更新中..."
 update-checker-new-release: |-
   SevenZipbackup <latest-version> 已經發佈, 你目前正在使用 <current-version>
-  從這裡下載更新: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" 或者點選 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 來更新
+  從這裡下載更新: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>" 或者點選 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 來更新
 update-checker-unsupported-release: |-
   你正在執行一個不支援的版本!
   推薦的版本是 <latest-version>，而你正在執行 <current-version>。
@@ -137,7 +137,7 @@ test-method-failed: "<upload-method> 測試失敗，請檢查 <gold>config.yml</
 test-method-successful: "備份方法 <upload-method> 測試成功啦"
 player-join-backup-enable: "正在啟用自動備份"
 player-join-update-available: |-
-  有更新啦，點選連結下載: <gold><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></gold>
+  有更新啦，點選連結下載: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>
   或者執行 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 來更新
 player-join-backup-failed: |-
   <red>最後一次備份失敗！<red>。
@@ -148,12 +148,12 @@ connection-error: "連線到 <domain> 失敗，檢查您的網路連線和伺服
 brief-backup-list: "SevenZipBackup 目前將備份 <list>。"
 brief-backup-list-empty: "什麼都沒有？！"
 brief-backup-list-external-backups: "一些外部備份"
-brief-backup-list-help: "想備份其他東西嗎？參見： <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
+brief-backup-list-help: "想備份其他東西嗎？參見： <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>"
 7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red>  ======|</gold>
 7zbackup-docs-command: |-
   <header>
   需要幫助？ 下方瞭解更多！
-  Wiki: <gold><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></gold>
+  Wiki: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>
   Discord: <gold><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></gold>
 7zbackup-version-command: |-
   <header>

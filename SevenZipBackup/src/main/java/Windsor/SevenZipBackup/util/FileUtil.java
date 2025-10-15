@@ -19,6 +19,9 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // 新增的Apache Commons Compress导入
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
@@ -37,7 +40,8 @@ public class FileUtil {
     public FileUtil(UploadLogger logger) {
         this.logger = logger;
     }
-
+    private static final ExecutorService compressionExecutor =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     /**
      * Gets the local backups in the specified folder as a {@code TreeMap} with their creation date and a reference to them.
      *
@@ -117,6 +121,24 @@ public class FileUtil {
         // 修改：输出文件后缀改为.7z
         ZipIt(location, path.getPath() + "/" + fileName.replace(".zip", ".7z"), fileList);
     }
+    /**
+     * 异步创建备份压缩文件
+     */
+    public CompletableFuture<Void> makeBackupAsync(@NotNull String location, LocalDateTimeFormatter formatter, List<String> blacklistGlobs) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                makeBackup(location, formatter, blacklistGlobs);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }, compressionExecutor);
+    }
+    /**
+     * 关闭线程池
+     */
+    public static void shutdown() {
+        compressionExecutor.shutdown();
+    }
 
     /**
      * Deletes the oldest files in the specified folder past the number to retain locally.
@@ -178,8 +200,8 @@ public class FileUtil {
      * @param fileList        file to include in the zip
      */
     private void ZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList) throws Exception {
-
-        byte[] buffer = new byte[8192]; // 8KB 缓冲区
+        //logger.info("正在为"+inputFolderPath+"创建压缩文件");
+        byte[] buffer = new byte[65536]; // 8KB 缓冲区
         try (SevenZOutputFile sevenZOutput = new SevenZOutputFile(new File(outputFilePath))) {
             SevenZMethodConfiguration methodConfig = new SevenZMethodConfiguration(
                     SevenZMethod.LZMA2,
@@ -187,11 +209,7 @@ public class FileUtil {
             );
             sevenZOutput.setContentMethods(Collections.singletonList(methodConfig));
 
-            int totalFiles = fileList.getList().size();
-            int processedFiles = 0;
-
             for (String file : fileList.getList()) {
-                processedFiles++;
 
                 String entryName = file.replace(File.separator, "/");
                 String filePath = new File(inputFolderPath, file).getPath();
@@ -229,9 +247,6 @@ public class FileUtil {
                     }
                 }
                 sevenZOutput.closeArchiveEntry();
-                if (processedFiles % 1000 == 0) {
-                    logger.info("压缩进度: " + processedFiles + "/" + totalFiles + " 文件");
-                }
             }
         }
     }

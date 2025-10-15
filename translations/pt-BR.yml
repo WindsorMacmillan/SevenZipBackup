@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
+# https://github.com/WindsorMacmillan/SevenZipBackup/tree/main/translations
 #
 # If not, feel free to contribute!
 
@@ -9,7 +9,7 @@ metrics-error: "Falha ao iniciar métrica"
 update-checker-started: "Procurando por atualizações..."
 update-checker-new-release: |-
   SevenZipbackup foi atualizado para a versão <latest-version>, você está usando a versão <current-version>
-  Atualize em: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" ou utilize <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
+  Atualize em: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>" ou utilize <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 update-checker-unsupported-release: |-
   Você está executando um lançamento sem suporte!
   A versão recomendada é <latest-version>, você está usando a versão <current-version>
@@ -137,7 +137,7 @@ test-method-failed: "O <upload-method> teste não foi bem sucedido, favor verifi
 test-method-successful: "O teste <upload-method> foi bem sucedido"
 player-join-backup-enable: "Habilitando backups automáticos"
 player-join-update-available: |-
-  Uma atualização está disponível, obtenha-a aqui: <gold><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></gold>
+  Uma atualização está disponível, obtenha-a aqui: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>
   ou rodando <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 player-join-backup-failed: |-
   <red>O último backup falhou!<red>
@@ -148,12 +148,12 @@ connection-error: "Falha na conexão com <domain>, verifique sua conexão de red
 brief-backup-list: "O SevenZipBackup atualmente fará o backup <list>"
 brief-backup-list-empty: "nada"
 brief-backup-list-external-backups: "alguns backups externos"
-brief-backup-list-help: "Deseja apoiar algo mais? Veja <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
+brief-backup-list-help: "Deseja apoiar algo mais? Veja <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>"
 7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
 7zbackup-docs-command: |-
   <header>
   Precisa de ajuda? Confira estes recursos úteis!
-  Wiki: <gold><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></gold>
+  Wiki: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>
   Discord: <gold><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></gold>
 7zbackup-version-command: |-
   <header>

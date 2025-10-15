@@ -1,5 +1,6 @@
 package Windsor.SevenZipBackup.plugin;
 
+import Windsor.SevenZipBackup.util.FileUtil;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import okhttp3.OkHttpClient;
 import org.bukkit.command.CommandSender;
@@ -96,6 +97,7 @@ public class SevenZipBackup extends JavaPlugin {
     @Override
     public void onDisable() {
         Scheduler.stopBackupThread();
+        FileUtil.shutdown();
         MessageUtil.Builder().mmText(intl("plugin-stop")).send();
     }
 

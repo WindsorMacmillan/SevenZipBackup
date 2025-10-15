@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
+# https://github.com/WindsorMacmillan/SevenZipBackup/tree/main/translations
 #
 # If not, feel free to contribute!
 
@@ -9,7 +9,7 @@ metrics-error: "Метрики не удалось запустить"
 update-checker-started: "Проверка обновлений..."
 update-checker-new-release: |-
   Версия SevenZipbackup <latest-version> был выпущен, Вы в настоящее время используете версию <current-version>
-  Обновление в: <gold><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></gold>" или с <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
+  Обновление в: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>" или с <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 update-checker-unsupported-release: |-
   Вы используете неподдерживаемый выпуск!
   Рекомендуемый выпуск <latest-version>, и ты бежишь <current-version>
@@ -137,7 +137,7 @@ test-method-failed: "То <upload-method> тест не удался, пожал
 test-method-successful: "Тест <upload-method> прошел успешно"
 player-join-backup-enable: "Включение автоматического резервного копирования"
 player-join-update-available: |-
-  Доступно обновление, скачать его здесь: <gold><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></gold>
+  Доступно обновление, скачать его здесь: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>
   или запустив <gold><click:run_command:/7zbackup update>/обновление резервной копии</click></gold>
 player-join-backup-failed: |-
   <red>Последняя резервная копия не удалась!<red>
@@ -148,12 +148,12 @@ connection-error: "Не удалось подключиться к <domain>, п�
 brief-backup-list: "SevenZipBackup в настоящее время будет выполнять резервное копирование <list>"
 brief-backup-list-empty: "ничего"
 brief-backup-list-external-backups: "некоторые внешние резервные копии"
-brief-backup-list-help: "Хотите создать резервную копию чего-то еще? Видеть <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
+brief-backup-list-help: "Хотите создать резервную копию чего-то еще? Видеть <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>"
 7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
 7zbackup-docs-command: |-
   <header>
   Нужна помощь? Ознакомьтесь с этими полезными ресурсами!
-  Вики: <gold><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></gold>
+  Вики: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>
   Discord: <gold><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></gold>
 7zbackup-version-command: |-
   <header>

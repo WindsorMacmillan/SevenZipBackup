@@ -1,5 +1,5 @@
 # Check if someone has translated the plugin into your language already!
-# https://github.com/MaxMaeder/SevenZipBackup/tree/master/translations
+# https://github.com/WindsorMacmillan/SevenZipBackup/tree/main/translations
 #
 # If not, feel free to contribute!
 
@@ -68,7 +68,7 @@ backups-scheduled: "<green>Hay programada una CdS a las <dark_green><time></dark
 brief-backup-list: "SevenZipBackup tiene programado realizar la CdS de <list>"
 brief-backup-list-empty: "nada"
 brief-backup-list-external-backups: "algunas copias externas"
-brief-backup-list-help: "¿Quieres realizar una Copia de Seguridad de alguna otra cosa? Mira en <gold><click:open_url:http://bit.ly/3xoHRAs>http://bit.ly/3xoHRAs</click></gold>"
+brief-backup-list-help: "¿Quieres realizar una Copia de Seguridad de alguna otra cosa? Mira en <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>"
 config-loaded: "¡Se ha cargado el archivo de configuración!"
 config-reloaded: "<gold>⚠</gold> <yellow>Se han recargado todos los archivos del plugin SevenZipBackup.</yellow>"
 connection-error: "Problema al conectar con <domain>, comprueba tu conexión y tu cortafuegos."
@@ -80,7 +80,7 @@ default-google-drive-name: "Mi unidad"
 7zbackup-docs-command: |-
   <header>
   ¿Necesitas ayuda? Puedes consultar los siguientes recursos.
-  Wiki: <yellow><click:open_url:http://bit.ly/3dDdmwK>http://bit.ly/3dDdmwK</click></yellow>
+  Wiki: <yellow><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></yellow>
   Discord: <yellow><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></yellow>
 7zbackup-help-command: |-
   <header>
@@ -176,7 +176,7 @@ player-join-backup-failed: |-
   <red>¡Ha surgido un problema con la última CdS!<red>
   Comprueba la consola para obtener más información.
 player-join-update-available: |-
-  Existe una actualización disponible, puedes obtenerla en: <yellow><click:open_url:http://bit.ly/2M14uVD>http://bit.ly/2M14uVD</click></yellow>
+  Existe una actualización disponible, puedes obtenerla en: <yellow><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></yellow>
   o usando <yellow><click:run_command:/7zbackup update>/7zbackup update</click></yellow>
 plugin-stop: "<dark_red>❗</dark_red> <red>¡Deteniendo el plugin!</red>"
 test-file-creation-failed: "Error al crear el archivo de prueba, vuelve a intentarlo."
@@ -193,7 +193,7 @@ unlink-provider-failed: "<dark_red>❗</dark_red> Problema al desvincular la cue
 update-checker-failed: "<dark_red>❗</dark_red> <red>Ha surgido un problema al intentar comprobar cual es la última versión de SevenZipBackup.</red>"
 update-checker-new-release: |-
   Se ha publicado la nueva versión <latest-version> de SevenZipbackup y se está ejecutando la versión <current-version>
-  Actualiza en: <yellow><click:open_url:http://bit.ly/2VGtF7L>http://bit.ly/2VGtF7L</click></yellow>" o usando <yellow><click:run_command:/7zbackup update>/7zbackup update</click></yellow>
+  Actualiza en: <yellow><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></yellow>" o usando <yellow><click:run_command:/7zbackup update>/7zbackup update</click></yellow>
 update-checker-started: "<yellow>Comprobando actualizaciones...</yellow>"
 update-checker-unsupported-release: |-
   ¡Se está ejecutando la versión <current-version> incompatible!

@@ -68,7 +68,7 @@ backups-scheduled: "Backup wird geplant, um um <time> jeden <days> zu laufen"
 brief-backup-list: "SevenZipBackup sichert derzeit <list>"
 brief-backup-list-empty: "nichts"
 brief-backup-list-external-backups: "einige externe Backups"
-brief-backup-list-help: "Möchtest du etwas anderes sichern? Sieh dir <gold><click:open_url:https://bit.ly/3xoHRAs>https://bit.ly/3xoHRAs</click></gold> an"
+brief-backup-list-help: "Möchtest du etwas anderes sichern? Sieh dir <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold> an"
 config-loaded: "Konfiguration geladen!"
 config-reloaded: "Konfiguration neu geladen!"
 connection-error: "Verbindung zu <domain> fehlgeschlagen, überprüfe deine Netzwerkverbindung und Server-Firewall"
@@ -179,7 +179,7 @@ player-join-backup-failed: |-
   <red>Das letzte Backup ist fehlgeschlagen!<red>
   Sieh in der Konsole für weitere Informationen nach.
 player-join-update-available: |-
-  Ein Update ist verfügbar, hole es dir hier: <gold><click:open_url:https://bit.ly/2M14uVD>https://bit.ly/2M14uVD</click></gold>
+  Ein Update ist verfügbar, hole es dir hier: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>
   oder durch Ausführen von <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 plugin-stop: "Plugin wird gestoppt!"
 shared-drive-deprecated: |-
@@ -202,7 +202,7 @@ unlink-provider-failed: "Fehler beim aufheben der Verknüpfung zu deinem <provid
 update-checker-failed: "Es gab ein Problem beim Versuch, die neueste Version von SevenZipBackup zu überprüfen"
 update-checker-new-release: |-
   SevenZipbackup-Version <latest-version> wurde veröffentlicht, du verwendest derzeit Version <current-version>.
-  Aktualisiere hier: <gold><click:open_url:https://bit.ly/2VGtF7L>https://bit.ly/2VGtF7L</click></gold> oder durch Ausführen von <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
+  Aktualisiere hier: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold> oder durch Ausführen von <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold>
 update-checker-started: "Suche nach Updates..."
 update-checker-unsupported-release: |-
   Du verwendest eine nicht unterstützte Version!
