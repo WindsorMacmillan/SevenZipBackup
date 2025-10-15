@@ -17,11 +17,14 @@ Take care of your server data and be well!
 数据无价，好好珍惜！  
 
 ## Features 插件功能
+<img width="699" height="462" alt="7zbackup" src="https://github.com/user-attachments/assets/c6e9846d-b86e-46ef-ba12-622180007163" />  
 - Saving up to 50% of your drive space using 7z archive with LZMA2!  
+- Async backup creation, create multiple backups at the same time!  
 - You can also upload backups to Google Drive, OneDrive, Dropbox, (S)FTP server or S3 compatible api.  
 - Backup any files or folders for your Minecraft server.  
 - Automatically purges backups locally and remotely according to a specified amount.  
 - Fully configurable backup interval and custom schedule.  
+
 - And **much** more!  
 - 使用LZMA2算法创建7z压缩文件至多节省50%的硬盘空间！  
 - 你同样可以上传备份到Google Drive、OneDrive、Dropbox、(S)FTP服务器或兼容S3的api.  
@@ -63,13 +66,14 @@ Simply run `/7zbackup linkaccount googledrive` and follow the on-screen instruct
 
 ### OneDrive
 Simply run `/7zbackup linkaccount onedrive` and follow the on-screen instructions.  
-仅需执行 `/7zbackup linkaccount googledrive` 并按照屏幕指示操作即可
+仅需执行 `/7zbackup linkaccount onedrive` 并按照屏幕指示操作即可
 
 ### DropBox
 Simply run `/7zbackup linkaccount dropbox` and follow the on-screen instructions.  
-仅需执行 `/7zbackup linkaccount googledrive` 并按照屏幕指示操作即可
+仅需执行 `/7zbackup linkaccount dropbox` 并按照屏幕指示操作即可
 
 ## Advanced Setup 高级设置
+<img width="576" height="310" alt="level-time-size" src="https://github.com/user-attachments/assets/3f1e0ab5-2671-437b-b2ec-7eb679e4887e" />
 
 
 
@@ -81,4 +85,5 @@ But don't take our word for it, all of this plugin's source code is available he
 由于我们需要访问您的Google Drive和OneDrive数据以备份您的服务器存档，因此需要提供隐私政策。
 本插件从您的Google Drive和OneDrive访问的所有数据均存储在您的Minecraft服务器上，我们无法访问这些数据。
 本插件物理上同样无法访问您Google Drive和OneDrive中任何与备份Minecraft服务器无关的数据。
+
 但您不必仅凭我们的一面之词——本插件全部源代码均在此公开！ 
