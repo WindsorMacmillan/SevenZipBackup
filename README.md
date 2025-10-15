@@ -18,6 +18,7 @@ Take care of your server data and be well!
 
 ## Features 插件功能
 <img width="699" height="462" alt="7zbackup" src="https://github.com/user-attachments/assets/c6e9846d-b86e-46ef-ba12-622180007163" />  
+  
 - Saving up to 50% of your drive space using 7z archive with LZMA2!  
 - Async backup creation, create multiple backups at the same time!  
 - You can also upload backups to Google Drive, OneDrive, Dropbox, (S)FTP server or S3 compatible api.  
@@ -87,3 +88,4 @@ But don't take our word for it, all of this plugin's source code is available he
 本插件物理上同样无法访问您Google Drive和OneDrive中任何与备份Minecraft服务器无关的数据。
 
 但您不必仅凭我们的一面之词——本插件全部源代码均在此公开！ 
+
