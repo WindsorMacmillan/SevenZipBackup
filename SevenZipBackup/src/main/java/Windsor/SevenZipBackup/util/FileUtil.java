@@ -16,10 +16,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +40,8 @@ public class FileUtil {
 
     /**
      * Gets the local backups in the specified folder as a {@code TreeMap} with their creation date and a reference to them.
-     * @param location the location of the folder containing the backups
+     *
+     * @param location  the location of the folder containing the backups
      * @param formatter the format of the file name
      * @return The list of backups
      */
@@ -65,8 +63,9 @@ public class FileUtil {
 
     /**
      * Creates a local backup 7z file for the specified file/folder.
-     * @param location the location of the file or folder
-     * @param formatter the format of the file name
+     *
+     * @param location       the location of the file or folder
+     * @param formatter      the format of the file name
      * @param blacklistGlobs a list of glob patterns of files/folders to not include in the backup.
      * @throws Exception
      */
@@ -123,7 +122,8 @@ public class FileUtil {
      * Deletes the oldest files in the specified folder past the number to retain locally.
      * <p>
      * The number of files to retain locally is specified by the user in the {@code config.yml}
-     * @param location the location of the folder containing the backups
+     *
+     * @param location  the location of the folder containing the backups
      * @param formatter the format of the file name
      */
     public void purgeLocalBackups(String location, LocalDateTimeFormatter formatter) {
@@ -172,66 +172,67 @@ public class FileUtil {
 
     /**
      * Creates 7z files in the specified folder into the specified file location using LZMA2 algorithm and solid compression.
+     *
      * @param inputFolderPath the path of the zip file to create
-     * @param outputFilePath the path of the folder to put it in
-     * @param fileList file to include in the zip
+     * @param outputFilePath  the path of the folder to put it in
+     * @param fileList        file to include in the zip
      */
     private void ZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList) throws Exception {
-        byte[] buffer = new byte[1024];
-        String formattedInputFolderPath = new File(inputFolderPath).getName();
-        if (isBaseFolder(inputFolderPath)) {
-            formattedInputFolderPath = "root";
-        }
+
+        byte[] buffer = new byte[8192]; // 8KB 缓冲区
         try (SevenZOutputFile sevenZOutput = new SevenZOutputFile(new File(outputFilePath))) {
             SevenZMethodConfiguration methodConfig = new SevenZMethodConfiguration(
                     SevenZMethod.LZMA2,
                     new LZMA2Options(ConfigParser.getConfig().backupStorage.zipCompression)
             );
             sevenZOutput.setContentMethods(Collections.singletonList(methodConfig));
+
+            int totalFiles = fileList.getList().size();
+            int processedFiles = 0;
+
             for (String file : fileList.getList()) {
+                processedFiles++;
+
                 String entryName = file.replace(File.separator, "/");
                 String filePath = new File(inputFolderPath, file).getPath();
 
+                File sourceFile = new File(filePath);
+                if (!sourceFile.exists()) {
+                    continue;
+                }
+
                 SevenZArchiveEntry entry = new SevenZArchiveEntry();
                 entry.setName(entryName);
+                entry.setSize(sourceFile.length());
 
-                BasicFileAttributes fileAttributes = null;
                 try {
-                    fileAttributes = Files.readAttributes(Paths.get(filePath), BasicFileAttributes.class);
-                } catch(Exception e) { }
-
-                if (fileAttributes == null) {
-                    logger.info(
-                            intl("local-backup-failed-attributes"),
-                            "file-path", filePath);
-                } else {
-                    entry.setCreationTime(fileAttributes.creationTime());
-                    entry.setAccessTime(fileAttributes.lastAccessTime());
-                    entry.setLastModifiedTime(fileAttributes.lastModifiedTime());
-                    entry.setSize(fileAttributes.size());
+                    BasicFileAttributes attrs = Files.readAttributes(sourceFile.toPath(), BasicFileAttributes.class);
+                    entry.setCreationTime(attrs.creationTime());
+                    entry.setAccessTime(attrs.lastAccessTime());
+                    entry.setLastModifiedTime(attrs.lastModifiedTime());
+                } catch (Exception e) {
+                    // 忽略属性错误
                 }
 
                 sevenZOutput.putArchiveEntry(entry);
 
-                try (FileInputStream fileInputStream = new FileInputStream(filePath)){
+                try (FileInputStream fileInputStream = new FileInputStream(sourceFile)) {
                     int len;
                     while ((len = fileInputStream.read(buffer)) > 0) {
                         sevenZOutput.write(buffer, 0, len);
                     }
                 } catch (Exception e) {
-                    // Don't send warning for .lock files, they will always be locked.
                     if (!filePath.endsWith(".lock")) {
                         logger.info(
                                 intl("local-backup-failed-to-include"),
                                 "file-path", filePath);
-                        logger.info("创建7z文件时发生错误: " + e.getMessage());
-                        e.printStackTrace();
                     }
                 }
                 sevenZOutput.closeArchiveEntry();
+                if (processedFiles % 1000 == 0) {
+                    logger.info("压缩进度: " + processedFiles + "/" + totalFiles + " 文件");
+                }
             }
-        } catch (Exception exception) {
-            throw exception;
         }
     }
 
@@ -244,7 +245,7 @@ public class FileUtil {
         private final List<String> fileList;
         private final List<BlacklistEntry> blacklist;
 
-        @Contract (pure = true)
+        @Contract(pure = true)
         private BackupFileList(List<BlacklistEntry> blacklist) {
             this.filesInBackupFolder = 0;
             this.fileList = new ArrayList<>();
@@ -274,6 +275,7 @@ public class FileUtil {
 
     /**
      * Generates a list of files to put in the zip created from the specified folder.
+     *
      * @param inputFolderPath The path of the folder to create the zip from
      * @throws Exception
      */
@@ -286,9 +288,10 @@ public class FileUtil {
 
     /**
      * Adds the specified file or folder to the list of files to put in the zip created from the specified folder.
-     * @param file the file or folder to add
+     *
+     * @param file            the file or folder to add
      * @param inputFolderPath the path of the folder to create the zip
-     * @param fileList the list of files to add the specified file or folder to.
+     * @param fileList        the list of files to add the specified file or folder to.
      * @throws Exception
      */
     private void generateFileList(@NotNull File file, String inputFolderPath, BackupFileList fileList) throws Exception {
@@ -303,7 +306,6 @@ public class FileUtil {
             for (BlacklistEntry blacklistEntry : fileList.getBlacklist()) {
                 if (blacklistEntry.getPathMatcher().matches(relativePath)) {
                     blacklistEntry.incBlacklistedFiles();
-
                     return;
                 }
             }
@@ -321,18 +323,20 @@ public class FileUtil {
 
     /**
      * Removes ".." from the location string to keep the location's backup folder within the local-save-directory.
+     *
      * @param location the unescaped location
      * @return the escaped location
      */
     @NotNull
-    @Contract (pure = true)
+    @Contract(pure = true)
     private static String escapeBackupLocation(@NotNull String location) {
         return location.replace("../", "");
     }
 
     /**
      * Finds all folders that match a glob
-     * @param glob the glob to search
+     *
+     * @param glob     the glob to search
      * @param rootPath the path to start searching from
      * @return List of all folders that match this glob under rootPath
      */
@@ -351,6 +355,7 @@ public class FileUtil {
      * Whether the specified folder is the base folder of the Minecraft server.
      * <p>
      * In other words, whether the folder is the folder containing the server jar.
+     *
      * @param folderPath the path of the folder
      * @return whether the folder is the base folder
      */
@@ -360,6 +365,7 @@ public class FileUtil {
 
     /**
      * Deletes the specified folder
+     *
      * @param folder the folder to be deleted
      * @return whether deleting the folder was successful
      */

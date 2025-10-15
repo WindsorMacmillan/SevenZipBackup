@@ -89,7 +89,7 @@ public class UpdateChecker {
     }
 
     public Version getLatest() throws Exception {
-        final String LATEST_URL = "https://api.github.com/WindsorMacmillan/SevenZipBackup/releases/latest";
+        final String LATEST_URL = "https://api.github.com/repos/WindsorMacmillan/SevenZipBackup/releases/latest";
         Request request = new Request.Builder().url(LATEST_URL).build();
         JSONObject pluginVersions;
         try (Response response = SevenZipBackup.httpClient.newCall(request).execute()) {
