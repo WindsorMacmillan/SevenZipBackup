@@ -191,3 +191,27 @@ brief-backup-list-help: "想备份其他东西吗？参见： <gold><click:open_
   <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> - 如果有新的版本，则下载并更新此插件
 list-delimiter: ", "
 list-last-delimiter: " 和 "
+backup-file-upload-complete: '备份"<file-name>"上传完成'
+backup-file-upload-start: '开始上传备份"<file-name>"'
+backup-status-pruning: "正在清理超量旧备份"
+backup-status-starting: "备份当前处在启动阶段"
+backup-total-time: "备份完成，耗时<time>s"
+backup-upload-complete: "备份文件已上传"
+backup-upload-start: "正在上传备份文件..."
+local-backup-file-deleted: '已删除本地备份"<local-backup-name>"'
+local-backup-limit-not-reached: "当前备份数<backup-count>未达上限<backup-limit>，跳过清理"
+local-backup-no-limit: "本地备份限制设置为0，跳过清理"
+local-backup-pruning-complete: '位置"<location>"的本地备份清理完成'
+local-backup-pruning-start: '正在清理位置"<location>"的本地备份'
+local-save-directory-not-relative: "本地保存目录非相对路径，将转换为相对于服务器目录的路径"
+location-empty: "位置<location>为空，不清理了！"
+shared-drive-deprecated: |-
+  由于谷歌的新限制，我们无法在新账户链接中继续支持共享云端硬盘。
+  现有链接目前仍可继续使用此功能。
+shared-drive-error: |-
+  获取共享云端硬盘时发生错误。
+  请确保shared-drive-id填写正确，或移除该设置以继续使用个人云端硬盘。
+upload-error-check: "正在检查上传错误..."
+upload-no-errors: "未发现上传错误"
+zip-compression-too-high: "输入的压缩级别超过最大值，已自动采用最高级别"
+zip-compression-too-low: "输入的压缩级别低于最小值，已自动采用最低级别"

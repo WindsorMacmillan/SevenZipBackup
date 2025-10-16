@@ -1,0 +1,256 @@
+package windsor.sevenzipbackup.uploaders;
+
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
+import windsor.sevenzipbackup.handler.commandHandler.BasicCommands;
+import windsor.sevenzipbackup.plugin.SevenZipBackup;
+import windsor.sevenzipbackup.util.Logger;
+import windsor.sevenzipbackup.util.MessageUtil;
+import windsor.sevenzipbackup.util.NetUtil;
+import windsor.sevenzipbackup.util.SchedulerUtil;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Objects;
+
+import static windsor.sevenzipbackup.config.Localization.intl;
+
+public class Authenticator {
+    /**
+     * Endpoints
+     */
+    private static final String AUTH_URL = "https://auth.drivebackup.com";
+    private static final String REQUEST_CODE_ENDPOINT = AUTH_URL + "/pin";
+    private static final String POLL_VERIFICATION_ENDPOINT = AUTH_URL + "/token";
+    private static final String ONEDRIVE_REQUEST_CODE_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode";
+    private static final String ONEDRIVE_POLL_VERIFICATION_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+
+    /**
+     * Authenticator client secret
+     */
+    private static final String CLIENT_SECRET = "fyKCRZRyJeHW5PzGJvQkL4dr2zRHRmwTaOutG7BBhQM=";
+
+    private static int taskId = -1;
+
+    public enum AuthenticationProvider {
+        GOOGLE_DRIVE("Google Drive", "googledrive", "/GoogleDriveCredential.json", "qWd2xXC/ORzdZvUotXoWhHC0POkMNuO/xuwcKWc9s1LLodayZXvkdKimmpOQqWYS6I+qGSrYNb8UCJWMhrgDXhIWEbDvytkQTwq+uNcnfw8=", "pasQz0KvtyC7o6CrlLPSMVV9Y0RMX76cXzsAbBoCBxI="),
+        ONEDRIVE("OneDrive", "onedrive", "/OneDriveCredential.json", "Ktj7Jd1h0oYNVicuyTBk5fU+gHS+QYReZxZKNZNO9CDxxHaf8bXlw0SKO9jnwc81", ""),
+        DROPBOX("Dropbox", "dropbox", "/DropboxCredential.json", "OSpqXymVUFSRnANAmj2DTA==", "4MrYNbN0I6J/fsAFeF00GQ==");
+
+        private final String name;
+        private final String id;
+        private final String credStoreLocation;
+        private final String clientId;
+        private final String clientSecret;
+
+        AuthenticationProvider(String name, String id, String credStoreLocation, String clientId, String clientSecret) {
+            this.name = name;
+            this.id = id;
+            this.credStoreLocation = credStoreLocation;
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public @NotNull String getCredStoreLocation() {
+            return SevenZipBackup.getInstance().getDataFolder().getAbsolutePath() + credStoreLocation;
+        }
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+    }
+
+    /**
+     * Attempt to authenticate a user with the specified authentication provider 
+     * using the OAuth 2.0-device authorization grant flow.
+     * 
+     * @param provider an {@code AuthenticationProvider}
+     * @param initiator user who initiated the authentication
+     */
+    public static void authenticateUser(final AuthenticationProvider provider, final CommandSender initiator) {
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
+        Logger logger = (input, placeholders) -> MessageUtil.Builder().mmText(input, placeholders).to(initiator).toConsole(false).send();
+        cancelPollTask();
+        try {
+            FormBody.Builder requestBody = new FormBody.Builder()
+                .add("type", provider.getId());
+            String requestEndpoint;
+            if (provider == AuthenticationProvider.ONEDRIVE) {
+                requestBody.add("client_id", Obfusticate.decrypt(provider.getClientId()));
+                requestBody.add("scope", "offline_access Files.ReadWrite");
+                requestEndpoint = ONEDRIVE_REQUEST_CODE_ENDPOINT;
+            } else {
+                requestBody.add("client_secret", Obfusticate.decrypt(CLIENT_SECRET));
+                requestEndpoint = REQUEST_CODE_ENDPOINT;
+            }
+            Request request = new Request.Builder()
+                .url(requestEndpoint)
+                .post(requestBody.build())
+                .build();
+            Response response = SevenZipBackup.httpClient.newCall(request).execute();
+            JSONObject parsedResponse = new JSONObject(Objects.requireNonNull(response.body()).string());
+            response.close();
+            String userCode = parsedResponse.getString("user_code");
+            String deviceCode = parsedResponse.getString("device_code");
+            String verificationUri = parsedResponse.getString("verification_uri");
+            long responseCheckDelay = SchedulerUtil.sToTicks(parsedResponse.getLong("interval"));
+            logger.log(
+                intl("link-account-code"),
+                "link-url", verificationUri,
+                "link-code", userCode,
+                "provider", provider.getName());
+            taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+                try {
+                    FormBody.Builder requestBody1 = new FormBody.Builder()
+                        .add("device_code", deviceCode)
+                        .add("user_code", userCode);
+                    String requestEndpoint1;
+                    if (provider == AuthenticationProvider.ONEDRIVE) {
+                        requestBody1.add("client_id", Obfusticate.decrypt(provider.getClientId()));
+                        requestBody1.add("grant_type", "urn:ietf:params:oauth:grant-type:device_code");
+                        requestEndpoint1 = ONEDRIVE_POLL_VERIFICATION_ENDPOINT;
+                    } else {
+                        requestBody1.add("client_secret", Obfusticate.decrypt(CLIENT_SECRET));
+                        requestEndpoint1 = POLL_VERIFICATION_ENDPOINT;
+                    }
+                    Request request1 = new Request.Builder()
+                        .url(requestEndpoint1)
+                        .post(requestBody1.build())
+                        .build();
+                    Response response1 = SevenZipBackup.httpClient.newCall(request1).execute();
+                    assert response1.body() != null;
+                    JSONObject parsedResponse1 = new JSONObject(response1.body().string());
+                    response1.close();
+                    if (parsedResponse1.has("refresh_token")) {
+                        saveRefreshToken(provider, (String) parsedResponse1.get("refresh_token"));
+                        linkSuccess(initiator, provider, logger);
+                        cancelPollTask();
+                    } else if (
+                        (provider == AuthenticationProvider.ONEDRIVE && !parsedResponse1.getString("error").equals("authorization_pending")) ||
+                        (provider != AuthenticationProvider.ONEDRIVE && !parsedResponse1.get("msg").equals("code_not_authenticated"))
+                        ) {
+                        MessageUtil.Builder().text(parsedResponse1.toString()).send();
+                        throw new UploadException();
+                    }
+                } catch (Exception exception) {
+                    NetUtil.catchException(exception, AUTH_URL, logger);
+                    logger.log(intl("link-provider-failed"), "provider", provider.getName());
+                    MessageUtil.sendConsoleException(exception);
+                    cancelPollTask();
+                }
+            }, responseCheckDelay, responseCheckDelay);
+        } catch (Exception exception) {
+            NetUtil.catchException(exception, AUTH_URL, logger);
+            logger.log(intl("link-provider-failed"), "provider", provider.getName());
+            MessageUtil.sendConsoleException(exception);
+        }
+    }
+
+    public static void unauthenticateUser(final AuthenticationProvider provider, final CommandSender initiator) {
+        Logger logger = (input, placeholders) -> MessageUtil.Builder().mmText(input, placeholders).to(initiator).send();
+        disableBackupMethod(provider, logger);
+        try {
+            File credStoreFile = new File(provider.getCredStoreLocation());
+            if (credStoreFile.exists()) {
+                credStoreFile.delete();
+            }
+        } catch (Exception exception) {
+            logger.log(intl("unlink-provider-failed"), "provider", provider.getName());
+            MessageUtil.sendConsoleException(exception);
+        }
+        logger.log(intl("unlink-provider-complete"), "provider", provider.getName());
+    }
+
+    private static void cancelPollTask() {
+        if (taskId != -1) {
+            Bukkit.getScheduler().cancelTask(taskId);
+            taskId = -1;
+        }
+    }
+
+    public static void linkSuccess(CommandSender initiator, @NotNull AuthenticationProvider provider, @NotNull Logger logger) {
+        logger.log(intl("link-provider-complete"), "provider", provider.getName());
+        enableBackupMethod(provider, logger);
+        SevenZipBackup.reloadLocalConfig();
+        BasicCommands.sendBriefBackupList(initiator);
+    }
+
+    public static void saveRefreshToken(@NotNull AuthenticationProvider provider, String token) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("refresh_token", token);
+        try (FileWriter file = new FileWriter(provider.getCredStoreLocation())) {
+            file.write(jsonObject.toString());
+        }
+    }
+
+    private static void enableBackupMethod(@NotNull AuthenticationProvider provider, Logger logger) {
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
+        if (!plugin.getConfig().getBoolean(provider.getId() + ".enabled")) {
+            logger.log("Automatically enabled " + provider.getName() + " backups");
+            plugin.getConfig().set(provider.getId() + ".enabled", true);
+            plugin.saveConfig();
+        }
+    }
+
+    private static void disableBackupMethod(@NotNull AuthenticationProvider provider, Logger logger) {
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
+        if (plugin.getConfig().getBoolean(provider.getId() + ".enabled")) {
+            logger.log("Disabled " + provider.getName() + " backups");
+            plugin.getConfig().set(provider.getId() + ".enabled", false);
+            plugin.saveConfig();
+        }
+    }
+
+    @NotNull
+    public static String getRefreshToken(AuthenticationProvider provider) {
+        try {
+            String clientJSON = processCredentialJsonFile(provider);
+            JSONObject clientJsonObject = new JSONObject(clientJSON);
+            String readRefreshToken = (String) clientJsonObject.get("refresh_token");
+            if (readRefreshToken == null || readRefreshToken.isEmpty()) {
+                throw new Exception();
+            }
+            return readRefreshToken;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static boolean hasRefreshToken(AuthenticationProvider provider) {
+        // what am I doing with my life?
+        return !getRefreshToken(provider).isEmpty();
+    }
+
+    @NotNull
+    private static String processCredentialJsonFile(@NotNull AuthenticationProvider provider) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(provider.getCredStoreLocation()))) {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+            while (line != null) {
+                sb.append(line);
+                line = br.readLine();
+            }
+            return sb.toString();
+        }
+    }
+}
