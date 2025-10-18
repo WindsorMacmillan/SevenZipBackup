@@ -1,3 +1,5 @@
+<img width="2100" height="900" alt="封面图" src="https://github.com/user-attachments/assets/556e5049-7ffe-4e7d-86ff-cc5656de7543" />
+
 # SevenZipBackup
 
 The very first 7-zip backup plugin for Minecraft server.  
@@ -88,4 +90,5 @@ But don't take our word for it, all of this plugin's source code is available he
 本插件物理上同样无法访问您Google Drive和OneDrive中任何与备份Minecraft服务器无关的数据。
 
 但您不必仅凭我们的一面之词——本插件全部源代码均在此公开！ 
+
 
