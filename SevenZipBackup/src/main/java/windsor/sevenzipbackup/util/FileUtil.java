@@ -17,11 +17,10 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 // 新增的Apache Commons Compress导入
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
@@ -29,6 +28,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration;
 import org.tukaani.xz.LZMA2Options;
+import windsor.sevenzipbackup.config.configSections.BackupStorage;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
 
@@ -37,11 +37,122 @@ public class FileUtil {
 
     private final UploadLogger logger;
 
+    // 修改：使用可配置的线程池
+    private static ExecutorService compressionExecutor = createCompressionExecutor();
+
     public FileUtil(UploadLogger logger) {
         this.logger = logger;
     }
-    private static final ExecutorService compressionExecutor =
-            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+    /**
+     * 创建可配置的压缩线程池
+     */
+    private static ExecutorService createCompressionExecutor() {
+        Config config = ConfigParser.getConfig();
+        int threadCount = config.backupStorage.threadCounts;
+        if (threadCount <= 0) {
+            threadCount = Runtime.getRuntime().availableProcessors();
+        }
+
+        // 创建自定义线程工厂来设置优先级和亲和性
+        CompressionThreadFactory threadFactory = new CompressionThreadFactory(
+                config.backupStorage.threadPriority,
+                BackupStorage.CPUAffinity  // 现在这是 List<Integer>
+        );
+
+        return Executors.newFixedThreadPool(threadCount, threadFactory);
+    }
+
+    /**
+     * 自定义线程工厂，用于设置线程优先级和亲和性
+     */
+    private static class CompressionThreadFactory implements ThreadFactory {
+        private final int threadPriority;
+        private final List<Integer> threadAffinity;  // 改为 List<Integer>
+        private final AtomicInteger threadNumber = new AtomicInteger(0);
+        private final String namePrefix = "compression-worker-";
+
+        public CompressionThreadFactory(int threadPriority, List<Integer> threadAffinity) {
+            this.threadPriority = threadPriority;
+            this.threadAffinity = threadAffinity;
+        }
+
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r, namePrefix + threadNumber.getAndIncrement());
+
+            // 设置线程优先级
+            if (threadPriority >= Thread.MIN_PRIORITY && threadPriority <= Thread.MAX_PRIORITY) {
+                t.setPriority(threadPriority);
+            } else {
+                t.setPriority(Thread.NORM_PRIORITY);
+            }
+
+            // 设置线程亲和性（CPU绑定）
+            if (threadAffinity != null && !threadAffinity.isEmpty()) {
+                setThreadAffinity(t, threadAffinity);
+            }
+
+            t.setDaemon(false);
+            return t;
+        }
+
+        /**
+         * 设置线程CPU亲和性
+         */
+        private void setThreadAffinity(Thread thread, List<Integer> affinityCores) {
+            // 在Linux系统上使用taskset命令设置CPU亲和性
+            if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+                try {
+                    int threadIndex = threadNumber.get() - 1; // 当前线程索引
+                    int coreIndex = threadIndex % affinityCores.size();
+                    int targetCore = affinityCores.get(coreIndex);
+
+                    // 获取线程的PID（在Linux中线程ID就是PID）
+                    long tid = thread.getId();
+
+                    // 使用taskset命令设置CPU亲和性
+                    ProcessBuilder pb = new ProcessBuilder(
+                            "taskset", "-pc", String.valueOf(targetCore), String.valueOf(tid)
+                    );
+                    Process process = pb.start();
+                    int exitCode = process.waitFor();
+
+                    if (exitCode == 0) {
+                        System.out.println("Successfully set thread " + thread.getName() +
+                                " to CPU core " + targetCore);
+                    } else {
+                        System.err.println("Failed to set thread affinity for " + thread.getName() +
+                                ", exit code: " + exitCode);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error setting thread affinity: " + e.getMessage());
+                }
+            } else {
+                System.err.println("Thread affinity is only supported on Linux systems");
+            }
+        }
+    }
+
+    /**
+     * 重新初始化线程池（当配置改变时调用）
+     */
+    public static void reinitializeExecutor() {
+        if (compressionExecutor != null && !compressionExecutor.isShutdown()) {
+            compressionExecutor.shutdown();
+            try {
+                // 等待现有任务完成
+                if (!compressionExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+                    compressionExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                compressionExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+        compressionExecutor = createCompressionExecutor();
+    }
+
     /**
      * Gets the local backups in the specified folder as a {@code TreeMap} with their creation date and a reference to them.
      *
@@ -120,6 +231,7 @@ public class FileUtil {
         // 修改：输出文件后缀改为.7z
         ZipIt(location, path.getPath() + "/" + fileName.replace(".zip", ".7z"), fileList);
     }
+
     /**
      * 异步创建备份压缩文件
      */
@@ -132,61 +244,20 @@ public class FileUtil {
             }
         }, compressionExecutor);
     }
+
     /**
      * 关闭线程池
      */
     public static void shutdown() {
-        compressionExecutor.shutdown();
-    }
-
-    /**
-     * Deletes the oldest files in the specified folder past the number to retain locally.
-     * <p>
-     * The number of files to retain locally is specified by the user in the {@code config.yml}
-     *
-     * @param location  the location of the folder containing the backups
-     * @param formatter the format of the file name
-     */
-    public void purgeLocalBackups(String location, LocalDateTimeFormatter formatter) {
-        location = escapeBackupLocation(location);
-        if (isBaseFolder(location)) {
-            location = "root";
-        }
-        logger.info(intl("local-backup-purging-start"), "location", location);
-        int localKeepCount = ConfigParser.getConfig().backupStorage.localKeepCount;
-        if (localKeepCount == -1) {
-            logger.info(intl("local-backup-no-limit"));
-        } else {
+        if (compressionExecutor != null) {
+            compressionExecutor.shutdown();
             try {
-                TreeMap<Long, File> backupList = getLocalBackups(location, formatter);
-                String size = String.valueOf(backupList.size());
-                String keepCount = String.valueOf(localKeepCount);
-                if (backupList.size() > localKeepCount) {
-                    logger.info(intl("local-backup-limit-reached"),
-                            "backup-count", size,
-                            "backup-limit", keepCount);
-                } else {
-                    logger.info(intl("local-backup-limit-not-reached"),
-                            "backup-count", size,
-                            "backup-limit", keepCount);
-                    return;
+                if (!compressionExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+                    compressionExecutor.shutdownNow();
                 }
-                while (backupList.size() > localKeepCount) {
-                    File fileToDelete = backupList.descendingMap().lastEntry().getValue();
-                    long dateOfFile = backupList.descendingMap().lastKey();
-                    if (!fileToDelete.delete()) {
-                        logger.info(intl("local-backup-file-failed-to-delete"),
-                                "local-backup-name", fileToDelete.getName());
-                    } else {
-                        logger.info(intl("local-backup-file-deleted"),
-                                "local-backup-name", fileToDelete.getName());
-                    }
-                    backupList.remove(dateOfFile);
-                }
-                logger.info(intl("local-backup-purging-complete"), "location", location);
-            } catch (Exception e) {
-                logger.info(intl("local-backup-failed-to-delete"));
-                MessageUtil.sendConsoleException(e);
+            } catch (InterruptedException e) {
+                compressionExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -200,7 +271,7 @@ public class FileUtil {
      */
     private void ZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList) throws Exception {
         //logger.info("正在为"+inputFolderPath+"创建压缩文件");
-        byte[] buffer = new byte[65536]; // 8KB 缓冲区
+        byte[] buffer = new byte[65536]; // 64KB 缓冲区
         try (SevenZOutputFile sevenZOutput = new SevenZOutputFile(new File(outputFilePath))) {
             SevenZMethodConfiguration methodConfig = new SevenZMethodConfiguration(
                     SevenZMethod.LZMA2,

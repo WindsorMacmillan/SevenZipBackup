@@ -4,64 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Reconstruction">
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Fixed plugin.yml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/SevenZipBackupApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/SevenZipBackupApi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/TestThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/TestThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/UploadThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/ConfigMigrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/ConfigParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/Localization.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/Localization.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/PermissionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/PermissionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/Advanced.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/Advanced.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupList.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupMethods.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupScheduling.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupScheduling.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/BackupStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/ExternalBackups.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/ExternalBackups.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/config/configSections/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/Messages.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/constants/Permission.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/constants/Permission.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/handler/CommandTabComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/CommandTabComplete.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/handler/DebugCollector.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/DebugCollector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/handler/commandHandler/BasicCommands.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/commandHandler/BasicCommands.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/handler/commandHandler/CommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/commandHandler/CommandHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/handler/listeners/ChatInputListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/listeners/ChatInputListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/handler/listeners/PlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/listeners/PlayerListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/BstatsMetrics.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/BstatsMetrics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/Scheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/SevenZipBackup.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/updater/UpdateChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/updater/UpdateChecker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/plugin/updater/Updater.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/updater/Updater.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/Authenticator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Authenticator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/Obfusticate.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Obfusticate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ResponseException.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/ResponseException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/UploadException.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/UploadException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/Uploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Uploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/dropbox/DropboxUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/dropbox/DropboxUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/FTPUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/ftp/FTPUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/ftp/SFTPUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/ftp/SFTPUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/googledrive/GoogleDriveUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/googledrive/GoogleDriveUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/mysql/MySQLUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/mysql/MySQLUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/onedrive/GraphApiErrorException.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/onedrive/GraphApiErrorException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/onedrive/OneDriveUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/onedrive/OneDriveUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/s3/S3Uploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/s3/S3Uploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/webdav/NextcloudUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/webdav/NextcloudUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/uploaders/webdav/WebDAVUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/webdav/WebDAVUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/BlacklistEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/BlacklistEntry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/ChunkedFileInputStream.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/ChunkedFileInputStream.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/CustomConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/CustomConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/HttpLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/HttpLogger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/LocalDateTimeFormatter.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/LocalDateTimeFormatter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/Logger.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/Logger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/MessageUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/MessageUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/NetUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/NetUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/SchedulerUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/SchedulerUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/ServerUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/ServerUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/Timer.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/Timer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/Windsor/SevenZipBackup/util/Version.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/Version.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translations/en-us.yml" beforeDir="false" afterPath="$PROJECT_DIR$/translations/en-us.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -225,7 +175,31 @@
       <option name="project" value="LOCAL" />
       <updated>1760558589779</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Reconstruction">
+      <option name="closed" value="true" />
+      <created>1760596460864</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1760596460864</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Reconstruction">
+      <option name="closed" value="true" />
+      <created>1760596567671</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1760596567671</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Fixed plugin.yml">
+      <option name="closed" value="true" />
+      <created>1760617527687</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1760617527687</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -263,6 +237,7 @@
     <MESSAGE value="Update pom" />
     <MESSAGE value="Fixed missing translation" />
     <MESSAGE value="Reconstruction" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reconstruction" />
+    <MESSAGE value="Fixed plugin.yml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed plugin.yml" />
   </component>
 </project>

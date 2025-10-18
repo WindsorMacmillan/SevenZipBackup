@@ -6,11 +6,17 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import windsor.sevenzipbackup.util.Logger;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static windsor.sevenzipbackup.config.Localization.intl;
 
 public class BackupStorage {
     public final long delay;
     public final int threadPriority;
+    public final int threadCounts;
+    public static List<Integer> CPUAffinity;
     public final int keepCount;
     public final int localKeepCount;
     public final int zipCompression;
@@ -20,19 +26,23 @@ public class BackupStorage {
     public final String remoteDirectory;
 
     public BackupStorage(
-        long delay, 
-        int threadPriority, 
-        int keepCount, 
-        int localKeepCount,
-        int zipCompression,
-        boolean backupsRequirePlayers,
-        boolean disableSavingDuringBackups,
-        String localDirectory,
-        String remoteDirectory
-        ) {
+            long delay,
+            int threadPriority,
+            int threadCounts,
+            List<Integer> CPUAffinity,
+            int keepCount,
+            int localKeepCount,
+            int zipCompression,
+            boolean backupsRequirePlayers,
+            boolean disableSavingDuringBackups,
+            String localDirectory,
+            String remoteDirectory
+    ) {
 
         this.delay = delay;
         this.threadPriority = threadPriority;
+        this.threadCounts = threadCounts;
+        BackupStorage.CPUAffinity = CPUAffinity;
         this.keepCount = keepCount;
         this.localKeepCount = localKeepCount;
         this.zipCompression = zipCompression;
@@ -59,6 +69,30 @@ public class BackupStorage {
             logger.log(intl("thread-priority-too-high"));
             threadPriority = Thread.MAX_PRIORITY;
         }
+        int threadCounts = config.getInt("backup-thread-counts");
+        if (threadCounts < 1) {
+            logger.log(intl("thread-counts-too-low"));
+            threadCounts = Runtime.getRuntime().availableProcessors();
+        } else if (threadCounts > Runtime.getRuntime().availableProcessors()) {
+            logger.log(intl("thread-counts-too-high"));
+            threadCounts = Runtime.getRuntime().availableProcessors();
+        }
+        if(config.getBoolean("enable-specify-cpu-cores")){
+            String[] CPUAffinityString = config.getString("cpu-cores-list").split(",");
+            List<Integer> CPUAffinity = Arrays.stream(CPUAffinityString).map(Integer::parseInt).collect(Collectors.toList());
+            if(CPUAffinity.size()==1 && CPUAffinity.get(0) ==-1){
+                CPUAffinity.remove(0);
+                for(int i=0;i<threadCounts;i++)CPUAffinity.add(Runtime.getRuntime().availableProcessors()-threadCounts+i);
+            }
+            else for(int i:CPUAffinity){
+                if (i < 1 || i >= Runtime.getRuntime().availableProcessors()) {
+                    logger.log(intl("cpu-affinity-error"));
+                    threadCounts = Runtime.getRuntime().availableProcessors();
+                    break;
+                }
+            }
+            logger.log("当前绑定核心："+CPUAffinity.stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
+        }
         int keepCount = config.getInt("keep-count");
         if (keepCount < 1 && keepCount != -1) {
             logger.log(intl("keep-count-invalid"));
@@ -69,7 +103,7 @@ public class BackupStorage {
             logger.log(intl("local-keep-count-invalid"));
             localKeepCount = defaultConfig.getInt("local-keep-count");
         }
-        int zipCompression = config.getInt("7z-compression");
+        int zipCompression = config.getInt("7z-compression-level");
         if (zipCompression < 0) {
             logger.log(intl("7z-compression-too-low"));
             zipCompression = 0;
@@ -85,6 +119,6 @@ public class BackupStorage {
             localDirectory = localDirectory.substring(1);
         }
         String remoteDirectory = config.getString("remote-save-directory");
-        return new BackupStorage(delay, threadPriority, keepCount, localKeepCount, zipCompression, backupsRequirePlayers, disableSavingDuringBackups, localDirectory, remoteDirectory);
+        return new BackupStorage(delay, threadPriority, threadCounts, CPUAffinity, keepCount, localKeepCount, zipCompression, backupsRequirePlayers, disableSavingDuringBackups, localDirectory, remoteDirectory);
     }
 }
