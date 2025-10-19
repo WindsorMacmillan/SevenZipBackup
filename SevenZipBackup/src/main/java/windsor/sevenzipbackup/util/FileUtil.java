@@ -162,7 +162,7 @@ public class FileUtil {
      */
     public TreeMap<Long, File> getLocalBackups(String location, LocalDateTimeFormatter formatter) {
         location = escapeBackupLocation(location);
-        int backupcounts=0;
+        //int backupcounts=0;
         TreeMap<Long, File> backupList = new TreeMap<>();
         String path = new File(ConfigParser.getConfig().backupStorage.localDirectory).getAbsolutePath() + "/" + location;
         File[] files = new File(path).listFiles();
@@ -171,11 +171,11 @@ public class FileUtil {
         }
         for (File file : files) {
             if (file.getName().endsWith(".7z")) {
-                backupcounts++;
+                //backupcounts++;
                 backupList.put((file.lastModified() / 1000), file);
             }
         }
-        logger.info("Current backups: "+backupcounts);
+        //logger.info("Current backups: "+backupcounts);
         return backupList;
     }
 

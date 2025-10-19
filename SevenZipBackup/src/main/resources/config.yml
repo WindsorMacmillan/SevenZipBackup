@@ -6,7 +6,7 @@
 #   ╚═╝  ╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     
 # SevenZipBackup   -   by Windsor Macmillan
 
-version: 2
+version: 3
 
 # Backup interval in minutes.
 # 备份间隔，单位分钟
@@ -28,11 +28,20 @@ backup-thread-priority: 5
 # 经过实测强烈建议选用5及以下，超过此值压缩率不会显著改善，但消耗时间和内存成倍增加。
 # 警告：过高的值可能会消耗巨量内存和CPU资源。
 7z-compression-level: 1
-
+# Compressing thread counts. Each thread can process backups creation in parallel.
+# Default is 4. Based on directories you need to create backups. (0 means keep same as CPU cores count)
+# 压缩线程数量。每个线程可以并行地创建备份文件。
+# 默认值为4。此值基于你需要创建备份的文件夹数量。(0表示与CPU核心数保持一致)
 backup-thread-counts: 4
-# 是否启用CPU亲和性
+# This determines whether threads are assigned to specified CPU cores.
+# 此项决定是否启用线程绑定到指定CPU核心
 enable-specify-cpu-cores: true
-# 绑定到特定CPU核心（逗号分隔，-1表示自动）
+# Specify CPU cores list to bind backup threads. (Separated by comma, -1 means automatic, will bind last several CPU cores)
+# We suggest you to specify CPU cores to non-main-thread cores to avoid impacting performance of the server.
+# 绑定压缩线程到特定CPU核心列表（逗号分隔，-1表示自动，会绑定到最后几个CPU核心）
+# 建议绑定到非主线程的CPU核心以免影响服务器性能
+# cpu-cores-list: "0,1,2,3"
+# cpu-cores-list: "12,13,14,15"
 cpu-cores-list: "-1"
 
 #只在有玩家在线时启用备份

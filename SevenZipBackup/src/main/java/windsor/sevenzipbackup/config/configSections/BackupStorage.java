@@ -91,7 +91,7 @@ public class BackupStorage {
                     break;
                 }
             }
-            logger.log("当前绑定核心："+CPUAffinity.stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
+            logger.log("CPU："+CPUAffinity.stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
         }
         int keepCount = config.getInt("keep-count");
         if (keepCount < 1 && keepCount != -1) {
