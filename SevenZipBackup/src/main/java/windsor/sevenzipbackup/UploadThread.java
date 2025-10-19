@@ -267,6 +267,16 @@ public class UploadThread implements Runnable {
         logger.broadcast(intl("backup-total-time"), "time", String.valueOf(totalSeconds));
     }
 
+    private void pruneLocalBackups() {
+        logger.log(intl("backup-local-prune-start"));
+        for (Map.Entry<String, LocalDateTimeFormatter> entry : locationsToBePruned.entrySet()) {
+            String location = entry.getKey();
+            LocalDateTimeFormatter formatter = entry.getValue();
+            fileUtil.purgeLocalBackups(location, formatter);
+        }
+        logger.log(intl("backup-local-prune-complete"));
+    }
+
     /**
      * 异步并发压缩所有备份文件夹
      */
@@ -324,7 +334,7 @@ public class UploadThread implements Runnable {
         uploadBackupFiles(uploaders);
         FileUtil.deleteFolder(new File("external-backups"));
         logger.info(intl("backup-upload-complete"));
-
+        pruneLocalBackups();
         // ... 剩余的上传后处理逻辑
     }
 

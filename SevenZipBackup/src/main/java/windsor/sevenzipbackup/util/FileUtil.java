@@ -162,6 +162,7 @@ public class FileUtil {
      */
     public TreeMap<Long, File> getLocalBackups(String location, LocalDateTimeFormatter formatter) {
         location = escapeBackupLocation(location);
+        int backupcounts=0;
         TreeMap<Long, File> backupList = new TreeMap<>();
         String path = new File(ConfigParser.getConfig().backupStorage.localDirectory).getAbsolutePath() + "/" + location;
         File[] files = new File(path).listFiles();
@@ -170,9 +171,11 @@ public class FileUtil {
         }
         for (File file : files) {
             if (file.getName().endsWith(".7z")) {
+                backupcounts++;
                 backupList.put((file.lastModified() / 1000), file);
             }
         }
+        logger.info("Current backups: "+backupcounts);
         return backupList;
     }
 
@@ -262,6 +265,56 @@ public class FileUtil {
         }
     }
 
+    /**
+     * Deletes the oldest files in the specified folder past the number to retain locally.
+     * <p>
+     * The number of files to retain locally is specified by the user in the {@code config.yml}
+     * @param location the location of the folder containing the backups
+     * @param formatter the format of the file name
+     */
+    public void purgeLocalBackups(String location, LocalDateTimeFormatter formatter) {
+        location = escapeBackupLocation(location);
+        if (isBaseFolder(location)) {
+            location = "root";
+        }
+        logger.log(intl("local-backup-pruning-start"), "location", location);
+        int localKeepCount = ConfigParser.getConfig().backupStorage.localKeepCount;
+        if (localKeepCount == -1) {
+            logger.info(intl("local-backup-no-limit"));
+        } else {
+            try {
+                TreeMap<Long, File> backupList = getLocalBackups(location, formatter);
+                String size = String.valueOf(backupList.size());
+                String keepCount = String.valueOf(localKeepCount);
+                if (backupList.size() > localKeepCount) {
+                    logger.info(intl("local-backup-limit-reached"),
+                            "backup-count", size,
+                            "backup-limit", keepCount);
+                } else {
+                    logger.info(intl("local-backup-limit-not-reached"),
+                            "backup-count", size,
+                            "backup-limit", keepCount);
+                    return;
+                }
+                while (backupList.size() > localKeepCount) {
+                    File fileToDelete = backupList.descendingMap().lastEntry().getValue();
+                    long dateOfFile = backupList.descendingMap().lastKey();
+                    if (!fileToDelete.delete()) {
+                        logger.log(intl("local-backup-file-failed-to-delete"),
+                                "local-backup-name", fileToDelete.getName());
+                    } else {
+                        logger.info(intl("local-backup-file-deleted"),
+                                "local-backup-name", fileToDelete.getName());
+                    }
+                    backupList.remove(dateOfFile);
+                }
+                logger.log(intl("local-backup-pruning-complete"), "location", location);
+            } catch (Exception e) {
+                logger.log(intl("local-backup-failed-to-delete"));
+                MessageUtil.sendConsoleException(e);
+            }
+        }
+    }
     /**
      * Creates 7z files in the specified folder into the specified file location using LZMA2 algorithm and solid compression.
      *
