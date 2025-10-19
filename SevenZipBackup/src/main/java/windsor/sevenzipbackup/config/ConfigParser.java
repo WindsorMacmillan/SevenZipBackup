@@ -21,7 +21,7 @@ import windsor.sevenzipbackup.util.MessageUtil;
 
 public class ConfigParser {
     public static class Config {
-        public static final int VERSION = 2;
+        public static final int VERSION = 3;
         public final BackupStorage backupStorage;
         public final BackupScheduling backupScheduling;
         public final BackupList backupList;

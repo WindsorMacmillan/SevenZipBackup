@@ -12,8 +12,6 @@ import windsor.sevenzipbackup.plugin.SevenZipBackup;
 import windsor.sevenzipbackup.util.MessageUtil;
 
 public class ConfigMigrator {
-    private static final String DEFAULT_TIMEZONE_STRING = "-00:00";
-
     // ConfigMigrator is called before localization is parsed, since ConfigMigrator
     // may change the intl file. Therefore, we just hardcode any messages.
     private static final String MIGRATING_MESSAGE = "Automatically migrating config to version <version>";
@@ -31,42 +29,20 @@ public class ConfigMigrator {
 
     public void migrate() {
         Logger logger = (input, placeholders) -> MessageUtil.Builder().mmText(input, placeholders).to(initiators).send();
-        if (config.isSet("version") && config.getInt("version") >= Config.VERSION) {
+        //logger.log("Current version <version>", "version", String.valueOf(config.isSet("version")));
+        if (config.get("version")!=null && config.getInt("version") >= Config.VERSION) {
             return;
         }
         logger.log(MIGRATING_MESSAGE, "version", String.valueOf(Config.VERSION));
         config.set("version", Config.VERSION);
         int backupThreadPriority = config.getInt("backup-thread-priority");
-        if (backupThreadPriority < 1) {
-            config.set("backup-thread-priority", 1);
-        }
+        if (backupThreadPriority < 1) config.set("backup-thread-priority", 1);
+        else if(backupThreadPriority > 10)config.set("backup-thread-priority", 10);
         int zipCompression = config.getInt("7z-compression");
-        if (zipCompression < 1) {
-            config.set("7z-compression", 1);
-        }
-        migrate("dir", "local-save-directory");
-        migrate("destination", "remote-save-directory");
-        if (config.isSet("schedule-timezone")
-                && !ObjectUtils.equals(config.getString("schedule-timezone"), DEFAULT_TIMEZONE_STRING)) {
-            migrate("schedule-timezone", "advanced.date-timezone");
-            config.set("backup-format-timezone", null);
-        } else {
-            migrate("backup-format-timezone", "advanced.date-timezone");
-            config.set("schedule-timezone", null);
-        }
-        String googleDriveSharedDriveId = config.getString("googledrive.shared-drive-id");
-        if (googleDriveSharedDriveId == null) {
-            config.set("googledrive.shared-drive-id", "");
-        }
-        migrate("advanced.message-prefix", "messages.prefix");
-        migrate("advanced.default-message-color", "messages.default-color");
-        migrateIntl("messages.no-perm", "no-perm");
-        migrateIntl("messages.backup-start", "backup-start");
-        migrateIntl("messages.backup-complete", "backup-complete");
-        migrateIntl("messages.next-backup", "next-backup");
-        migrateIntl("messages.next-schedule-backup", "next-schedule-backup");
-        migrateIntl("messages.next-schedule-backup-format", "next-schedule-backup-format");
-        migrateIntl("messages.auto-backups-disabled", "auto-backups-disabled");
+        if (zipCompression < 0)config.set("7z-compression-level", 0);
+        else if (zipCompression > 9) config.set("7z-compression-level", 9);
+        else config.set("7z-compression-level", zipCompression);
+        config.set("7z-compression", null);
         SevenZipBackup.getInstance().saveConfig();
         SevenZipBackup.getInstance().saveIntlConfig();
     }
@@ -78,6 +54,7 @@ public class ConfigMigrator {
      * @param newPath the new path
      */
     private void migrate(String oldPath, String newPath) {
+        if(config.get(oldPath)==null)return;
         config.set(newPath, config.get(oldPath));
         config.set(oldPath, null);
     }
@@ -89,6 +66,7 @@ public class ConfigMigrator {
      * @param newPath the new path
      */
     private void migrateIntl(String oldPath, String newPath) {
+        if(config.get(oldPath)==null)return;
         localizationConfig.set(newPath, config.get(oldPath));
         config.set(oldPath, null);
     }

@@ -60,11 +60,11 @@ public class SevenZipBackup extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         httpClient = new OkHttpClient.Builder()
-            .connectTimeout(1, TimeUnit.MINUTES)
-            .writeTimeout(3, TimeUnit.MINUTES)
-            .readTimeout(3, TimeUnit.MINUTES)
-            .addInterceptor(new HttpLogger())
-            .build();
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(3, TimeUnit.MINUTES)
+                .readTimeout(3, TimeUnit.MINUTES)
+                .addInterceptor(new HttpLogger())
+                .build();
         adventure = BukkitAudiences.create(plugin);
         chatInputPlayers = new ArrayList<>(1);
         List<CommandSender> configPlayers = PermissionHandler.getPlayersWithPerm(Permission.RELOAD_CONFIG);
@@ -72,14 +72,29 @@ public class SevenZipBackup extends JavaPlugin {
         localizationConfig = new CustomConfig("intl.yml");
         localizationConfig.saveDefaultConfig();
         Localization.set(localizationConfig.getConfig());
-        ConfigMigrator configMigrator = new ConfigMigrator(getConfig(), localizationConfig.getConfig(), configPlayers);
-        configMigrator.migrate();
+        try {
+            reloadConfig();
+            FileConfiguration mainConfig = getConfig();
+            localizationConfig.reloadConfig();
+            FileConfiguration localizationFile = localizationConfig.getConfig();
+            ConfigMigrator configMigrator = new ConfigMigrator(mainConfig, localizationFile, configPlayers);
+            configMigrator.migrate();
+            reloadConfig();
+            localizationConfig.reloadConfig();
+        } catch (Exception e) {
+            getLogger().severe("Load config.yml error: " + e.getMessage());
+            // 在配置错误时使用默认配置
+            //saveResource("config.yml", true); // 覆盖为默认配置
+            //saveResource("intl.yml", true); // 覆盖为默认本地化配置
+            reloadConfig();
+            localizationConfig.reloadConfig();
+        }
         config = new ConfigParser(getConfig());
         config.reload(configPlayers);
         MessageUtil.Builder()
-            .to(configPlayers)
-            .mmText(intl("config-loaded"))
-            .send();
+                .to(configPlayers)
+                .mmText(intl("config-loaded"))
+                .send();
         getCommand(CommandHandler.CHAT_KEYWORD).setTabCompleter(new CommandTabComplete());
         getCommand(CommandHandler.CHAT_KEYWORD).setExecutor(new CommandHandler());
         PluginManager pm = getServer().getPluginManager();
@@ -124,8 +139,14 @@ public class SevenZipBackup extends JavaPlugin {
         FileConfiguration configFile = getInstance().getConfig();
         localizationConfig.reloadConfig();
         FileConfiguration localizationFile = localizationConfig.getConfig();
-        config.reload(configFile, players);
-        Localization.set(localizationFile);
+        // 在重新加载时也验证配置
+        try {
+            config.reload(configFile, players);
+            Localization.set(localizationFile);
+        } catch (Exception e) {
+            MessageUtil.Builder().mmText(intl("config-load-error")).send();
+        }
+
         Scheduler.startBackupThread();
     }
 }
