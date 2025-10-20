@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import windsor.sevenzipbackup.config.ConfigParser;
 import windsor.sevenzipbackup.config.ConfigParser.Config;
+import windsor.sevenzipbackup.config.configSections.Advanced;
 import windsor.sevenzipbackup.config.configSections.BackupList.BackupListEntry;
 import windsor.sevenzipbackup.config.configSections.BackupList.BackupListEntry.PathBackupLocation;
 import windsor.sevenzipbackup.config.configSections.ExternalBackups.ExternalBackupSource;
@@ -187,9 +188,16 @@ public class UploadThread implements Runnable {
                 "backup-status", getBackupStatus());
             return;
         }
+        if(ConfigParser.getConfig().advanced.debugEnabled){
+            logger.info("尝试运行定时备份任务");
+        }
         try {
             run_internal();
         } catch (Exception e) {
+            if(ConfigParser.getConfig().advanced.debugEnabled){
+                logger.info("无法运行备份任务：");
+                e.printStackTrace();
+            }
             lastBackupSuccessful = false;
             throw e;
         } finally {
@@ -215,6 +223,9 @@ public class UploadThread implements Runnable {
         if (initiator == null) {
             updateNextIntervalBackupTime();
         }
+        if(ConfigParser.getConfig().advanced.debugEnabled){
+            logger.info("为备份任务设定线程优先级");
+        }
         Thread.currentThread().setPriority(config.backupStorage.threadPriority);
         if (!SevenZipBackupApi.shouldStartBackup()) {
             return;
@@ -223,6 +234,9 @@ public class UploadThread implements Runnable {
             return;
         }
         boolean errorOccurred = false;
+        if(ConfigParser.getConfig().advanced.debugEnabled){
+            logger.info("备份条件已通过检查");
+        }
         List<ExternalBackupSource> externalBackupList = Arrays.asList(config.externalBackups.sources);
         backupList = new ArrayList<>(Arrays.asList(config.backupList.list));
         if (externalBackupList.isEmpty() && backupList.isEmpty()) {
@@ -240,7 +254,7 @@ public class UploadThread implements Runnable {
             }
         }
 
-        //logger.info(intl("backup-local-start"));
+        logger.info(intl("backup-local-start"));
         backupStatus = BackupStatus.COMPRESSING;
         backupBackingUp = 0;
         ServerUtil.setAutoSave(false);
@@ -251,9 +265,15 @@ public class UploadThread implements Runnable {
         } catch (Exception e) {
             logger.info(intl("backup-local-failed"));
             MessageUtil.sendConsoleException(e);
+            if(ConfigParser.getConfig().advanced.debugEnabled){
+                logger.info("异步备份任务失败！");
+                e.printStackTrace();
+            }
             errorOccurred = true;
         }
-
+        if(ConfigParser.getConfig().advanced.debugEnabled){
+            logger.info("备份压缩任务完成");
+        }
         ServerUtil.setAutoSave(true);
 
         if (!errorOccurred) {
@@ -282,17 +302,21 @@ public class UploadThread implements Runnable {
      */
     private void asyncCompressAllBackups() throws Exception {
         List<CompletableFuture<Void>> compressionFutures = new ArrayList<>();
-
         // 为每个备份项创建异步任务
         for (BackupListEntry set : backupList) {
             for (Path folder : set.location.getPaths()) {
+                if(ConfigParser.getConfig().advanced.debugEnabled){
+                    logger.info("为备份项创建异步任务："+ folder.toString());
+                }
                 if (set.create) {
                     CompletableFuture<Void> future = createBackupAsync(folder.toString(), set.formatter, Arrays.asList(set.blacklist));
                     compressionFutures.add(future);
                 }
             }
         }
-
+        if(ConfigParser.getConfig().advanced.debugEnabled){
+            logger.info("等待所有压缩任务完成...");
+        }
         // 等待所有压缩任务完成
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(
                 compressionFutures.toArray(new CompletableFuture[0])
@@ -322,7 +346,7 @@ public class UploadThread implements Runnable {
      * 继续执行上传流程
      */
     private void continueWithUploadProcess() {
-        //logger.info(intl("backup-upload-start"));
+        logger.info(intl("backup-upload-start"));
         backupStatus = BackupStatus.UPLOADING;
         backupBackingUp = 0;
 

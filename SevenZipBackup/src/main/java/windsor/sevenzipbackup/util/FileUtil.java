@@ -9,11 +9,7 @@ import windsor.sevenzipbackup.config.ConfigParser.Config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -37,8 +33,8 @@ public class FileUtil {
 
     private final UploadLogger logger;
 
-    // 修改：使用可配置的线程池
     private static ExecutorService compressionExecutor = createCompressionExecutor();
+    private static ExecutorService fileListExecutor = createFileListExecutor();
 
     public FileUtil(UploadLogger logger) {
         this.logger = logger;
@@ -53,12 +49,32 @@ public class FileUtil {
         if (threadCount <= 0) {
             threadCount = Runtime.getRuntime().availableProcessors();
         }
-
-        // 创建自定义线程工厂来设置优先级和亲和性
         CompressionThreadFactory threadFactory = new CompressionThreadFactory(
                 config.backupStorage.threadPriority,
-                BackupStorage.CPUAffinity  // 现在这是 List<Integer>
+                BackupStorage.CPUAffinity
         );
+
+        return Executors.newFixedThreadPool(threadCount, threadFactory);
+    }
+
+    /**
+     * 创建专门用于文件列表生成的线程池
+     */
+    private static ExecutorService createFileListExecutor() {
+        Config config = ConfigParser.getConfig();
+        int threadCount = Math.max(2, Runtime.getRuntime().availableProcessors() / 2);
+        ThreadFactory threadFactory = new ThreadFactory() {
+            private final AtomicInteger threadNumber = new AtomicInteger(0);
+            private final String namePrefix = "filelist-worker-";
+
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, namePrefix + threadNumber.getAndIncrement());
+                t.setDaemon(true);
+                t.setPriority(Thread.NORM_PRIORITY);
+                return t;
+            }
+        };
 
         return Executors.newFixedThreadPool(threadCount, threadFactory);
     }
@@ -151,6 +167,20 @@ public class FileUtil {
             }
         }
         compressionExecutor = createCompressionExecutor();
+
+        // 同时重新初始化文件列表线程池
+        if (fileListExecutor != null && !fileListExecutor.isShutdown()) {
+            fileListExecutor.shutdown();
+            try {
+                if (!fileListExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+                    fileListExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                fileListExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+        fileListExecutor = createFileListExecutor();
     }
 
     /**
@@ -162,7 +192,6 @@ public class FileUtil {
      */
     public TreeMap<Long, File> getLocalBackups(String location, LocalDateTimeFormatter formatter) {
         location = escapeBackupLocation(location);
-        //int backupcounts=0;
         TreeMap<Long, File> backupList = new TreeMap<>();
         String path = new File(ConfigParser.getConfig().backupStorage.localDirectory).getAbsolutePath() + "/" + location;
         File[] files = new File(path).listFiles();
@@ -171,81 +200,120 @@ public class FileUtil {
         }
         for (File file : files) {
             if (file.getName().endsWith(".7z")) {
-                //backupcounts++;
                 backupList.put((file.lastModified() / 1000), file);
             }
         }
-        //logger.info("Current backups: "+backupcounts);
         return backupList;
     }
 
     /**
-     * Creates a local backup 7z file for the specified file/folder.
-     *
-     * @param location       the location of the file or folder
-     * @param formatter      the format of the file name
-     * @param blacklistGlobs a list of glob patterns of files/folders to not include in the backup.
+     * 异步创建备份压缩文件（包含异步文件列表生成）
      */
-    public void makeBackup(@NotNull String location, LocalDateTimeFormatter formatter, List<String> blacklistGlobs) throws Exception {
-        Config config = ConfigParser.getConfig();
-        if (location.charAt(0) == '/') {
-            throw new IllegalArgumentException("Location cannot start with a slash");
-        }
-        ZonedDateTime now = ZonedDateTime.now(config.advanced.dateTimezone);
-        String fileName = formatter.format(now);
-        String subFolderName = location;
-        if (isBaseFolder(subFolderName)) {
-            subFolderName = "root";
-        }
-        File path = new File(escapeBackupLocation(config.backupStorage.localDirectory + "/" + subFolderName));
-        if (!path.exists()) {
-            path.mkdirs();
-        }
-        List<BlacklistEntry> blacklist = new ArrayList<>();
-        for (String blacklistGlob : blacklistGlobs) {
-            BlacklistEntry blacklistEntry = new BlacklistEntry(
-                    blacklistGlob,
-                    FileSystems.getDefault().getPathMatcher("glob:" + blacklistGlob)
-            );
-            blacklist.add(blacklistEntry);
-        }
-        BackupFileList fileList = generateFileList(location, blacklist);
-        for (BlacklistEntry blacklistEntry : fileList.getBlacklist()) {
-            String globPattern = blacklistEntry.getGlobPattern();
-            int blacklistedFiles = blacklistEntry.getBlacklistedFiles();
-            if (blacklistedFiles > 0) {
-                logger.info(
-                        intl("local-backup-backlisted"),
-                        "blacklisted-files-count", String.valueOf(blacklistedFiles),
-                        "glob-pattern", globPattern);
+    public CompletableFuture<Void> makeBackupAsync(@NotNull String location, LocalDateTimeFormatter formatter, List<String> blacklistGlobs) {
+        return CompletableFuture.supplyAsync(() -> {
+            // 第一阶段：准备工作和文件列表生成
+            try {
+                Config config = ConfigParser.getConfig();
+                if (location.charAt(0) == '/') {
+                    throw new IllegalArgumentException("Location cannot start with a slash");
+                }
+                if(ConfigParser.getConfig().advanced.debugEnabled){
+                    logger.info("处理文件夹路径中："+location);
+                }
+                ZonedDateTime now = ZonedDateTime.now(config.advanced.dateTimezone);
+                String fileName = formatter.format(now);
+                String subFolderName = location;
+                if (isBaseFolder(subFolderName)) {
+                    subFolderName = "root";
+                }
+                File path = new File(escapeBackupLocation(config.backupStorage.localDirectory + "/" + subFolderName));
+                if (!path.exists()) {
+                    path.mkdirs();
+                }
+
+                // 准备黑名单
+                if(ConfigParser.getConfig().advanced.debugEnabled){
+                    logger.info("处理黑名单文件排除中");
+                }
+                List<BlacklistEntry> blacklist = new ArrayList<>();
+                for (String blacklistGlob : blacklistGlobs) {
+                    BlacklistEntry blacklistEntry = new BlacklistEntry(
+                            blacklistGlob,
+                            FileSystems.getDefault().getPathMatcher("glob:" + blacklistGlob)
+                    );
+                    blacklist.add(blacklistEntry);
+                }
+
+                // 处理文件名
+                if (fileName.contains(NAME_KEYWORD)) {
+                    int lastSeparatorIndex = Math.max(location.lastIndexOf('/'), location.lastIndexOf('\\'));
+                    String lastFolderName = location.substring(lastSeparatorIndex + 1);
+                    fileName = fileName.replace(NAME_KEYWORD, lastFolderName);
+                }
+
+                final String finalFileName = fileName.replace(".zip", ".7z");
+                final String outputPath = path.getPath() + "/" + finalFileName;
+
+                // 返回准备结果，用于下一阶段
+                return new BackupPreparation(location, outputPath, blacklist, finalFileName);
+            } catch (Exception e) {
+                if(ConfigParser.getConfig().advanced.debugEnabled){
+                    logger.info("无法处理备份文件夹："+location);
+                    e.printStackTrace();
+                }
+                throw new CompletionException(e);
             }
-        }
-        int filesInBackupFolder = fileList.getFilesInBackupFolder();
-        if (filesInBackupFolder > 0) {
-            logger.info(
-                    intl("local-backup-in-backup-folder"),
-                    "files-in-backup-folder-count", String.valueOf(filesInBackupFolder));
-        }
-        if (fileName.contains(NAME_KEYWORD)) {
-            int lastSeparatorIndex = Math.max(location.lastIndexOf('/'), location.lastIndexOf('\\'));
-            String lastFolderName = location.substring(lastSeparatorIndex + 1);
-            fileName = fileName.replace(NAME_KEYWORD, lastFolderName);
-        }
-        // 修改：输出文件后缀改为.7z
-        ZipIt(location, path.getPath() + "/" + fileName.replace(".zip", ".7z"), fileList);
+        }, fileListExecutor).thenComposeAsync(preparation -> {
+            // 第二阶段：异步生成文件列表
+            return generateFileListAsync(preparation.location, preparation.blacklist)
+                    .thenApplyAsync(fileList -> {
+                        // 记录黑名单和备份文件夹统计信息
+                        for (BlacklistEntry blacklistEntry : fileList.getBlacklist()) {
+                            String globPattern = blacklistEntry.getGlobPattern();
+                            int blacklistedFiles = blacklistEntry.getBlacklistedFiles();
+                            if (blacklistedFiles > 0) {
+                                logger.info(
+                                        intl("local-backup-backlisted"),
+                                        "blacklisted-files-count", String.valueOf(blacklistedFiles),
+                                        "glob-pattern", globPattern);
+                            }
+                        }
+                        int filesInBackupFolder = fileList.getFilesInBackupFolder();
+                        if (filesInBackupFolder > 0) {
+                            logger.info(
+                                    intl("local-backup-in-backup-folder"),
+                                    "files-in-backup-folder-count", String.valueOf(filesInBackupFolder));
+                        }
+                        return new BackupData(preparation, fileList);
+                    }, compressionExecutor);
+        }, fileListExecutor).thenComposeAsync(backupData -> {
+            // 第三阶段：异步压缩
+            if(ConfigParser.getConfig().advanced.debugEnabled){
+                logger.info("进入异步压缩环节：");
+            }
+            return ZipItAsync(backupData.preparation.location,
+                    backupData.preparation.outputPath,
+                    backupData.fileList);
+        }, compressionExecutor);
     }
 
     /**
-     * 异步创建备份压缩文件
+     * 异步生成文件列表
      */
-    public CompletableFuture<Void> makeBackupAsync(@NotNull String location, LocalDateTimeFormatter formatter, List<String> blacklistGlobs) {
-        return CompletableFuture.runAsync(() -> {
+    private CompletableFuture<BackupFileList> generateFileListAsync(String inputFolderPath, List<BlacklistEntry> blacklist) {
+        return CompletableFuture.supplyAsync(() -> {
             try {
-                makeBackup(location, formatter, blacklistGlobs);
+                BackupFileList fileList = new BackupFileList(blacklist);
+                generateFileList(new File(inputFolderPath), inputFolderPath, fileList);
+                return fileList;
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                if(ConfigParser.getConfig().advanced.debugEnabled){
+                    logger.info("生成待备份文件列表错误："+inputFolderPath);
+                    e.printStackTrace();
+                }
+                throw new CompletionException(e);
             }
-        }, compressionExecutor);
+        }, fileListExecutor);
     }
 
     /**
@@ -260,6 +328,18 @@ public class FileUtil {
                 }
             } catch (InterruptedException e) {
                 compressionExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        if (fileListExecutor != null) {
+            fileListExecutor.shutdown();
+            try {
+                if (!fileListExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+                    fileListExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                fileListExecutor.shutdownNow();
                 Thread.currentThread().interrupt();
             }
         }
@@ -315,6 +395,7 @@ public class FileUtil {
             }
         }
     }
+
     /**
      * Creates 7z files in the specified folder into the specified file location using LZMA2 algorithm and solid compression.
      *
@@ -323,7 +404,8 @@ public class FileUtil {
      * @param fileList        file to include in the zip
      */
     private void ZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList) throws Exception {
-        //logger.info("正在为"+inputFolderPath+"创建压缩文件");
+        if(ConfigParser.getConfig().advanced.debugEnabled)
+            logger.info("正在为"+inputFolderPath+"创建压缩文件");
         byte[] buffer = new byte[65536]; // 64KB 缓冲区
         try (SevenZOutputFile sevenZOutput = new SevenZOutputFile(new File(outputFilePath))) {
             SevenZMethodConfiguration methodConfig = new SevenZMethodConfiguration(
@@ -331,7 +413,9 @@ public class FileUtil {
                     new LZMA2Options(ConfigParser.getConfig().backupStorage.zipCompression)
             );
             sevenZOutput.setContentMethods(Collections.singletonList(methodConfig));
-
+            if(ConfigParser.getConfig().advanced.debugEnabled){
+                logger.info("设定压缩级别成功");
+            }
             for (String file : fileList.getList()) {
 
                 String entryName = file.replace(File.separator, "/");
@@ -367,11 +451,31 @@ public class FileUtil {
                         logger.info(
                                 intl("local-backup-failed-to-include"),
                                 "file-path", filePath);
+                        if(ConfigParser.getConfig().advanced.debugEnabled){
+                            e.printStackTrace();
+                        }
                     }
                 }
                 sevenZOutput.closeArchiveEntry();
             }
         }
+    }
+
+    /**
+     * 异步创建7z压缩文件
+     */
+    private CompletableFuture<Void> ZipItAsync(String inputFolderPath, String outputFilePath, BackupFileList fileList) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                ZipIt(inputFolderPath, outputFilePath, fileList);
+            } catch (Exception e) {
+                if(ConfigParser.getConfig().advanced.debugEnabled){
+                    logger.info("异步创建压缩文件错误："+inputFolderPath);
+                    e.printStackTrace();
+                }
+                throw new CompletionException(e);
+            }
+        }, compressionExecutor);
     }
 
     /**
@@ -412,15 +516,33 @@ public class FileUtil {
     }
 
     /**
-     * Generates a list of files to put in the zip created from the specified folder.
-     *
-     * @param inputFolderPath The path of the folder to create the zip from
+     * 用于在异步阶段间传递备份准备数据的内部类
      */
-    @NotNull
-    private BackupFileList generateFileList(String inputFolderPath, List<BlacklistEntry> blacklist) throws Exception {
-        BackupFileList fileList = new BackupFileList(blacklist);
-        generateFileList(new File(inputFolderPath), inputFolderPath, fileList);
-        return fileList;
+    private static class BackupPreparation {
+        final String location;
+        final String outputPath;
+        final List<BlacklistEntry> blacklist;
+        final String fileName;
+
+        BackupPreparation(String location, String outputPath, List<BlacklistEntry> blacklist, String fileName) {
+            this.location = location;
+            this.outputPath = outputPath;
+            this.blacklist = blacklist;
+            this.fileName = fileName;
+        }
+    }
+
+    /**
+     * 用于在异步阶段间传递备份数据的内部类
+     */
+    private static class BackupData {
+        final BackupPreparation preparation;
+        final BackupFileList fileList;
+
+        BackupData(BackupPreparation preparation, BackupFileList fileList) {
+            this.preparation = preparation;
+            this.fileList = fileList;
+        }
     }
 
     /**
@@ -479,11 +601,49 @@ public class FileUtil {
     public static List<Path> generateGlobFolderList(String glob, String rootPath) {
         PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:./" + glob);
         List<Path> list = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(Paths.get(rootPath))) {
-            list = walk.filter(pathMatcher::matches).filter(Files::isDirectory).collect(Collectors.toList());
+
+        try {
+            // 使用 walkFileTree 而不是 walk，因为它提供了更好的异常控制
+            Files.walkFileTree(Paths.get(rootPath), new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    // 我们只关心目录，所以跳过文件
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    try {
+                        if (pathMatcher.matches(dir)) {
+                            list.add(dir);
+                        }
+                        return FileVisitResult.CONTINUE;
+                    } catch (Exception e) {
+                        // 如果访问目录时出现异常，跳过并继续
+                        System.err.println("Warning: Skipping directory due to access issue: " + dir + " - " + e.getMessage());
+                        return FileVisitResult.CONTINUE;
+                    }
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                    // 当访问文件失败时（如权限不足），跳过并继续
+                    System.err.println("Warning: Failed to visit path: " + file + " - " + exc.getMessage());
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         } catch (IOException exception) {
-            return list;
+            // 记录错误但不抛出异常
+            System.err.println("Error generating glob folder list for glob: " + glob + " at root: " + rootPath);
+            System.err.println("Error message: " + exception.getMessage());
+            // 返回已找到的列表（可能为空）
+        } catch (Exception exception) {
+            // 捕获其他可能的异常
+            System.err.println("Unexpected error generating glob folder list for glob: " + glob + " at root: " + rootPath);
+            System.err.println("Error message: " + exception.getMessage());
+            // 返回已找到的列表（可能为空）
         }
+
         return list;
     }
 
