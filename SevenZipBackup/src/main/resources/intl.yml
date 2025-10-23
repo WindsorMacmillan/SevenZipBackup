@@ -32,7 +32,7 @@ backup-local-complete: "本地备份已创建成功。"
 backup-local-file-complete: '备份目录 <location>" 成功'
 backup-local-file-start: '正在为 "<location>"创建备份'
 backup-local-prune-complete: "本地超量的旧备份已清理"
-backup-local-prune-start: "正在清理超量的就备份"
+backup-local-prune-start: "正在清理超量的旧备份"
 backup-local-start: "开始备份....."
 ftp-method-pubic-key-invalid: "公钥存放路径对 FTP 备份方式无效，留空"
 ftp-method-passphrase-invalid: "密码对 FTP 备份方式无效，留空"

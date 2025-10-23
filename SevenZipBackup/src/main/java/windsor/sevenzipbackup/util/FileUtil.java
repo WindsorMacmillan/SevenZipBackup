@@ -15,15 +15,15 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-// 新增的Apache Commons Compress导入
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration;
 import org.tukaani.xz.LZMA2Options;
+import net.openhft.affinity.Affinity;
+import net.openhft.affinity.AffinityLock;
+import net.openhft.affinity.AffinityStrategies;
 import windsor.sevenzipbackup.config.configSections.BackupStorage;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -46,9 +46,6 @@ public class FileUtil {
     private static ExecutorService createCompressionExecutor() {
         Config config = ConfigParser.getConfig();
         int threadCount = config.backupStorage.threadCounts;
-        if (threadCount <= 0) {
-            threadCount = Runtime.getRuntime().availableProcessors();
-        }
         CompressionThreadFactory threadFactory = new CompressionThreadFactory(
                 config.backupStorage.threadPriority,
                 BackupStorage.CPUAffinity
@@ -62,7 +59,7 @@ public class FileUtil {
      */
     private static ExecutorService createFileListExecutor() {
         Config config = ConfigParser.getConfig();
-        int threadCount = Math.max(2, Runtime.getRuntime().availableProcessors() / 2);
+        int threadCount = config.backupStorage.threadCounts;
         ThreadFactory threadFactory = new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(0);
             private final String namePrefix = "filelist-worker-";
@@ -95,7 +92,14 @@ public class FileUtil {
 
         @Override
         public Thread newThread(Runnable r) {
-            Thread t = new Thread(r, namePrefix + threadNumber.getAndIncrement());
+            Thread t = new Thread(() -> {
+                // 在线程开始时设置CPU亲和性
+                if (threadAffinity != null && !threadAffinity.isEmpty()) {
+                    setThreadAffinity(threadAffinity);
+                }
+                // 执行原始任务
+                r.run();
+            }, namePrefix + threadNumber.getAndIncrement());
 
             // 设置线程优先级
             if (threadPriority >= Thread.MIN_PRIORITY && threadPriority <= Thread.MAX_PRIORITY) {
@@ -104,48 +108,40 @@ public class FileUtil {
                 t.setPriority(Thread.NORM_PRIORITY);
             }
 
-            // 设置线程亲和性（CPU绑定）
-            if (threadAffinity != null && !threadAffinity.isEmpty()) {
-                setThreadAffinity(t, threadAffinity);
-            }
-
             t.setDaemon(false);
             return t;
         }
 
         /**
-         * 设置线程CPU亲和性
+         * 使用OpenHFT Affinity库设置线程CPU亲和性（跨平台）
          */
-        private void setThreadAffinity(Thread thread, List<Integer> affinityCores) {
-            // 在Linux系统上使用taskset命令设置CPU亲和性
-            if (System.getProperty("os.name").toLowerCase().contains("linux")) {
-                try {
-                    int threadIndex = threadNumber.get() - 1; // 当前线程索引
-                    int coreIndex = threadIndex % affinityCores.size();
-                    int targetCore = affinityCores.get(coreIndex);
+        private void setThreadAffinity(List<Integer> affinityCores) {
+            try {
+                int threadIndex = threadNumber.get() - 1; // 当前线程索引
+                int coreIndex = threadIndex % affinityCores.size();
+                int targetCore = affinityCores.get(coreIndex);
 
-                    // 获取线程的PID（在Linux中线程ID就是PID）
-                    long tid = thread.getId();
+                // 使用OpenHFT Affinity库设置CPU亲和性
+                AffinityLock lock = AffinityLock.acquireLock(targetCore);
 
-                    // 使用taskset命令设置CPU亲和性
-                    ProcessBuilder pb = new ProcessBuilder(
-                            "taskset", "-pc", String.valueOf(targetCore), String.valueOf(tid)
-                    );
-                    Process process = pb.start();
-                    int exitCode = process.waitFor();
-
-                    if (exitCode == 0) {
-                        System.out.println("Successfully set thread " + thread.getName() +
-                                " to CPU core " + targetCore);
-                    } else {
-                        System.err.println("Failed to set thread affinity for " + thread.getName() +
-                                ", exit code: " + exitCode);
+                if (lock != null && lock.isAllocated()) {
+                    if(ConfigParser.getConfig().advanced.debugEnabled) {
+                        System.out.println("Successfully set thread " + Thread.currentThread().getName() +
+                                " to CPU core " + targetCore + " using OpenHFT Affinity");
                     }
-                } catch (Exception e) {
-                    System.err.println("Error setting thread affinity: " + e.getMessage());
+
+                    // 在JVM关闭时释放锁
+                    Runtime.getRuntime().addShutdownHook(new Thread(lock::release));
+                } else {
+                    System.err.println("Failed to acquire affinity lock for CPU core " + targetCore +
+                            " for thread " + Thread.currentThread().getName());
                 }
-            } else {
-                System.err.println("Thread affinity is only supported on Linux systems");
+
+            } catch (Exception e) {
+                System.err.println("Error setting thread affinity using OpenHFT: " + e.getMessage());
+                if(ConfigParser.getConfig().advanced.debugEnabled) {
+                    e.printStackTrace();
+                }
             }
         }
     }
