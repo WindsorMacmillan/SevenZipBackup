@@ -4,28 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Fixed threads CPU affinity">
-      <change afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/BackupProgressCallback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BossBarConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/Advanced.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/Advanced.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupMethods.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/CommandTabComplete.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/CommandTabComplete.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/DebugCollector.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/commandHandler/CommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/commandHandler/CommandHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/listeners/PlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/listeners/PlayerListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/ChunkedFileInputStream.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/ChunkedFileInputStream.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" afterDir="false" />
-    </list>
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="New feature: Show bossbar progress" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -276,7 +255,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761231118574</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="New feature: Show bossbar progress">
+      <option name="closed" value="true" />
+      <created>1765471727810</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1765471727810</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -321,6 +308,7 @@
     <MESSAGE value="Fixed config migrating exceptions" />
     <MESSAGE value="Fixed exceptions handle" />
     <MESSAGE value="Fixed threads CPU affinity" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed threads CPU affinity" />
+    <MESSAGE value="New feature: Show bossbar progress" />
+    <option name="LAST_COMMIT_MESSAGE" value="New feature: Show bossbar progress" />
   </component>
 </project>
