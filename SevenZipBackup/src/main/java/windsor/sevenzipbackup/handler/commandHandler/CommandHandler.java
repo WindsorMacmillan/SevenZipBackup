@@ -26,7 +26,7 @@ public class CommandHandler implements CommandExecutor {
      * @param args any arguments that followed the command
      * @return whether the command was handled
      */
-    public boolean onCommand(CommandSender sender, @NotNull Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!command.getName().equalsIgnoreCase(CHAT_KEYWORD)) {
             return false;
         } 

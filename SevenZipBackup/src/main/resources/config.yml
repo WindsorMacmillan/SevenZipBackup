@@ -6,7 +6,7 @@
 #   ╚═╝  ╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     
 # SevenZipBackup   -   by Windsor Macmillan
 
-version: 3
+version: 4
 
 # Backup interval in minutes.
 # 备份间隔，单位分钟
@@ -48,6 +48,14 @@ cpu-cores-list: "-1"
 backups-require-players: true
 #在备份时暂时挂起世界保存
 disable-saving-during-backups: true
+#备份时显示boos栏进度条
+show-bossbar-progress: true
+#You can choose from 7 colors: BLUE, GREEN, PINK, PURPLE, RED, WHITE and YELLOW
+#可用7钟颜色：BLUE, GREEN, PINK, PURPLE, RED, WHITE and YELLOW
+bossbar-color: "BLUE"
+#You can choose from 5 styles: SOLID, SEGMENT_6, SEGMENT_10, SEGMENT_12, SEGMENT_20
+#可用风格：SOLID, SEGMENT_6, SEGMENT_10, SEGMENT_12, SEGMENT_20
+bossbar-style: "SOLID"
 
 
 scheduled-backups: false

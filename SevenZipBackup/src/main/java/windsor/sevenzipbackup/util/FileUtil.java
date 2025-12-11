@@ -2,6 +2,7 @@ package windsor.sevenzipbackup.util;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import windsor.sevenzipbackup.BackupProgressCallback;
 import windsor.sevenzipbackup.UploadThread.UploadLogger;
 import windsor.sevenzipbackup.config.ConfigParser;
 import windsor.sevenzipbackup.config.ConfigParser.Config;
@@ -21,9 +22,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration;
 import org.tukaani.xz.LZMA2Options;
-import net.openhft.affinity.Affinity;
 import net.openhft.affinity.AffinityLock;
-import net.openhft.affinity.AffinityStrategies;
 import windsor.sevenzipbackup.config.configSections.BackupStorage;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -62,10 +61,10 @@ public class FileUtil {
         int threadCount = config.backupStorage.threadCounts;
         ThreadFactory threadFactory = new ThreadFactory() {
             private final AtomicInteger threadNumber = new AtomicInteger(0);
-            private final String namePrefix = "filelist-worker-";
 
             @Override
-            public Thread newThread(Runnable r) {
+            public Thread newThread(@NotNull Runnable r) {
+                String namePrefix = "filelist-worker-";
                 Thread t = new Thread(r, namePrefix + threadNumber.getAndIncrement());
                 t.setDaemon(true);
                 t.setPriority(Thread.NORM_PRIORITY);
@@ -83,7 +82,6 @@ public class FileUtil {
         private final int threadPriority;
         private final List<Integer> threadAffinity;  // 改为 List<Integer>
         private final AtomicInteger threadNumber = new AtomicInteger(0);
-        private final String namePrefix = "compression-worker-";
 
         public CompressionThreadFactory(int threadPriority, List<Integer> threadAffinity) {
             this.threadPriority = threadPriority;
@@ -91,7 +89,8 @@ public class FileUtil {
         }
 
         @Override
-        public Thread newThread(Runnable r) {
+        public Thread newThread(@NotNull Runnable r) {
+            String namePrefix = "compression-worker-";
             Thread t = new Thread(() -> {
                 // 在线程开始时设置CPU亲和性
                 if (threadAffinity != null && !threadAffinity.isEmpty()) {
@@ -117,11 +116,10 @@ public class FileUtil {
          */
         private void setThreadAffinity(List<Integer> affinityCores) {
             try {
-                int threadIndex = threadNumber.get() - 1; // 当前线程索引
+                int threadIndex = threadNumber.get() - 1;
                 int coreIndex = threadIndex % affinityCores.size();
                 int targetCore = affinityCores.get(coreIndex);
 
-                // 使用OpenHFT Affinity库设置CPU亲和性
                 AffinityLock lock = AffinityLock.acquireLock(targetCore);
 
                 if (lock != null && lock.isAllocated()) {
@@ -130,7 +128,6 @@ public class FileUtil {
                                 " to CPU core " + targetCore + " using OpenHFT Affinity");
                     }
 
-                    // 在JVM关闭时释放锁
                     Runtime.getRuntime().addShutdownHook(new Thread(lock::release));
                 } else {
                     System.err.println("Failed to acquire affinity lock for CPU core " + targetCore +
@@ -205,7 +202,7 @@ public class FileUtil {
     /**
      * 异步创建备份压缩文件（包含异步文件列表生成）
      */
-    public CompletableFuture<Void> makeBackupAsync(@NotNull String location, LocalDateTimeFormatter formatter, List<String> blacklistGlobs) {
+    public CompletableFuture<Void> makeBackupAsync(@NotNull String location, LocalDateTimeFormatter formatter, List<String> blacklistGlobs, BackupProgressCallback callback) {
         return CompletableFuture.supplyAsync(() -> {
             // 第一阶段：准备工作和文件列表生成
             try {
@@ -280,6 +277,12 @@ public class FileUtil {
                                     intl("local-backup-in-backup-folder"),
                                     "files-in-backup-folder-count", String.valueOf(filesInBackupFolder));
                         }
+
+                        // 通知文件列表准备完成，传递文件数量
+                        if (callback != null) {
+                            callback.onFileListPrepared(fileList.getList().size());
+                        }
+
                         return new BackupData(preparation, fileList);
                     }, compressionExecutor);
         }, fileListExecutor).thenComposeAsync(backupData -> {
@@ -289,7 +292,19 @@ public class FileUtil {
             }
             return ZipItAsync(backupData.preparation.location,
                     backupData.preparation.outputPath,
-                    backupData.fileList);
+                    backupData.fileList,
+                    callback)
+                    .whenComplete((result, throwable) -> {
+                        if (throwable == null) {
+                            if (callback != null) {
+                                callback.onBackupComplete();
+                            }
+                        } else {
+                            if (callback != null) {
+                                callback.onError(throwable);
+                            }
+                        }
+                    });
         }, compressionExecutor);
     }
 
@@ -398,8 +413,9 @@ public class FileUtil {
      * @param inputFolderPath the path of the zip file to create
      * @param outputFilePath  the path of the folder to put it in
      * @param fileList        file to include in the zip
+     * @param callback        进度回调
      */
-    private void ZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList) throws Exception {
+    private void ZipIt(String inputFolderPath, String outputFilePath, BackupFileList fileList, BackupProgressCallback callback) throws Exception {
         if(ConfigParser.getConfig().advanced.debugEnabled)
             logger.info("正在为"+inputFolderPath+"创建压缩文件");
         byte[] buffer = new byte[65536]; // 64KB 缓冲区
@@ -412,8 +428,10 @@ public class FileUtil {
             if(ConfigParser.getConfig().advanced.debugEnabled){
                 logger.info("设定压缩级别成功");
             }
-            for (String file : fileList.getList()) {
 
+            List<String> files = fileList.getList();
+            for (int i = 0; i < files.size(); i++) {
+                String file = files.get(i);
                 String entryName = file.replace(File.separator, "/");
                 String filePath = new File(inputFolderPath, file).getPath();
 
@@ -453,6 +471,11 @@ public class FileUtil {
                     }
                 }
                 sevenZOutput.closeArchiveEntry();
+
+                // 每个文件处理完成后调用回调
+                if (callback != null) {
+                    callback.onFileProcessed();
+                }
             }
         }
     }
@@ -460,10 +483,10 @@ public class FileUtil {
     /**
      * 异步创建7z压缩文件
      */
-    private CompletableFuture<Void> ZipItAsync(String inputFolderPath, String outputFilePath, BackupFileList fileList) {
+    private CompletableFuture<Void> ZipItAsync(String inputFolderPath, String outputFilePath, BackupFileList fileList, BackupProgressCallback callback) {
         return CompletableFuture.runAsync(() -> {
             try {
-                ZipIt(inputFolderPath, outputFilePath, fileList);
+                ZipIt(inputFolderPath, outputFilePath, fileList, callback);
             } catch (Exception e) {
                 if(ConfigParser.getConfig().advanced.debugEnabled){
                     logger.info("异步创建压缩文件错误："+inputFolderPath);
@@ -602,13 +625,13 @@ public class FileUtil {
             // 使用 walkFileTree 而不是 walk，因为它提供了更好的异常控制
             Files.walkFileTree(Paths.get(rootPath), new SimpleFileVisitor<Path>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) {
                     // 我们只关心目录，所以跳过文件
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                public @NotNull FileVisitResult preVisitDirectory(@NotNull Path dir, @NotNull BasicFileAttributes attrs) {
                     try {
                         if (pathMatcher.matches(dir)) {
                             list.add(dir);
@@ -622,7 +645,7 @@ public class FileUtil {
                 }
 
                 @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                public @NotNull FileVisitResult visitFileFailed(@NotNull Path file, @NotNull IOException exc) {
                     // 当访问文件失败时（如权限不足），跳过并继续
                     System.err.println("Warning: Failed to visit path: " + file + " - " + exc.getMessage());
                     return FileVisitResult.CONTINUE;

@@ -61,10 +61,6 @@ public class ChunkedFileInputStream extends InputStream {
         return true;
     }
 
-    public int getCurrentChunk() {
-        return current_chunk;
-    }
-
     // Needs to be long, or you'll get trouble with files larger than 2G.
     public long getCurrentOffset() {
         return (long)current_chunk * (long)chunksize;

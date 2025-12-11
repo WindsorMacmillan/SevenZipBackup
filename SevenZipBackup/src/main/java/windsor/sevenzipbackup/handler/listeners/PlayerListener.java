@@ -28,6 +28,10 @@ public class PlayerListener implements Listener {
         if (!UploadThread.wasLastBackupSuccessful() && PermissionHandler.hasPerm(player, Permission.BACKUP)) {
             MessageUtil.Builder().mmText(Localization.intl("player-join-backup-failed")).to(player).toConsole(false).send();
         }
+        // 如果当前正在备份，将玩家添加到BossBar
+        if (UploadThread.isBackupInProgress()) {
+            UploadThread.addPlayerToBossBar(player);
+        }
     }
 
     public static boolean isAutoBackupsActive() {

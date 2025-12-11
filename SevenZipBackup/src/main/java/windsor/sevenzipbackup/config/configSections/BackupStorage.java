@@ -8,6 +8,7 @@ import windsor.sevenzipbackup.util.Logger;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -59,7 +60,7 @@ public class BackupStorage {
         long delay = config.getLong("delay");
         if (delay < 5 && delay != -1) {
             logger.log(intl("invalid-backup-delay"));
-            delay = defaultConfig.getLong("delay");
+            delay = Objects.requireNonNull(defaultConfig).getLong("delay");
         }
         int threadPriority = config.getInt("backup-thread-priority");
         if (threadPriority < Thread.MIN_PRIORITY) {
@@ -78,7 +79,7 @@ public class BackupStorage {
             threadCounts = Runtime.getRuntime().availableProcessors();
         }
         if(config.getBoolean("enable-specify-cpu-cores")){
-            String[] CPUAffinityString = config.getString("cpu-cores-list").split(",");
+            String[] CPUAffinityString = Objects.requireNonNull(config.getString("cpu-cores-list")).split(",");
             List<Integer> CPUAffinity = Arrays.stream(CPUAffinityString).map(Integer::parseInt).collect(Collectors.toList());
             if(CPUAffinity.size()==1 && CPUAffinity.get(0) ==-1){
                 CPUAffinity.remove(0);
@@ -96,12 +97,12 @@ public class BackupStorage {
         int keepCount = config.getInt("keep-count");
         if (keepCount < 1 && keepCount != -1) {
             logger.log(intl("keep-count-invalid"));
-            keepCount = defaultConfig.getInt("keep-count");
+            keepCount = Objects.requireNonNull(defaultConfig).getInt("keep-count");
         }
         int localKeepCount = config.getInt("local-keep-count");
         if (localKeepCount < -1) {
             logger.log(intl("local-keep-count-invalid"));
-            localKeepCount = defaultConfig.getInt("local-keep-count");
+            localKeepCount = Objects.requireNonNull(defaultConfig).getInt("local-keep-count");
         }
         int zipCompression = config.getInt("7z-compression-level");
         if (zipCompression < 0) {
@@ -114,7 +115,7 @@ public class BackupStorage {
         boolean backupsRequirePlayers = config.getBoolean("backups-require-players");
         boolean disableSavingDuringBackups = config.getBoolean("disable-saving-during-backups");
         String localDirectory = config.getString("local-save-directory");
-        if (localDirectory.startsWith("/")) {
+        if (Objects.requireNonNull(localDirectory).startsWith("/")) {
             logger.log(intl("local-save-directory-not-relative"));
             localDirectory = localDirectory.substring(1);
         }

@@ -1,5 +1,6 @@
 package windsor.sevenzipbackup.plugin;
 
+import windsor.sevenzipbackup.UploadThread;
 import windsor.sevenzipbackup.util.FileUtil;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import okhttp3.OkHttpClient;
@@ -24,6 +25,7 @@ import windsor.sevenzipbackup.util.MessageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -83,20 +85,18 @@ public class SevenZipBackup extends JavaPlugin {
             localizationConfig.reloadConfig();
         } catch (Exception e) {
             getLogger().severe("Load config.yml error: " + e.getMessage());
-            // 在配置错误时使用默认配置
-            //saveResource("config.yml", true); // 覆盖为默认配置
-            //saveResource("intl.yml", true); // 覆盖为默认本地化配置
             reloadConfig();
             localizationConfig.reloadConfig();
         }
         config = new ConfigParser(getConfig());
+        ConfigParser.setPluginInstance(this); // 设置插件实例到ConfigParser
         config.reload(configPlayers);
         MessageUtil.Builder()
                 .to(configPlayers)
                 .mmText(intl("config-loaded"))
                 .send();
-        getCommand(CommandHandler.CHAT_KEYWORD).setTabCompleter(new CommandTabComplete());
-        getCommand(CommandHandler.CHAT_KEYWORD).setExecutor(new CommandHandler());
+        Objects.requireNonNull(getCommand(CommandHandler.CHAT_KEYWORD)).setTabCompleter(new CommandTabComplete());
+        Objects.requireNonNull(getCommand(CommandHandler.CHAT_KEYWORD)).setExecutor(new CommandHandler());
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PlayerListener(), plugin);
         pm.registerEvents(new ChatInputListener(), plugin);
@@ -113,6 +113,7 @@ public class SevenZipBackup extends JavaPlugin {
     public void onDisable() {
         Scheduler.stopBackupThread();
         FileUtil.shutdown();
+        UploadThread.cleanupBossBar(); // 清理BossBar
         MessageUtil.Builder().mmText(intl("plugin-stop")).send();
     }
 

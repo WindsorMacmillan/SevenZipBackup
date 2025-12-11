@@ -4,6 +4,7 @@ import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -48,10 +49,10 @@ public class Advanced {
         boolean updateCheck = config.getBoolean("advanced.update-check");
         boolean suppressErrors = config.getBoolean("advanced.suppress-errors");
         boolean debugEnabled = config.getBoolean("advanced.debug");
-        Locale dateLanguage = new Locale(config.getString("advanced.date-language"));
+        Locale dateLanguage = new Locale(Objects.requireNonNull(config.getString("advanced.date-language")));
         ZoneId dateTimezone;
         try {
-            dateTimezone = ZoneId.of(config.getString("advanced.date-timezone"));
+            dateTimezone = ZoneId.of(Objects.requireNonNull(config.getString("advanced.date-timezone")));
         } catch(DateTimeException e) {
             logger.log(intl("date-format-invalid"));
             //Fallback to UTC

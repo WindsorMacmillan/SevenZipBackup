@@ -10,6 +10,7 @@ import windsor.sevenzipbackup.config.ConfigParser;
 import windsor.sevenzipbackup.util.Logger;
 
 import java.nio.file.InvalidPathException;
+import java.util.Objects;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
 
@@ -148,7 +149,7 @@ public class BackupMethods {
     @NotNull
     @Contract ("_, _ -> new")
     public static BackupMethods parse(@NotNull FileConfiguration config, Logger logger) {
-        String googleSharedDriveId = config.getString("googledrive.shared-drive-id").trim();
+        String googleSharedDriveId = Objects.requireNonNull(config.getString("googledrive.shared-drive-id")).trim();
         if (!Strings.isNullOrEmpty(googleSharedDriveId)) {
             logger.log(intl("shared-drive-deprecated"));
         }
@@ -190,7 +191,7 @@ public class BackupMethods {
         String publicKey = "";
         if (!Strings.isNullOrEmpty(config.getString("ftp.sftp-public-key")) && ftpEnabled) {
             try {
-                publicKey = ConfigParser.verifyPath(config.getString("ftp.sftp-public-key"));
+                publicKey = ConfigParser.verifyPath(Objects.requireNonNull(config.getString("ftp.sftp-public-key")));
             } catch (InvalidPathException e) {
                 logger.log(intl("ftp-method-pubic-key-invalid"));
             }
@@ -198,7 +199,7 @@ public class BackupMethods {
         String baseDir = "";
         if (!Strings.isNullOrEmpty(config.getString("ftp.base-dir")) && ftpEnabled) {
             try {
-                baseDir = ConfigParser.verifyPath(config.getString("ftp.base-dir"));
+                baseDir = ConfigParser.verifyPath(Objects.requireNonNull(config.getString("ftp.base-dir")));
             } catch (InvalidPathException e) {
                 logger.log(intl("ftp-method-passphrase-invalid"));
             }

@@ -18,7 +18,7 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering> <!-- this is the important part, it's what replaces, filters, all placeholders in the resources folder (such as ${project.version} in plugin.yml) -->
+                <filtering>true</filtering>
             </resource>
         </resources>
         <plugins>
@@ -125,10 +125,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.9-R0.1-SNAPSHOT</version>
-            <type>jar</type>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.21.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -159,7 +158,7 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.38.0</version>
+            <version>0.40.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.lookfirst</groupId>
@@ -184,7 +183,7 @@
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
-            <version>8.5.14</version>
+            <version>8.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>
@@ -196,6 +195,11 @@
             <artifactId>affinity</artifactId>
             <version>3.23.3</version>
         </dependency>
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.20.0</version>
+    </dependency>
     </dependencies>
 </project>
 

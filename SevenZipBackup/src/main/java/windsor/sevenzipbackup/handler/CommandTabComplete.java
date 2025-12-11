@@ -28,7 +28,7 @@ public class CommandTabComplete implements TabCompleter {
      * @return String list of possible tab completions
      */
     @Override
-    public List<String> onTabComplete(CommandSender player, @NotNull Command cmd, String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender player, @NotNull Command cmd, @NotNull String label, String[] args) {
         if ("7zbackup".equalsIgnoreCase(cmd.getName())) {
             if (args.length == 1) {
                 List<String> commandList = new ArrayList<>(10);
@@ -68,32 +68,36 @@ public class CommandTabComplete implements TabCompleter {
                 if (!hasPerm(player, Permission.BACKUP)) {
                     return Collections.emptyList();
                 }
-                List<String> commandList = new ArrayList<>(6);
-                BackupMethods methods = ConfigParser.getConfig().backupMethods;
-                if (methods.googleDrive.enabled) {
-                    commandList.add("googledrive");
-                }
-                if (methods.oneDrive.enabled) {
-                    commandList.add("onedrive");
-                }
-                if (methods.dropbox.enabled) {
-                    commandList.add("dropbox");
-                }
-                if (methods.webdav.enabled) {
-                    commandList.add("webdav");
-                }
-                if (methods.nextcloud.enabled) {
-                    commandList.add("nextcloud");
-                }
-                if (methods.s3.enabled) {
-                    commandList.add("s3");
-                }
-                if (methods.ftp.enabled) {
-                    commandList.add("ftp");
-                }
-                return commandList;
+                return getStrings();
             }
         }
         return Collections.emptyList();
+    }
+
+    private static @NotNull List<String> getStrings() {
+        List<String> commandList = new ArrayList<>(6);
+        BackupMethods methods = ConfigParser.getConfig().backupMethods;
+        if (methods.googleDrive.enabled) {
+            commandList.add("googledrive");
+        }
+        if (methods.oneDrive.enabled) {
+            commandList.add("onedrive");
+        }
+        if (methods.dropbox.enabled) {
+            commandList.add("dropbox");
+        }
+        if (methods.webdav.enabled) {
+            commandList.add("webdav");
+        }
+        if (methods.nextcloud.enabled) {
+            commandList.add("nextcloud");
+        }
+        if (methods.s3.enabled) {
+            commandList.add("s3");
+        }
+        if (methods.ftp.enabled) {
+            commandList.add("ftp");
+        }
+        return commandList;
     }
 }
