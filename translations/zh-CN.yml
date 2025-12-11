@@ -8,13 +8,13 @@ metrics-started: "Metrics 已启用"
 metrics-error: "Metrics 启动失败了"
 update-checker-started: "检查更新中..."
 update-checker-new-release: |-
-  SevenZipbackup <latest-version> 已经发布啦, 你目前正在使用 <current-version>
+  7ZBackup <latest-version> 已经发布啦, 你目前正在使用 <current-version>
   从这里下载更新: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/releases>GITHUB</click></gold>" 或者点击 <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> 来更新
 update-checker-unsupported-release: |-
   你正在运行一个不支持的版本!
   推荐的版本是 <latest-version>，而你正在运行 <current-version>。
   如果你最近才更新此插件，请忽略此信息
-update-checker-failed: "在尝试检查 SevenZipBackup 的更新时出现了问题"
+update-checker-failed: "在尝试检查 SevenZipBackup 的更新时出错"
 updater-start: "尝试下载 SevenZipBackup 最新版"
 updater-no-updates: "你正在使用最新版 SevenZipBackup！"
 updater-fetch-failed: "无法获取最新版 SevenZipBackup"
@@ -22,26 +22,35 @@ updater-update-failed: "插件更新失败，更多信息请查看控制台"
 updater-successful: "成功更新了插件! 重启您的服务器以生效。"
 config-loaded: "配置已加载！"
 config-reloaded: "配置已重置！"
-date-format-invalid: "日期格式时区无效，将使用UTC"
+date-format-invalid: "日期格式时区无效，使用 UTC"
 backup-list-glob-invalid: "世界无效，跳过备份策略 <entry>"
 backup-list-path-invalid: "路径无效，跳过备份策略 <entry>"
 backup-list-no-dest-specified: "没有指定路径或世界，跳过备份策略 <entry>"
 backup-list-format-invalid: "格式无效，跳过备份策略 <entry>"
 backup-list-blacklist-invalid: "备份策略 <entry> 中的黑名单无效，留空"
+backup-local-complete: "本地备份已创建成功。"
+backup-local-file-complete: '备份目录 <location>" 成功'
+backup-local-file-start: '正在为 "<location>"创建备份'
+backup-local-prune-complete: "本地超量的旧备份已清理"
+backup-local-prune-start: "正在清理超量的旧备份"
+backup-local-start: "开始备份....."
 ftp-method-pubic-key-invalid: "公钥存放路径对 FTP 备份方式无效，留空"
 ftp-method-passphrase-invalid: "密码对 FTP 备份方式无效，留空"
-backup-schedule-days-invalid: "天数表无效，不备份了！<entry>"
-backup-schedule-day-invalid: "星期几？没看懂，不备份了！\"<day>\""
-backup-schedule-day-empty: "没写星期几，不备份了！<entry>"
+backup-schedule-days-invalid: "Days list invalid, skipping schedule entry <entry>"
+backup-schedule-day-invalid: "Day of week invalid, skipping day of week \"<day>\""
+backup-schedule-day-empty: "Day of week list empty, skipping schedule entry <entry>"
 backup-schedule-time-invalid: "时间无效，跳过时间表策略 <entry>"
 backup-schedule-empty: "备份时间表为空，禁用基于时间的备份"
 invalid-backup-delay: "填入的备份延迟无效，使用默认值"
-thread-priority-too-low: "填入的线程优先级小于最小值，使用0"
-thread-priority-too-high: "填入的线程优先级超过最大值，使用10"
+thread-priority-too-low: "填入的线程优先级小于最小值，使用默认值"
+thread-priority-too-high: "填入的线程优先级超过最大值，使用默认值"
+thread-counts-too-low: "输入的线程数量小于1，使用默认值"
+thread-counts-too-high: "输入的线程数量超过可用核心数，使用默认值"
+cpu-affinity-error: "输入的处理器核心列表不正确，使用默认值"
 keep-count-invalid: "保留份数无效，使用默认值"
 local-keep-count-invalid: "本地保留份数无效，使用默认值"
-7z-compression-too-low: "填入的7z压缩等级小于最小值，使用0"
-7z-compression-too-high: "填入的7z压缩等级大于最大值，使用9"
+7z-compression-too-low: "填入的 zip 压缩等级小于最小值，使用默认值"
+7z-compression-too-high: "填入的 zip 压缩等级大于最大值，使用默认值"
 external-backup-type-invalid: "备份类型无效，跳过外部备份策略 <entry>"
 external-backup-host-port-invalid: "主机名/端口无效，跳过外部备份策略 <entry>"
 external-backup-user-pass-invalid: "用户名/密码无效，跳过外部备份策略 <entry>"
@@ -58,7 +67,7 @@ external-database-list-name-invalid: "名称无效，跳过外部备份数据库
 external-database-list-blacklist-invalid: "外部备份数据库策略 <entry-backup> 中的黑名单无效，留空"
 backups-scheduled: "计划在 <days> 的 <time> 进行一次备份"
 backups-interval-scheduled: "计划每隔 <delay> 分钟进行一次备份"
-no-perm: "权限呢，你要干嘛？"
+no-perm: "权限呢，没有权限你也敢这么做？"
 link-account-code: "要链接 <provider> 账户, 请前往 <gold><click:open_url:'<link-url>'><link-url></click></gold> 然后填入 <gold><click:copy_to_clipboard:'<link-code>'><link-code></click></gold>"
 link-provider-failed: "无法链接 <provider> 账户, 请再试试吧"
 link-provider-complete: "你的 <provider> 账户已链接！"
@@ -77,11 +86,11 @@ backup-empty-list: "备份列表是空的欸"
 backup-start: "正在创建备份，服务器可能会卡顿小段时间哦..."
 external-ftp-backup-start: "正在从 (S)FTP 服务器 (<socket-addr>) 下载文件以包括在备份列表中"
 external-ftp-backup-blacklisted: "未在 (S)FTP 服务器的备份列表中包括 <blacklisted-files>， 因为它们被 \"<glob-pattern>\" 列入黑名单"
-external-ftp-backup-failed: "未能在备份列表中包括来自 (S)FTP 服务器 (<socket-addr>) 的文件，请检查<gold>config.yml</gold> 中的服务器证书。"
+external-ftp-backup-failed: 未能在备份列表中包括来自 (S)FTP 服务器 (<socket-addr>) 的文件，请检查<gold>config.yml</gold> 中的服务器证书。
 external-ftp-backup-complete: "来自 (S)FTP 服务器 (<socket-addr>) 的文件已成功包括在备份列表中"
 external-mysql-backup-start: "从MySQL服务器 (<socket-addr>) 下载数据库以包括在备份列表中"
 external-mysql-backup-blacklisted: "在备份列表中没有包括表 \"<blacklist-entry>\"，因为它被列入了黑名单。"
-external-mysql-backup-failed: "未能在备份列表中包括来自MySQL服务器 (<socket-addr>) 的数据库，请检查<gold>config.yml</gold>中的服务器凭证。"
+external-mysql-backup-failed: 未能在备份列表中包括来自MySQL服务器 (<socket-addr>) 的数据库，请检查<gold>config.yml</gold>中的服务器凭证。
 external-mysql-backup-complete: "来自MySQL服务器(<socket-addr>) 的数据库被成功包括在备份列表中。"
 local-backup-date-format-invalid: |-
   无法解析备份 "<file-name>" 的日期格式，这可能是由于日期格式在 config.yml 中被更新。
@@ -97,10 +106,7 @@ backup-failed-absolute-path: |-
   创建备份失败，备份文件夹的路径需要使用绝对路径，而不是相对路径
   绝对路径可能会覆盖敏感文件，更多信息请参见文档。
   已跳过备份此位置
-backup-local-failed: |-
-  创建本地备份失败
-  即使 local-keep-count 被设置为零，该插件也需要临时创建一个本地备份。
-  已跳过备份此位置
+backup-local-failed: "创建本地备份失败，已跳过备份此位置"
 backup-method-uploading: "正在上传文件至 <upload-method>"
 backup-method-limit-reached: "在 <upload-method> 中的当前备份位置已有 <file-count> 个文件，超过了 <file-limit> 个的限制，删除中"
 backup-method-prune-failed: "删除超过限制的备份失败"
@@ -120,7 +126,7 @@ backup-method-not-auth-authenticator: |-
   请尝试重新链接您的账户，请点击 <gold><click:run_command:'<link-command>'><link-command></click></gold>。
 backup-method-complete: "已成功上传备份至 <gold><upload-method></gold>"
 backup-complete: "备份已完成"
-backup-disabled-inactivity: "由于你的服务器鬼服了而停用自动备份"
+backup-disabled-inactivity: "由于你的服务器太不活跃了而停用自动备份"
 backup-status-not-running: "没有备份正在运行呢"
 backup-status-compressing: "压缩 \"<set-name>\" 中, <set-count> 个中的第 <set-num> 个"
 backup-status-uploading: "上传 \"<set-name>\" 中, <set-count> 个中的第 <set-num> 个"
@@ -149,11 +155,12 @@ brief-backup-list: "SevenZipBackup 目前将备份 <list>。"
 brief-backup-list-empty: "什么都没有？！"
 brief-backup-list-external-backups: "一些外部备份"
 brief-backup-list-help: "想备份其他东西吗？参见： <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>"
-7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> ======|</gold>
+7zbackup-command-header: <gold>|====== <dark_red>SevenZipBackup</dark_red> <gold>|</gold> <yellow><click:open_url:http://github.com/JohnsonRan>JohnsonRan</click> 汉化</yellow> ======|</gold>
 7zbackup-docs-command: |-
   <header>
   需要帮助？ 下方了解更多！
   Wiki: <gold><click:open_url:https://github.com/WindsorMacmillan/SevenZipBackup/blob/main/README.md>GITHUB</click></gold>
+  Discord: <gold><click:open_url:http://bit.ly/3f4VuuT>http://bit.ly/3f4VuuT</click></gold>
 7zbackup-version-command: |-
   <header>
   插件版本: <gold><plugin-version></gold>
@@ -184,3 +191,31 @@ brief-backup-list-help: "想备份其他东西吗？参见： <gold><click:open_
   <gold><click:run_command:/7zbackup update>/7zbackup update</click></gold> - 如果有新的版本，则下载并更新此插件
 list-delimiter: ", "
 list-last-delimiter: " 和 "
+backup-file-upload-complete: '备份"<file-name>"上传完成'
+backup-file-upload-start: '开始上传备份"<file-name>"'
+backup-status-pruning: "正在清理超量旧备份"
+backup-status-starting: "备份当前处在启动阶段"
+backup-total-time: "备份完成，耗时<time>s"
+backup-upload-complete: "备份文件已上传"
+backup-upload-start: "正在上传备份文件..."
+local-backup-file-deleted: '已删除本地备份"<local-backup-name>"'
+local-backup-limit-not-reached: "当前备份数<backup-count>未达上限<backup-limit>，跳过清理"
+local-backup-no-limit: "本地备份限制设置为0，跳过清理"
+local-backup-pruning-complete: '位置"<location>"的本地备份清理完成'
+local-backup-pruning-start: '正在清理位置"<location>"的本地备份'
+local-save-directory-not-relative: "本地保存目录非相对路径，将转换为相对于服务器目录的路径"
+location-empty: "位置<location>为空，不清理了！"
+shared-drive-deprecated: |-
+  由于谷歌的新限制，我们无法在新账户链接中继续支持共享云端硬盘。
+  现有链接目前仍可继续使用此功能。
+shared-drive-error: |-
+  获取共享云端硬盘时发生错误。
+  请确保shared-drive-id填写正确，或移除该设置以继续使用个人云端硬盘。
+upload-error-check: "正在检查上传错误..."
+upload-no-errors: "未发现上传错误"
+zip-compression-too-high: "输入的压缩级别超过最大值，已自动采用最高级别"
+zip-compression-too-low: "输入的压缩级别低于最小值，已自动采用最低级别"
+bossbar-create: "&b服务器备份中，可能卡顿"
+bossbar-preparing: "&b服务器备份，收集文件中"
+bossbar-progress: "&b服务器备份中：<progress>% (<num>/<total>文件)"
+config-load-error: "配置文件读取失败！请检查config.yml"
