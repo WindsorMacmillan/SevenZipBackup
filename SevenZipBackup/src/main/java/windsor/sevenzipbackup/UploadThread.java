@@ -338,12 +338,18 @@ public class UploadThread implements Runnable {
      * 清理BossBar（插件禁用时调用）
      */
     public static void cleanupBossBar() {
-        Bukkit.getScheduler().runTask(ConfigParser.getPluginInstance(), () -> {
-            if (backupBossBar != null) {
+        if (backupBossBar != null) {
+            org.bukkit.plugin.Plugin plugin = ConfigParser.getPluginInstance();
+            if (!plugin.isEnabled() || Bukkit.isPrimaryThread()) {
                 backupBossBar.removeAll();
                 backupBossBar = null;
+            } else {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    backupBossBar.removeAll();
+                    backupBossBar = null;
+                });
             }
-        });
+        }
     }
 
     /**

@@ -572,7 +572,16 @@ public class FileUtil {
      * @param fileList        the list of files to add the specified file or folder to.
      */
     private void generateFileList(@NotNull File file, String inputFolderPath, BackupFileList fileList) throws Exception {
-        BasicFileAttributes fileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        if (!file.exists()) {
+            return;
+        }
+        BasicFileAttributes fileAttributes;
+        try {
+            fileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        } catch (java.nio.file.NoSuchFileException e) {
+            return;
+        }
+
         if (fileAttributes.isRegularFile()) {
             // Verify not backing up previous backups
             if (file.getCanonicalPath().startsWith(new File(ConfigParser.getConfig().backupStorage.localDirectory).getCanonicalPath())) {
@@ -588,8 +597,11 @@ public class FileUtil {
             }
             fileList.appendToList(relativePath.toString());
         } else if (fileAttributes.isDirectory()) {
-            for (String filename : Objects.requireNonNull(file.list())) {
-                generateFileList(new File(file, filename), inputFolderPath, fileList);
+            String[] children = file.list();
+            if (children != null) {
+                for (String filename : children) {
+                    generateFileList(new File(file, filename), inputFolderPath, fileList);
+                }
             }
         } else {
             logger.info(intl("local-backup-failed-to-include"),
