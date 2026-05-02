@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SevenZipBackup/SevenZipBackup.iml" filepath="$PROJECT_DIR$/SevenZipBackup/SevenZipBackup.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SevenZipBackup/SevenZipBackup-Parent.SevenZipBackup.main.iml" filepath="$PROJECT_DIR$/.idea/modules/SevenZipBackup/SevenZipBackup-Parent.SevenZipBackup.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SevenZipBackup/SevenZipBackup-Parent.SevenZipBackup.test.iml" filepath="$PROJECT_DIR$/.idea/modules/SevenZipBackup/SevenZipBackup-Parent.SevenZipBackup.test.iml" />
     </modules>
   </component>
 </project>

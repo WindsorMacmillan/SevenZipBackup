@@ -1,0 +1,19 @@
+
+allprojects {
+    group = 'Windsor'
+    
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    // Apply common configurations to all subprojects
+    afterEvaluate {
+        if (it.plugins.hasPlugin('java')) {
+            tasks.withType(JavaCompile).configureEach {
+                options.encoding = 'UTF-8'
+            }
+        }
+    }
+}
