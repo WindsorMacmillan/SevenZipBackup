@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SevenZipBackup.iml" filepath="$PROJECT_DIR$/.idea/SevenZipBackup.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SevenZipBackup/SevenZipBackup.iml" filepath="$PROJECT_DIR$/SevenZipBackup/SevenZipBackup.iml" />
     </modules>
   </component>
 </project>

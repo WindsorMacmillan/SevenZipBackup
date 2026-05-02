@@ -35,6 +35,20 @@ Take care of your server data and be well!
 - 根据设定上限自动删除最旧的备份文件.  
 - 完全自定义的备份间隔和备份计划.  
 
+## Building from Source 从源码构建
+
+### Using Gradle (Recommended)
+
+```bash
+# Navigate to project directory
+cd SevenZipBackup
+
+# Build the plugin (includes all dependencies)
+./gradlew shadowJar
+
+# The built JAR will be in build/libs/SevenZipBackup.jar
+```
+
 ## Requirements 使用需求
 ### General Requirements 环境要求
 

@@ -1,0 +1,116 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.5'
+}
+
+group = 'Windsor'
+version = '0.0.5'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+    
+    // Spigot/Bukkit repository
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+    
+    // CodeMC repository (for bStats and other libraries)
+    maven {
+        name = 'codemc-repo'
+        url = 'https://repo.codemc.org/repository/maven-public'
+    }
+}
+
+dependencies {
+    // Provided by server
+    compileOnly 'org.spigotmc:spigot-api:1.21.10-R0.1-SNAPSHOT'
+    
+    // Google Drive API
+    implementation 'com.google.apis:google-api-services-drive:v2-rev393-1.25.0'
+    
+    // bStats metrics
+    implementation 'org.bstats:bstats-bukkit:3.1.0'
+    
+    // OkHttp for HTTP requests
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    
+    // JSON library
+    implementation 'org.json:json:20240303'
+    
+    // FTP support
+    implementation 'commons-net:commons-net:3.11.1'
+    
+    // SFTP support (SSHJ)
+    implementation 'com.hierynomus:sshj:0.40.0'
+    
+    // WebDAV support (Sardine)
+    implementation 'com.github.lookfirst:sardine:5.12'
+    
+    // Adventure platform for modern text components
+    implementation 'net.kyori:adventure-platform-bukkit:4.3.4'
+    implementation 'net.kyori:adventure-text-minimessage:4.17.0'
+    implementation 'net.kyori:adventure-text-serializer-legacy:4.17.0'
+    
+    // S3/MinIO support
+    implementation 'io.minio:minio:8.6.0'
+    
+    // XZ compression
+    implementation 'org.tukaani:xz:1.9'
+    
+    // CPU affinity
+    implementation 'net.openhft:affinity:3.23.3'
+    
+    // Apache Commons Lang3
+    implementation 'org.apache.commons:commons-lang3:3.20.0'
+}
+
+shadowJar {
+    archiveFileName = "${project.name}.jar"
+    
+    // Relocate dependencies to avoid conflicts
+    relocate 'org.bstats', 'windsor.SevenZipBackup.lib'
+    relocate 'com.google.apis', 'windsor.SevenZipBackup.lib'
+    relocate 'okhttp3', 'windsor.SevenZipBackup.lib'
+    relocate 'okio', 'windsor.SevenZipBackup.lib'
+    relocate 'kotlin', 'windsor.SevenZipBackup.lib'
+    relocate 'org.json', 'windsor.SevenZipBackup.lib'
+    relocate 'org.apache.commons', 'windsor.SevenZipBackup.lib'
+    relocate 'org.apache.commons.net', 'windsor.SevenZipBackup.lib'
+    relocate 'com.hierynomus', 'windsor.SevenZipBackup.lib'
+    relocate 'com.github.lookfirst', 'windsor.SevenZipBackup.lib'
+    relocate 'net.kyori', 'windsor.SevenZipBackup.lib'
+    relocate 'com.fasterxml', 'windsor.SevenZipBackup.lib'
+    
+    // Exclude META-INF to avoid signature issues
+    exclude 'META-INF/**'
+    
+    minimize()
+}
+
+processResources {
+    filteringCharset = 'UTF-8'
+    
+    // Replace variables in plugin.yml
+    filesMatching('plugin.yml') {
+        expand(
+            'project': [
+                'version': project.version
+            ]
+        )
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// Build task alias
+tasks.register('buildPlugin') {
+    dependsOn shadowJar
+}
