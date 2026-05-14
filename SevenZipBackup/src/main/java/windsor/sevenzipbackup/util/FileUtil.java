@@ -24,7 +24,6 @@ import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration;
 import org.tukaani.xz.LZMA2Options;
 import net.openhft.affinity.AffinityLock;
 import windsor.sevenzipbackup.config.configSections.BackupStorage;
-
 import static windsor.sevenzipbackup.config.Localization.intl;
 
 public class FileUtil {

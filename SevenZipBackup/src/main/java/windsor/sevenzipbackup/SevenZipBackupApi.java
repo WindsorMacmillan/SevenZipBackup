@@ -16,26 +16,22 @@ public class SevenZipBackupApi {
     private static final ArrayList<Callable<Boolean>> beforeBackupStartCallables = new ArrayList<>();
     private static final ArrayList<Runnable> onBackupDoneRunnables = new ArrayList<>();
     private static final ArrayList<Runnable> onBackupErrorRunnables = new ArrayList<>();
+    private static final ExecutorService BACKUP_START_POOL = Executors.newFixedThreadPool(4);
 
     /**
      * Gets whether to proceed with the backup by executing the {@code Callable}s specified by API users.
      * @return whether to proceed
      */
     static boolean shouldStartBackup() {
-        ExecutorService executor = Executors.newFixedThreadPool(10);
         ArrayList<Future<Boolean>> futures = new ArrayList<>();
-
         for (Callable<Boolean> callable : beforeBackupStartCallables) {
-            futures.add(executor.submit(callable));
+            futures.add(BACKUP_START_POOL.submit(callable));
         }
-
-        boolean shouldStartBackup = true;
-
-        for (Future<Boolean> future : futures){
+        boolean shouldStart = true;
+        for (Future<Boolean> future : futures) {
             try {
-
                 if (Boolean.FALSE.equals(future.get(10, TimeUnit.SECONDS))) {
-                    shouldStartBackup = false;
+                    shouldStart = false;
                     MessageUtil.Builder().text("Not starting a backup due to a beforeBackupStart() Callable returning false").toConsole(true).send();
 
                     break;
@@ -46,7 +42,7 @@ public class SevenZipBackupApi {
             }
         }
 
-        return shouldStartBackup;
+        return shouldStart;
     }
 
     /**
@@ -64,6 +60,22 @@ public class SevenZipBackupApi {
     static void backupError() {
         for (Runnable runnable : onBackupErrorRunnables) {
             new Thread(runnable).start();
+        }
+    }
+
+
+    /**
+     * 关闭 API 内部线程池，请在插件卸载时调用
+     */
+    public static void shutdown() {
+        BACKUP_START_POOL.shutdown();
+        try {
+            if (!BACKUP_START_POOL.awaitTermination(5, TimeUnit.SECONDS)) {
+                BACKUP_START_POOL.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            BACKUP_START_POOL.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 

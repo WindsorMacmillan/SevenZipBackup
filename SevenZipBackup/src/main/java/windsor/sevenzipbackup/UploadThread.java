@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -68,64 +69,28 @@ public class UploadThread implements Runnable {
     private final FileUtil fileUtil;
     private final Timer totalTimer;
 
-    // BossBar相关字段 - 修改为文件级别的进度跟踪
     private static BossBar backupBossBar;
-    private static final AtomicInteger totalFilesToBackup = new AtomicInteger(0); // 总文件数（所有备份任务累加）
-    private static final AtomicInteger totalFilesProcessed = new AtomicInteger(0); // 已处理的文件数
+    private static final AtomicInteger totalFilesToBackup = new AtomicInteger(0);
+    private static final AtomicInteger totalFilesProcessed = new AtomicInteger(0);
+    private static int totalBackupTasks = 0;
+    private static final AtomicInteger completedBackupTasks = new AtomicInteger(0);
 
-    // 备份任务计数
-    private static int totalBackupTasks = 0; // 总备份任务数（文件夹数量）
-    private static final AtomicInteger completedBackupTasks = new AtomicInteger(0); // 已完成备份任务数
-
-
-    /**
-     * The current status of the backup thread
-     */
     enum BackupStatus {
-        /**
-         * The backup thread isn't running
-         */
         NOT_RUNNING,
-
-        /**
-         * The backup thread is compressing the files to be backed up.
-         */
         COMPRESSING,
-
         STARTING,
         PRUNING,
-        /**
-         * The backup thread is uploading the files
-         */
         UPLOADING
     }
 
-    /**
-     * List of {@code Uploaders} to upload the backups to
-     */
     private ArrayList<Uploader> uploaders;
-    /**
-     * List of locations to be pruned that were successfully backed up.
-     */
     private final Map<String, LocalDateTimeFormatter> locationsToBePruned = new HashMap<>(10);
-
-    /**
-     * The list of items to be backed up by the backup thread.
-     */
     private List<BackupListEntry> backupList;
-
-    /**
-     * The {@code BackupStatus} of the backup thread
-     */
     private static BackupStatus backupStatus = BackupStatus.NOT_RUNNING;
-
     private static LocalDateTime nextIntervalBackupTime;
     private static boolean lastBackupSuccessful = true;
-
-    /**
-     * The backup currently being backed up by the
-     */
     private static int backupBackingUp = 0;
+
 
     public abstract static class UploadLogger implements Logger {
         public void broadcast(String input, String... placeholders) {
@@ -134,11 +99,8 @@ public class UploadThread implements Runnable {
                     .all()
                     .send();
         }
-
         public abstract void log(String input, String... placeholders);
-
         public void initiatorError(String input, String... placeholders) {}
-
         public void info(String input, String... placeholders) {
             MessageUtil.Builder()
                     .mmText(input, placeholders)
@@ -196,34 +158,23 @@ public class UploadThread implements Runnable {
      */
     private void createBossBar() {
         Config config = ConfigParser.getConfig();
+        if (!config.bossBarConfig.showBossBarProgress) return;
 
-        // 检查是否启用BossBar
-        if (!config.bossBarConfig.showBossBarProgress) {
-            return;
-        }
+        Scheduler.runSyncTask(() -> {
+            if (backupBossBar != null) backupBossBar.removeAll();
 
-        Bukkit.getScheduler().runTask(ConfigParser.getPluginInstance(), () -> {
-            if (backupBossBar != null) {
-                backupBossBar.removeAll();
-            }
-
-            // 使用翻译文本
             String title = intl("bossbar-create");
-
             backupBossBar = Bukkit.createBossBar(
                     ChatColor.translateAlternateColorCodes('&', title),
                     config.bossBarConfig.bossBarColor,
                     config.bossBarConfig.bossBarStyle
             );
             backupBossBar.setProgress(0.0);
-
-            // 为所有在线玩家显示BossBar
             for (Player player : Bukkit.getOnlinePlayers()) {
                 backupBossBar.addPlayer(player);
             }
-
-            logger.info("开始备份，共 " + totalBackupTasks + " 个文件夹需要备份");
         });
+        logger.info("开始备份，共 " + totalBackupTasks + " 个文件夹需要备份");
     }
 
     /**
@@ -231,38 +182,25 @@ public class UploadThread implements Runnable {
      */
     private void updateBossBarProgress() {
         Config config = ConfigParser.getConfig();
+        if (!config.bossBarConfig.showBossBarProgress) return;
 
-        // 检查是否启用BossBar
-        if (!config.bossBarConfig.showBossBarProgress) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTask(ConfigParser.getPluginInstance(), () -> {
+        Scheduler.runSyncTask(() -> {
             if (backupBossBar == null) return;
-
             int totalFiles = totalFilesToBackup.get();
             int processedFiles = totalFilesProcessed.get();
-
-            // 计算进度
             double progress;
             String title;
-
             if (totalFiles <= 0) {
                 int completedTasks = completedBackupTasks.get();
                 progress = totalBackupTasks > 0 ? (double) completedTasks / totalBackupTasks : 0.0;
                 title = intl("bossbar-preparing");
-
             } else {
-                // 有文件统计，显示文件进度
                 progress = (double) processedFiles / totalFiles;
-
-                // 使用格式化字符串替换占位符
                 title = intl("bossbar-progress")
                         .replace("<progress>", String.format("%.2f", progress * 100))
                         .replace("<num>", String.valueOf(processedFiles))
                         .replace("<total>", String.valueOf(totalFiles));
             }
-
             backupBossBar.setProgress(Math.min(progress, 1.0));
             backupBossBar.setTitle(ChatColor.translateAlternateColorCodes('&', title));
         });
@@ -274,14 +212,10 @@ public class UploadThread implements Runnable {
      */
     public static void addPlayerToBossBar(Player player) {
         Config config = ConfigParser.getConfig();
+        if (!config.bossBarConfig.showBossBarProgress) return;
 
-        // 检查是否启用BossBar
-        if (!config.bossBarConfig.showBossBarProgress) {
-            return;
-        }
-
-        Bukkit.getScheduler().runTask(ConfigParser.getPluginInstance(), () -> {
-            if (backupBossBar != null && player != null && player.isOnline()) {
+        Scheduler.runPlayerTask(player, () -> {
+            if (backupBossBar != null && player.isOnline()) {
                 backupBossBar.addPlayer(player);
             }
         });
@@ -291,13 +225,11 @@ public class UploadThread implements Runnable {
      * 移除BossBar
      */
     private void removeBossBar() {
-        Bukkit.getScheduler().runTask(ConfigParser.getPluginInstance(), () -> {
+        Scheduler.runSyncTask(() -> {
             if (backupBossBar != null) {
                 backupBossBar.removeAll();
                 backupBossBar = null;
             }
-
-            // 重置计数器
             totalFilesToBackup.set(0);
             totalFilesProcessed.set(0);
             totalBackupTasks = 0;
@@ -338,7 +270,7 @@ public class UploadThread implements Runnable {
      * 清理BossBar（插件禁用时调用）
      */
     public static void cleanupBossBar() {
-        Bukkit.getScheduler().runTask(ConfigParser.getPluginInstance(), () -> {
+        Scheduler.runSyncTask(() -> {
             if (backupBossBar != null) {
                 backupBossBar.removeAll();
                 backupBossBar = null;
@@ -368,11 +300,14 @@ public class UploadThread implements Runnable {
                 e.printStackTrace();
             }
             lastBackupSuccessful = false;
-            throw e;
+            try {
+                throw e;
+            } catch (ExecutionException | InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         } finally {
             backupStatus = BackupStatus.NOT_RUNNING;
             // 无论成功与否，都移除BossBar
-            removeBossBar();
             if (lastBackupSuccessful) {
                 SevenZipBackupApi.backupDone();
             } else {
@@ -384,7 +319,7 @@ public class UploadThread implements Runnable {
     /**
      * actual backup logic
      */
-    void run_internal() {
+    void run_internal() throws ExecutionException, InterruptedException {
         Config config = ConfigParser.getConfig();
         totalTimer.start();
         backupStatus = BackupStatus.STARTING;
@@ -578,6 +513,7 @@ public class UploadThread implements Runnable {
         uploadBackupFiles(uploaders);
         FileUtil.deleteFolder(new File("external-backups"));
         logger.info(intl("backup-upload-complete"));
+        removeBossBar();
         pruneLocalBackups();
     }
 

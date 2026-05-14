@@ -1,5 +1,6 @@
 package windsor.sevenzipbackup.plugin;
 
+import windsor.sevenzipbackup.SevenZipBackupApi;
 import windsor.sevenzipbackup.UploadThread;
 import windsor.sevenzipbackup.util.FileUtil;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -114,6 +115,7 @@ public class SevenZipBackup extends JavaPlugin {
         Scheduler.stopBackupThread();
         FileUtil.shutdown();
         UploadThread.cleanupBossBar(); // 清理BossBar
+        SevenZipBackupApi.shutdown();
         MessageUtil.Builder().mmText(intl("plugin-stop")).send();
     }
 

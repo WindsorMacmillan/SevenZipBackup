@@ -8,10 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import windsor.sevenzipbackup.config.ConfigParser;
 import windsor.sevenzipbackup.plugin.SevenZipBackup;
+import windsor.sevenzipbackup.plugin.Scheduler;
 import windsor.sevenzipbackup.util.Logger;
 import windsor.sevenzipbackup.util.MessageUtil;
 import windsor.sevenzipbackup.util.NetUtil;
-import windsor.sevenzipbackup.util.SchedulerUtil;
 import windsor.sevenzipbackup.util.Version;
 
 import java.io.IOException;
@@ -21,9 +21,6 @@ import static windsor.sevenzipbackup.config.Localization.intl;
 
 public class UpdateChecker {
 
-    /**
-     * How often to check for updates, in seconds
-     */
     private static final long UPDATE_CHECK_INTERVAL = 60 * 60 * 4;
 
     private static Version currentVersion;
@@ -36,34 +33,33 @@ public class UpdateChecker {
         SevenZipBackup plugin = SevenZipBackup.getInstance();
         UpdateChecker checker = new UpdateChecker();
         if (ConfigParser.getConfig().advanced.updateCheckEnabled) {
-            plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            // 修改点：使用 Scheduler 的统一异步任务方法，兼容 Paper 和 Folia
+            Scheduler.runAsyncRepeatingTask(() -> {
                 Logger logger = (input, placeholders) -> MessageUtil.Builder().mmText(input, placeholders).send();
                 try {
                     if (!hasSentStartMessage) {
                         logger.log(intl("update-checker-started"));
                         hasSentStartMessage = true;
                     }
-                    //get versions
                     currentVersion = checker.getCurrent();
                     latestVersion = checker.getLatest();
-                    //check if the current version is outdated
                     if (latestVersion.isAfter(currentVersion)) {
                         logger.log(
-                            intl("update-checker-new-release"),
-                            "latest-version", latestVersion.toString(),
-                            "current-version", currentVersion.toString());
+                                intl("update-checker-new-release"),
+                                "latest-version", latestVersion.toString(),
+                                "current-version", currentVersion.toString());
                     } else if (currentVersion.isAfter(latestVersion)) {
                         logger.log(
-                            intl("update-checker-unsupported-release"),
-                            "latest-version", latestVersion.toString(),
-                            "current-version", currentVersion.toString());
+                                intl("update-checker-unsupported-release"),
+                                "latest-version", latestVersion.toString(),
+                                "current-version", currentVersion.toString());
                     }
                 } catch (Exception e) {
                     NetUtil.catchException(e, "api.github.com", logger);
                     logger.log(intl("update-checker-failed"));
                     MessageUtil.sendConsoleException(e);
                 }
-            }, 0, SchedulerUtil.sToTicks(UPDATE_CHECK_INTERVAL));
+            }, 0, windsor.sevenzipbackup.util.SchedulerUtil.sToTicks(UPDATE_CHECK_INTERVAL));
         }
     }
 

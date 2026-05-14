@@ -1,5 +1,6 @@
 package windsor.sevenzipbackup.handler.commandHandler;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -120,8 +121,9 @@ public class CommandHandler implements CommandExecutor {
                     break;
                 }
                 MessageUtil.Builder().mmText(intl("backup-forced")).to(sender).send();
-                Runnable uploadThread = new UploadThread(sender);
-                new Thread(uploadThread).start();
+                Bukkit.getAsyncScheduler().runNow(SevenZipBackup.getInstance(), scheduledTask -> {
+                    new UploadThread(sender).run(); // 仍在新线程中执行，但由调度器托管
+                });
                 break;
             case "test":
                 if (!PermissionHandler.hasPerm(sender, Permission.BACKUP)) {
