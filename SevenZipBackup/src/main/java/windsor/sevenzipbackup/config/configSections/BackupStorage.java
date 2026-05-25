@@ -6,18 +6,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import windsor.sevenzipbackup.util.Logger;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
 
 public class BackupStorage {
     public final long delay;
-    public final int threadPriority;
     public final int threadCounts;
-    public static List<Integer> CPUAffinity;
     public final int keepCount;
     public final int localKeepCount;
     public final int zipCompression;
@@ -28,9 +23,7 @@ public class BackupStorage {
 
     public BackupStorage(
             long delay,
-            int threadPriority,
             int threadCounts,
-            List<Integer> CPUAffinity,
             int keepCount,
             int localKeepCount,
             int zipCompression,
@@ -39,11 +32,8 @@ public class BackupStorage {
             String localDirectory,
             String remoteDirectory
     ) {
-
         this.delay = delay;
-        this.threadPriority = threadPriority;
         this.threadCounts = threadCounts;
-        BackupStorage.CPUAffinity = CPUAffinity;
         this.keepCount = keepCount;
         this.localKeepCount = localKeepCount;
         this.zipCompression = zipCompression;
@@ -54,7 +44,7 @@ public class BackupStorage {
     }
 
     @NotNull
-    @Contract ("_, _ -> new")
+    @Contract("_, _ -> new")
     public static BackupStorage parse(@NotNull FileConfiguration config, Logger logger) {
         Configuration defaultConfig = config.getDefaults();
         long delay = config.getLong("delay");
@@ -62,37 +52,11 @@ public class BackupStorage {
             logger.log(intl("invalid-backup-delay"));
             delay = Objects.requireNonNull(defaultConfig).getLong("delay");
         }
-        int threadPriority = config.getInt("backup-thread-priority");
-        if (threadPriority < Thread.MIN_PRIORITY) {
-            logger.log(intl("thread-priority-too-low"));
-            threadPriority = Thread.MIN_PRIORITY;
-        } else if (threadPriority > Thread.MAX_PRIORITY) {
-            logger.log(intl("thread-priority-too-high"));
-            threadPriority = Thread.MAX_PRIORITY;
-        }
-        int threadCounts = config.getInt("backup-thread-counts");
+        // 读取并发数，默认 1，最小 1
+        int threadCounts = config.getInt("backup-thread-counts", 1);
         if (threadCounts < 1) {
             logger.log(intl("thread-counts-too-low"));
-            threadCounts = Runtime.getRuntime().availableProcessors();
-        } else if (threadCounts > Runtime.getRuntime().availableProcessors()) {
-            logger.log(intl("thread-counts-too-high"));
-            threadCounts = Runtime.getRuntime().availableProcessors();
-        }
-        if(config.getBoolean("enable-specify-cpu-cores")){
-            String[] CPUAffinityString = Objects.requireNonNull(config.getString("cpu-cores-list")).split(",");
-            List<Integer> CPUAffinity = Arrays.stream(CPUAffinityString).map(Integer::parseInt).collect(Collectors.toList());
-            if(CPUAffinity.size()==1 && CPUAffinity.get(0) ==-1){
-                CPUAffinity.remove(0);
-                for(int i=0;i<threadCounts;i++)CPUAffinity.add(Runtime.getRuntime().availableProcessors()-threadCounts+i);
-            }
-            else for(int i:CPUAffinity){
-                if (i < 1 || i >= Runtime.getRuntime().availableProcessors()) {
-                    logger.log(intl("cpu-affinity-error"));
-                    threadCounts = Runtime.getRuntime().availableProcessors();
-                    break;
-                }
-            }
-            logger.log("CPU："+CPUAffinity.stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]")));
+            threadCounts = 1;
         }
         int keepCount = config.getInt("keep-count");
         if (keepCount < 1 && keepCount != -1) {
@@ -112,6 +76,7 @@ public class BackupStorage {
             logger.log(intl("7z-compression-too-high"));
             zipCompression = 9;
         }
+
         boolean backupsRequirePlayers = config.getBoolean("backups-require-players");
         boolean disableSavingDuringBackups = config.getBoolean("disable-saving-during-backups");
         String localDirectory = config.getString("local-save-directory");
@@ -120,6 +85,7 @@ public class BackupStorage {
             localDirectory = localDirectory.substring(1);
         }
         String remoteDirectory = config.getString("remote-save-directory");
-        return new BackupStorage(delay, threadPriority, threadCounts, CPUAffinity, keepCount, localKeepCount, zipCompression, backupsRequirePlayers, disableSavingDuringBackups, localDirectory, remoteDirectory);
+        return new BackupStorage(delay, threadCounts, keepCount, localKeepCount, zipCompression,
+                backupsRequirePlayers, disableSavingDuringBackups, localDirectory, remoteDirectory);
     }
 }

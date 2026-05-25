@@ -16,11 +16,6 @@ delay: 60
 keep-count: -1
 local-keep-count: -1
 
-# The priority of the backup thread [1-10]. Lower value cause less server lag. Increase this value if backup takes too long.
-# WARNING: High value may significantly increase server lag, typically accounting for 10-30 ms tick time.
-# 备份线程的优先级[1-10]，更低值会减少服务器卡顿影响，若备份用时过长请酌情增加
-# 警告：过高的值可能会显著增加服务器mspt，实测中影响能达到10~30。
-backup-thread-priority: 5
 # Compress level for 7zip archive [0-9]. 0 refers to super-fast. 9 refers to extreme-compression. Increasing this value can create smaller backup.
 # Based on actual testing, we STRONGLY RECOMMEND level 5 or lower.
 # WARNING: Beyond this value, compression rate would NOT improve significantly, while time and memory consumption increase exponentially.
@@ -33,16 +28,6 @@ backup-thread-priority: 5
 # 压缩线程数量。每个线程可以并行地创建备份文件。
 # 默认值为4。此值基于你需要创建备份的文件夹数量。(0表示与CPU核心数保持一致)
 backup-thread-counts: 4
-# This determines whether threads are assigned to specified CPU cores.
-# 此项决定是否启用线程绑定到指定CPU核心
-enable-specify-cpu-cores: true
-# Specify CPU cores list to bind backup threads. (Separated by comma, -1 means automatic, will bind last several CPU cores)
-# We suggest you to specify CPU cores to non-main-thread cores to avoid impacting performance of the server.
-# 绑定压缩线程到特定CPU核心列表（逗号分隔，-1表示自动，会绑定到最后几个CPU核心）
-# 建议绑定到非主线程的CPU核心以免影响服务器性能
-# cpu-cores-list: "0,1,2,3"
-# cpu-cores-list: "12,13,14,15"
-cpu-cores-list: "-1"
 
 #只在有玩家在线时启用备份
 backups-require-players: true
@@ -122,7 +107,7 @@ messages:
   send-in-chat: true
   # prefix: "&6[&f7&8z&bBackup&6] "
   prefix: "&6[&f7&8z&b备份&6] "
-  default-color: "&3"
+  default-color: "&9"
 
 advanced:
   metrics: true

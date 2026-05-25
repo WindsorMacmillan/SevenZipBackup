@@ -2,6 +2,7 @@ package windsor.sevenzipbackup;
 
 import com.google.api.client.util.Strings;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,6 +34,10 @@ import windsor.sevenzipbackup.util.Logger;
 import windsor.sevenzipbackup.util.MessageUtil;
 import windsor.sevenzipbackup.util.ServerUtil;
 import windsor.sevenzipbackup.util.Timer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import windsor.sevenzipbackup.util.FileUtil.BackupFileList;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -55,8 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -74,6 +78,27 @@ public class UploadThread implements Runnable {
     private static final AtomicInteger totalFilesProcessed = new AtomicInteger(0);
     private static int totalBackupTasks = 0;
     private static final AtomicInteger completedBackupTasks = new AtomicInteger(0);
+    private static final ConcurrentHashMap<String, TaskProgress> taskProgressMap = new ConcurrentHashMap<>();
+
+    private static class TaskProgress {
+        volatile int total;
+        final AtomicInteger processed;
+        TaskProgress(int total) {
+            this.total = total;
+            this.processed = new AtomicInteger(0);
+        }
+        void setTotal(int newTotal) {
+            this.total = newTotal;
+        }
+    }
+
+    private static void recalcGlobalTotal() {
+        int sum = 0;
+        for (TaskProgress tp : taskProgressMap.values()) {
+            sum += tp.total;
+        }
+        totalFilesToBackup.set(sum);
+    }
 
     enum BackupStatus {
         NOT_RUNNING,
@@ -108,9 +133,6 @@ public class UploadThread implements Runnable {
         }
     }
 
-    /**
-     * Creates an instance of the {@code UploadThread} object
-     */
     public UploadThread() {
         logger = new UploadLogger() {
             @Override
@@ -125,10 +147,6 @@ public class UploadThread implements Runnable {
         totalTimer = new Timer();
     }
 
-    /**
-     * Creates an instance of the {@code UploadThread} object
-     * @param initiator the player who initiated the backup
-     */
     public UploadThread(CommandSender initiator) {
         this.initiator = initiator;
         logger = new UploadLogger() {
@@ -153,9 +171,6 @@ public class UploadThread implements Runnable {
         totalTimer = new Timer();
     }
 
-    /**
-     * 创建BossBar
-     */
     private void createBossBar() {
         Config config = ConfigParser.getConfig();
         if (!config.bossBarConfig.showBossBarProgress) return;
@@ -164,6 +179,8 @@ public class UploadThread implements Runnable {
             if (backupBossBar != null) backupBossBar.removeAll();
 
             String title = intl("bossbar-create");
+            title = applyBossBarColor(title, config);
+
             backupBossBar = Bukkit.createBossBar(
                     ChatColor.translateAlternateColorCodes('&', title),
                     config.bossBarConfig.bossBarColor,
@@ -177,10 +194,7 @@ public class UploadThread implements Runnable {
         logger.info("开始备份，共 " + totalBackupTasks + " 个文件夹需要备份");
     }
 
-    /**
-     * 更新BossBar进度 - 基于文件级别
-     */
-    private void updateBossBarProgress() {
+    public static void updateBossBarProgress() {
         Config config = ConfigParser.getConfig();
         if (!config.bossBarConfig.showBossBarProgress) return;
 
@@ -201,15 +215,39 @@ public class UploadThread implements Runnable {
                         .replace("<num>", String.valueOf(processedFiles))
                         .replace("<total>", String.valueOf(totalFiles));
             }
+            // 应用 bossbar 颜色到标题
+            title = applyBossBarColor(title, config);
+
             backupBossBar.setProgress(Math.min(progress, 1.0));
             backupBossBar.setTitle(ChatColor.translateAlternateColorCodes('&', title));
         });
     }
 
     /**
-     * 将玩家添加到BossBar（如果当前正在备份）
-     * @param player 要添加的玩家
+     * 根据配置中的 bossbar-color 转换为 ChatColor 并添加到文本开头
      */
+    private static String applyBossBarColor(String text, Config config) {
+        BarColor barColor = config.bossBarConfig.bossBarColor;
+        ChatColor chatColor;
+        try {
+            chatColor = ChatColor.valueOf(barColor.name());
+        } catch (IllegalArgumentException e) {
+            chatColor = ChatColor.BLUE;
+        }
+        return chatColor + text;
+    }
+
+    /**
+     * 重新计算全局已处理文件数（遍历所有任务求和）
+     */
+    private static void recalcGlobalProcessed() {
+        int sum = 0;
+        for (TaskProgress tp : taskProgressMap.values()) {
+            sum += tp.processed.get();
+        }
+        totalFilesProcessed.set(sum);
+    }
+
     public static void addPlayerToBossBar(Player player) {
         Config config = ConfigParser.getConfig();
         if (!config.bossBarConfig.showBossBarProgress) return;
@@ -221,9 +259,6 @@ public class UploadThread implements Runnable {
         });
     }
 
-    /**
-     * 移除BossBar
-     */
     private void removeBossBar() {
         Scheduler.runSyncTask(() -> {
             if (backupBossBar != null) {
@@ -234,53 +269,32 @@ public class UploadThread implements Runnable {
             totalFilesProcessed.set(0);
             totalBackupTasks = 0;
             completedBackupTasks.set(0);
+            taskProgressMap.clear();
         });
     }
 
-    /**
-     * 检查是否正在备份
-     * @return 如果正在备份返回true
-     */
     public static boolean isBackupInProgress() {
         return backupBossBar != null;
     }
 
-    /**
-     * 增加总文件数（当一个新的备份任务完成文件列表准备时调用）
-     */
     public static void addFilesToTotal(int fileCount) {
         totalFilesToBackup.addAndGet(fileCount);
     }
 
-    /**
-     * 增加已处理文件数（每处理完一个文件时调用）
-     */
-    public static void incrementProcessedFiles() {
-        totalFilesProcessed.incrementAndGet();
-    }
-
-    /**
-     * 增加已完成备份任务数
-     */
     public static void incrementCompletedTasks() {
         completedBackupTasks.incrementAndGet();
     }
 
-    /**
-     * 清理BossBar（插件禁用时调用）
-     */
     public static void cleanupBossBar() {
         Scheduler.runSyncTask(() -> {
             if (backupBossBar != null) {
                 backupBossBar.removeAll();
                 backupBossBar = null;
             }
+            taskProgressMap.clear();
         });
     }
 
-    /**
-     * Starts a backup
-     */
     @Override
     public void run() {
         if (initiator != null && backupStatus != BackupStatus.NOT_RUNNING) {
@@ -296,18 +310,12 @@ public class UploadThread implements Runnable {
             run_internal();
         } catch (Exception e) {
             if(ConfigParser.getConfig().advanced.debugEnabled){
-                logger.info("无法运行备份任务：");
+                logger.info("备份任务异常：");
                 e.printStackTrace();
             }
             lastBackupSuccessful = false;
-            try {
-                throw e;
-            } catch (ExecutionException | InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
         } finally {
             backupStatus = BackupStatus.NOT_RUNNING;
-            // 无论成功与否，都移除BossBar
             if (lastBackupSuccessful) {
                 SevenZipBackupApi.backupDone();
             } else {
@@ -316,9 +324,6 @@ public class UploadThread implements Runnable {
         }
     }
 
-    /**
-     * actual backup logic
-     */
     void run_internal() throws ExecutionException, InterruptedException {
         Config config = ConfigParser.getConfig();
         totalTimer.start();
@@ -329,10 +334,6 @@ public class UploadThread implements Runnable {
         if (initiator == null) {
             updateNextIntervalBackupTime();
         }
-        if(ConfigParser.getConfig().advanced.debugEnabled){
-            logger.info("为备份任务设定线程优先级");
-        }
-        Thread.currentThread().setPriority(config.backupStorage.threadPriority);
         if (!SevenZipBackupApi.shouldStartBackup()) {
             return;
         }
@@ -351,7 +352,6 @@ public class UploadThread implements Runnable {
         }
         logger.broadcast(intl("backup-start"));
 
-        // 处理外部备份
         for (ExternalBackupSource externalBackup : externalBackupList) {
             if (externalBackup instanceof ExternalFTPSource) {
                 makeExternalFileBackup((ExternalFTPSource) externalBackup);
@@ -365,7 +365,6 @@ public class UploadThread implements Runnable {
         backupBackingUp = 0;
         ServerUtil.setAutoSave(false);
 
-        // 计算总备份任务数（需要备份的文件夹数量）
         totalBackupTasks = 0;
         for (BackupListEntry set : backupList) {
             if (set.create) {
@@ -373,19 +372,15 @@ public class UploadThread implements Runnable {
             }
         }
 
-        // 重置计数器
         totalFilesToBackup.set(0);
         totalFilesProcessed.set(0);
         completedBackupTasks.set(0);
 
-        // 在开始异步压缩前创建BossBar
         if (totalBackupTasks > 0) {
             createBossBar();
-            // 初始更新一次进度条
             updateBossBarProgress();
         }
 
-        // 异步压缩所有备份文件夹
         try {
             asyncCompressAllBackups();
         } catch (Exception e) {
@@ -404,7 +399,6 @@ public class UploadThread implements Runnable {
 
         if (!errorOccurred) {
             logger.info(intl("backup-local-complete"));
-            // 继续后续的上传流程...
             continueWithUploadProcess();
         }
         totalTimer.end();
@@ -423,92 +417,165 @@ public class UploadThread implements Runnable {
         logger.log(intl("backup-local-prune-complete"));
     }
 
-    /**
-     * 异步并发压缩所有备份文件夹
-     */
     private void asyncCompressAllBackups() throws Exception {
-        List<CompletableFuture<Void>> compressionFutures = new ArrayList<>();
-        // 为每个备份项创建异步任务
+        int maxParallel = ConfigParser.getConfig().backupStorage.threadCounts;
+        if (maxParallel < 1) maxParallel = 1;
+
+        // 预扫描，收集任务并获得初始文件数，同时建立进度条
+        List<CompressTask> tasks = new ArrayList<>();
+        int initialTotal = 0;
+        taskProgressMap.clear();
+
         for (BackupListEntry set : backupList) {
             for (Path folder : set.location.getPaths()) {
-                if(ConfigParser.getConfig().advanced.debugEnabled){
-                    logger.info("为备份项创建异步任务："+ folder.toString());
-                }
-                if (set.create) {
-                    CompletableFuture<Void> future = createBackupAsync(folder.toString(), set.formatter, Arrays.asList(set.blacklist));
-                    compressionFutures.add(future);
-                }
+                if (!set.create) continue;
+                String location = folder.toString();
+                LocalDateTimeFormatter formatter = set.formatter;
+                List<String> blacklist = Arrays.asList(set.blacklist);
+                String outputPath = fileUtil.generateOutputPath(location, formatter);
+
+                // 预扫描，带回调以便显示日志，但不更新bossbar（避免闪烁）
+                BackupFileList fileList = fileUtil.prepareFileList(location, blacklist,
+                        new BackupProgressCallback() {
+                            @Override public void onFileListPrepared(int fileCount) {
+                                logger.info("备份位置 " + location + " 发现 " + fileCount + " 个文件需要备份");
+                            }
+                            @Override public void onFileProcessed() {}
+                            @Override public void onBackupComplete() {}
+                            @Override public void onError(Throwable throwable) {}
+                        });
+                int fileCount = fileList.getList().size();
+                tasks.add(new CompressTask(location, outputPath, blacklist, formatter));
+                taskProgressMap.put(location, new TaskProgress(fileCount));
+                initialTotal += fileCount;
             }
         }
 
-        if (compressionFutures.isEmpty()) {
-            return;
+        if (tasks.isEmpty()) return;
+
+        totalFilesToBackup.set(initialTotal);
+        totalFilesProcessed.set(0);
+        createBossBar();
+        updateBossBarProgress();
+
+        // 按并发度提交任务
+        ExecutorService executor = Executors.newFixedThreadPool(maxParallel);
+        List<Future<Void>> futures = new ArrayList<>();
+        try {
+            for (CompressTask task : tasks) {
+                Future<Void> future = executor.submit(() -> {
+                    // 重新扫描实际文件列表，修正数量
+                    BackupFileList actualFileList;
+                    try {
+                        actualFileList = fileUtil.prepareFileList(task.location, task.blacklist);
+                    } catch (Exception e) {
+                        // 如果扫描失败，记录错误并跳过
+                        logger.info("重新扫描文件列表失败：" + task.location);
+                        MessageUtil.sendConsoleException(e);
+                        // 标记任务完成（文件数为0）
+                        TaskProgress tp = taskProgressMap.get(task.location);
+                        if (tp != null) {
+                            tp.setTotal(0);
+                            tp.processed.set(0);
+                            recalcGlobalTotal();
+                            recalcGlobalProcessed();
+                        }
+                        incrementCompletedTasks();
+                        updateBossBarProgress();
+                        return null;
+                    }
+
+                    // 更新总量
+                    TaskProgress tp = taskProgressMap.get(task.location);
+                    if (tp != null) {
+                        int oldTotal = tp.total;
+                        int newTotal = actualFileList.getList().size();
+                        tp.setTotal(newTotal);
+                        // 如果新总数更小，已处理数需要同步裁剪
+                        if (tp.processed.get() > newTotal) {
+                            tp.processed.set(newTotal);
+                        }
+                        recalcGlobalTotal();
+                        recalcGlobalProcessed();
+                        if (oldTotal != newTotal) {
+                            logger.info("备份位置 " + task.location + " 文件数变更为 " + newTotal);
+                        }
+                    }
+
+                    // 开始压缩
+                    try {
+                        fileUtil.compressBackup(task.location, task.outputPath, actualFileList,
+                                new BackupProgressCallback() {
+                                    @Override public void onFileListPrepared(int fileCount) {}
+                                    @Override public void onFileProcessed() {}
+                                    @Override public void onProgress(int processedFiles, int totalFiles) {
+                                        TaskProgress t = taskProgressMap.get(task.location);
+                                        if (t != null) {
+                                            t.processed.set(processedFiles);
+                                            recalcGlobalProcessed();
+                                            updateBossBarProgress();
+                                        }
+                                    }
+                                    @Override public void onBackupComplete() {
+                                        TaskProgress t = taskProgressMap.get(task.location);
+                                        if (t != null) {
+                                            t.processed.set(t.total);
+                                            recalcGlobalProcessed();
+                                        }
+                                        incrementCompletedTasks();
+                                        updateBossBarProgress();
+                                        locationsToBePruned.put(task.location, task.formatter);
+                                        logger.info(intl("backup-local-file-complete"), "location", task.location);
+                                    }
+                                    @Override public void onError(Throwable throwable) {
+                                        TaskProgress t = taskProgressMap.get(task.location);
+                                        if (t != null) {
+                                            t.processed.set(t.total);
+                                            recalcGlobalProcessed();
+                                        }
+                                        incrementCompletedTasks();
+                                        updateBossBarProgress();
+                                        logger.info(intl("backup-local-file-failed"), "location", task.location);
+                                        MessageUtil.sendConsoleException((Exception) throwable);
+                                    }
+                                });
+                    } catch (Exception e) {
+                        throw new CompletionException(e);
+                    }
+                    return null;
+                });
+                futures.add(future);
+            }
+
+            if (ConfigParser.getConfig().advanced.debugEnabled) {
+                logger.info("等待所有压缩任务完成（最大并行 " + maxParallel + "）...");
+            }
+            for (Future<Void> f : futures) f.get();
+        } finally {
+            executor.shutdown();
         }
-
-        if(ConfigParser.getConfig().advanced.debugEnabled){
-            logger.info("等待所有压缩任务完成...");
-        }
-
-        // 创建所有任务完成后的回调
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(
-                compressionFutures.toArray(new CompletableFuture[0])
-        );
-
-        // 设置超时时间（例如2小时）
-        allFutures.get(2, java.util.concurrent.TimeUnit.HOURS);
     }
 
-    /**
-     * 异步创建备份文件
-     */
-    private CompletableFuture<Void> createBackupAsync(String location, LocalDateTimeFormatter formatter, List<String> blackList) {
-        return fileUtil.makeBackupAsync(location, formatter, blackList, new BackupProgressCallback() {
-            @Override
-            public void onFileListPrepared(int fileCount) {
-                // 累加文件总数
-                addFilesToTotal(fileCount);
-                updateBossBarProgress();
-                logger.info("备份位置 " + location + " 发现 " + fileCount + " 个文件需要备份");
-            }
+    private static class CompressTask {
+        final String location;
+        final String outputPath;
+        final List<String> blacklist;
+        final LocalDateTimeFormatter formatter;
 
-            @Override
-            public void onFileProcessed() {
-                // 增加已处理文件数并更新进度
-                incrementProcessedFiles();
-                updateBossBarProgress();
-            }
-
-            @Override
-            public void onBackupComplete() {
-                // 增加已完成任务数
-                incrementCompletedTasks();
-                updateBossBarProgress();
-                locationsToBePruned.put(location, formatter);
-                logger.info(intl("backup-local-file-complete"), "location", location);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                // 即使出错，也计入已完成任务
-                incrementCompletedTasks();
-                updateBossBarProgress();
-                logger.info(intl("backup-local-file-failed"), "location", location);
-                MessageUtil.sendConsoleException((Exception) throwable);
-            }
-        });
+        CompressTask(String location, String outputPath, List<String> blacklist, LocalDateTimeFormatter formatter) {
+            this.location = location;
+            this.outputPath = outputPath;
+            this.blacklist = blacklist;
+            this.formatter = formatter;
+        }
     }
-    /**
-     * 继续执行上传流程
-     */
+
     private void continueWithUploadProcess() {
         logger.info(intl("backup-upload-start"));
         backupStatus = BackupStatus.UPLOADING;
         backupBackingUp = 0;
 
-        // 原有的上传逻辑
         uploaders = new ArrayList<>(5);
-        // ... 初始化 uploaders 的代码
-
         ensureMethodsAuthenticated();
         uploadBackupFiles(uploaders);
         FileUtil.deleteFolder(new File("external-backups"));
@@ -555,12 +622,6 @@ public class UploadThread implements Runnable {
         }
     }
 
-    /**
-     * Uploads the most recent backup file to the specified uploaders
-     * @param location path to the folder
-     * @param formatter save format configuration
-     * @param uploaders services to upload to
-     */
     private void uploadFile(String location, LocalDateTimeFormatter formatter, List<Uploader> uploaders) {
         try {
             if (FileUtil.isBaseFolder(location)) {
@@ -594,10 +655,6 @@ public class UploadThread implements Runnable {
         }
     }
 
-    /**
-     * Downloads files from an FTP server and stores them within the external-backups temporary folder, using the specified external backup settings.
-     * @param externalBackup the external backup settings
-     */
     private void makeExternalFileBackup(ExternalFTPSource externalBackup) {
         logger.info(
                 intl("external-ftp-backup-start"),
@@ -681,10 +738,6 @@ public class UploadThread implements Runnable {
         }
     }
 
-    /**
-     * Downloads databases from a MySQL server and stores them within the external-backups temporary folder, using the specified external backup settings.
-     * @param externalBackup the external backup settings
-     */
     private void makeExternalDatabaseBackup(ExternalMySQLSource externalBackup) {
         logger.info(
                 intl("external-mysql-backup-start"),
@@ -726,10 +779,6 @@ public class UploadThread implements Runnable {
         }
     }
 
-    /**
-     * Gets the current status of the backup thread
-     * @return the status of the backup thread as a {@code String}
-     */
     public static String getBackupStatus() {
         Config config = ConfigParser.getConfig();
         String message;
@@ -760,10 +809,6 @@ public class UploadThread implements Runnable {
                 .replace("<set-count>", String.valueOf(backupList.length));
     }
 
-    /**
-     * Gets the date/time of the next automatic backup, if enabled.
-     * @return the time and/or date of the next automatic backup formatted using the messages in the {@code config.yml}
-     */
     public static String getNextAutoBackup() {
         Config config = ConfigParser.getConfig();
         if (config.backupScheduling.enabled) {
@@ -781,9 +826,6 @@ public class UploadThread implements Runnable {
         }
     }
 
-    /**
-     * Sets the time of the next interval-based backup to the current time + the configured interval.
-     */
     public static void updateNextIntervalBackupTime() {
         nextIntervalBackupTime = LocalDateTime.now().plusMinutes(ConfigParser.getConfig().backupStorage.delay);
     }
@@ -792,25 +834,14 @@ public class UploadThread implements Runnable {
         return lastBackupSuccessful;
     }
 
-    /**
-     * Gets the socket address (ipaddress/hostname:port) of an external backup server based on the specified settings.
-     * @param externalBackup the external backup settings
-     * @return the socket address
-     */
     @NotNull
-    @Contract (pure = true)
+    @Contract(pure = true)
     private static String getSocketAddress(@NotNull ExternalBackupSource externalBackup) {
         return externalBackup.hostname + "-" + externalBackup.port;
     }
 
-    /**
-     * Generates the name for a folder based on the specified external backup settings to be stored within the external-backups temporary folder.
-     * @param externalBackup the external backup settings
-     * @return the folder name
-     */
     @Nullable
     private static String getTempFolderName(ExternalBackupSource externalBackup) {
-        // There is probably a better way to do this without modifying the config to have unique identifiers for each external backup.
         StringBuilder base = new StringBuilder(getSocketAddress(externalBackup));
         base.append(externalBackup.username);
         base.append(externalBackup.password);
@@ -818,9 +849,7 @@ public class UploadThread implements Runnable {
             ExternalFTPSource ftpSource = (ExternalFTPSource) externalBackup;
             base.append(ftpSource.baseDirectory);
             String hash2 = hash(base.toString());
-            if (hash2 == null) {
-                return null;
-            }
+            if (hash2 == null) return null;
             return "ftp-" + hash2;
         } else if (externalBackup instanceof ExternalMySQLSource) {
             ExternalMySQLSource mysqlSource = (ExternalMySQLSource) externalBackup;
@@ -828,13 +857,10 @@ public class UploadThread implements Runnable {
                 base.append(database.name);
             }
             String hash3 = hash(base.toString());
-            if (hash3 == null) {
-                return null;
-            }
+            if (hash3 == null) return null;
             return "mysql-" + hash3;
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Nullable

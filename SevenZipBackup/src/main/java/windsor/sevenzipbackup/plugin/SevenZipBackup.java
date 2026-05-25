@@ -2,7 +2,7 @@ package windsor.sevenzipbackup.plugin;
 
 import windsor.sevenzipbackup.SevenZipBackupApi;
 import windsor.sevenzipbackup.UploadThread;
-import windsor.sevenzipbackup.util.FileUtil;
+import windsor.sevenzipbackup.util.*;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import okhttp3.OkHttpClient;
 import org.bukkit.command.CommandSender;
@@ -20,9 +20,6 @@ import windsor.sevenzipbackup.handler.listeners.ChatInputListener;
 import windsor.sevenzipbackup.handler.listeners.PlayerListener;
 import windsor.sevenzipbackup.plugin.updater.UpdateChecker;
 import windsor.sevenzipbackup.plugin.updater.Updater;
-import windsor.sevenzipbackup.util.CustomConfig;
-import windsor.sevenzipbackup.util.HttpLogger;
-import windsor.sevenzipbackup.util.MessageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,12 +87,20 @@ public class SevenZipBackup extends JavaPlugin {
             localizationConfig.reloadConfig();
         }
         config = new ConfigParser(getConfig());
-        ConfigParser.setPluginInstance(this); // 设置插件实例到ConfigParser
+        ConfigParser.setPluginInstance(this);
         config.reload(configPlayers);
         MessageUtil.Builder()
                 .to(configPlayers)
                 .mmText(intl("config-loaded"))
                 .send();
+
+        try {
+            SevenZipExecutable.extract();
+        } catch (Exception e) {
+            getLogger().severe("Failed to extract native 7zr binary: " + e.getMessage());
+            throw new RuntimeException("7zr extraction failed", e);
+        }
+
         Objects.requireNonNull(getCommand(CommandHandler.CHAT_KEYWORD)).setTabCompleter(new CommandTabComplete());
         Objects.requireNonNull(getCommand(CommandHandler.CHAT_KEYWORD)).setExecutor(new CommandHandler());
         PluginManager pm = getServer().getPluginManager();
@@ -113,7 +118,6 @@ public class SevenZipBackup extends JavaPlugin {
     @Override
     public void onDisable() {
         Scheduler.stopBackupThread();
-        FileUtil.shutdown();
         UploadThread.cleanupBossBar(); // 清理BossBar
         SevenZipBackupApi.shutdown();
         MessageUtil.Builder().mmText(intl("plugin-stop")).send();
@@ -142,7 +146,6 @@ public class SevenZipBackup extends JavaPlugin {
         FileConfiguration configFile = getInstance().getConfig();
         localizationConfig.reloadConfig();
         FileConfiguration localizationFile = localizationConfig.getConfig();
-        // 在重新加载时也验证配置
         try {
             config.reload(configFile, players);
             Localization.set(localizationFile);

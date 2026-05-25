@@ -16,6 +16,12 @@ public interface BackupProgressCallback {
     void onFileProcessed();
 
     /**
+     * 进度更新（新增）：当使用外部 7zr 时，可提供已处理文件数和总文件数。
+     * 默认不做任何事，保持旧代码兼容。
+     */
+    default void onProgress(int processedFiles, int totalFiles) {}
+
+    /**
      * 当整个备份任务完成时调用
      */
     void onBackupComplete();

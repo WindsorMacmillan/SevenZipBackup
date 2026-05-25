@@ -19,6 +19,16 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>7z/**/*</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>7z/**/*</include>
+                </includes>
             </resource>
         </resources>
         <plugins>
@@ -26,6 +36,18 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.4.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>exe</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>dll</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>so</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -84,10 +106,10 @@
                             <pattern>com.github.lookfirst</pattern>
                             <shadedPattern>windsor.SevenZipBackup.lib</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>net.kyori</pattern>
-                            <shadedPattern>windsor.SevenZipBackup.lib</shadedPattern>
-                        </relocation>
+<!--                        <relocation>-->
+<!--                            <pattern>net.kyori</pattern>-->
+<!--                            <shadedPattern>windsor.SevenZipBackup.lib</shadedPattern>-->
+<!--                        </relocation>-->
                         <relocation>
                             <pattern>com.fasterxml</pattern>
                             <shadedPattern>windsor.SevenZipBackup.lib</shadedPattern>
@@ -97,7 +119,7 @@
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
-                                <exclude>META-INF/**</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -177,11 +199,13 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
+            <scope>provided</scope>
             <version>4.17.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-legacy</artifactId>
+            <scope>provided</scope>
             <version>4.17.0</version>
         </dependency>
         <dependency>
@@ -190,20 +214,10 @@
             <version>8.6.0</version>
         </dependency>
         <dependency>
-            <groupId>org.tukaani</groupId>
-            <artifactId>xz</artifactId>
-            <version>1.9</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.20.0</version>
         </dependency>
-        <dependency>
-            <groupId>net.openhft</groupId>
-            <artifactId>affinity</artifactId>
-            <version>3.23.3</version>
-        </dependency>
-    <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>3.20.0</version>
-    </dependency>
     </dependencies>
 </project>
 
