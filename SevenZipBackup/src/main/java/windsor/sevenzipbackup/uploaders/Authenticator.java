@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.Objects;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -115,6 +115,7 @@ public class Authenticator {
             String deviceCode = parsedResponse.getString("device_code");
             String verificationUri = parsedResponse.getString("verification_uri");
             long responseCheckDelay = SchedulerUtil.sToTicks(parsedResponse.getLong("interval"));
+            long delayMillis = responseCheckDelay * 50L;
             logger.log(
                 intl("link-account-code"),
                 "link-url", verificationUri,
@@ -159,7 +160,7 @@ public class Authenticator {
                     MessageUtil.sendConsoleException(exception);
                     cancelPollTask();
                 }
-            }, Duration.ofMillis(responseCheckDelay * 50L), Duration.ofMillis(responseCheckDelay * 50L));
+            }, delayMillis, delayMillis, TimeUnit.MILLISECONDS);
         } catch (Exception exception) {
             NetUtil.catchException(exception, AUTH_URL, logger);
             logger.log(intl("link-provider-failed"), "provider", provider.getName());
