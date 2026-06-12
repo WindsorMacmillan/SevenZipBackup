@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Objects;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -38,7 +39,7 @@ public class Authenticator {
      */
     private static final String CLIENT_SECRET = "fyKCRZRyJeHW5PzGJvQkL4dr2zRHRmwTaOutG7BBhQM=";
 
-    private static int taskId = -1;
+    private static io.papermc.paper.threadedregions.scheduler.ScheduledTask pollTask = null;
 
     public enum AuthenticationProvider {
         GOOGLE_DRIVE("Google Drive", "googledrive", "/GoogleDriveCredential.json", "qWd2xXC/ORzdZvUotXoWhHC0POkMNuO/xuwcKWc9s1LLodayZXvkdKimmpOQqWYS6I+qGSrYNb8UCJWMhrgDXhIWEbDvytkQTwq+uNcnfw8=", "pasQz0KvtyC7o6CrlLPSMVV9Y0RMX76cXzsAbBoCBxI="),
@@ -119,7 +120,7 @@ public class Authenticator {
                 "link-url", verificationUri,
                 "link-code", userCode,
                 "provider", provider.getName());
-            taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            pollTask = plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, scheduledTask -> {
                 try {
                     FormBody.Builder requestBody1 = new FormBody.Builder()
                         .add("device_code", deviceCode)
@@ -158,7 +159,7 @@ public class Authenticator {
                     MessageUtil.sendConsoleException(exception);
                     cancelPollTask();
                 }
-            }, responseCheckDelay, responseCheckDelay);
+            }, Duration.ofMillis(responseCheckDelay * 50L), Duration.ofMillis(responseCheckDelay * 50L));
         } catch (Exception exception) {
             NetUtil.catchException(exception, AUTH_URL, logger);
             logger.log(intl("link-provider-failed"), "provider", provider.getName());
@@ -182,9 +183,9 @@ public class Authenticator {
     }
 
     private static void cancelPollTask() {
-        if (taskId != -1) {
-            Bukkit.getScheduler().cancelTask(taskId);
-            taskId = -1;
+        if (pollTask != null) {
+            pollTask.cancel();
+            pollTask = null;
         }
     }
 
