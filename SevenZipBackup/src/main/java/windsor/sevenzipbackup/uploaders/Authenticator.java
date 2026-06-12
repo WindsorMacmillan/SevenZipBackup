@@ -5,6 +5,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import windsor.sevenzipbackup.handler.commandHandler.BasicCommands;
@@ -19,7 +20,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.Objects;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -39,7 +39,7 @@ public class Authenticator {
      */
     private static final String CLIENT_SECRET = "fyKCRZRyJeHW5PzGJvQkL4dr2zRHRmwTaOutG7BBhQM=";
 
-    private static io.papermc.paper.threadedregions.scheduler.ScheduledTask pollTask = null;
+    private static ScheduledTask pollTask = null;
 
     public enum AuthenticationProvider {
         GOOGLE_DRIVE("Google Drive", "googledrive", "/GoogleDriveCredential.json", "qWd2xXC/ORzdZvUotXoWhHC0POkMNuO/xuwcKWc9s1LLodayZXvkdKimmpOQqWYS6I+qGSrYNb8UCJWMhrgDXhIWEbDvytkQTwq+uNcnfw8=", "pasQz0KvtyC7o6CrlLPSMVV9Y0RMX76cXzsAbBoCBxI="),
@@ -115,7 +115,6 @@ public class Authenticator {
             String deviceCode = parsedResponse.getString("device_code");
             String verificationUri = parsedResponse.getString("verification_uri");
             long responseCheckDelay = SchedulerUtil.sToTicks(parsedResponse.getLong("interval"));
-            long delayMillis = responseCheckDelay * 50L;
             logger.log(
                 intl("link-account-code"),
                 "link-url", verificationUri,
@@ -160,7 +159,7 @@ public class Authenticator {
                     MessageUtil.sendConsoleException(exception);
                     cancelPollTask();
                 }
-            }, delayMillis, delayMillis, TimeUnit.MILLISECONDS);
+            }, responseCheckDelay, responseCheckDelay);
         } catch (Exception exception) {
             NetUtil.catchException(exception, AUTH_URL, logger);
             logger.log(intl("link-provider-failed"), "provider", provider.getName());
