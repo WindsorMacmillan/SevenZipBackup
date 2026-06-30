@@ -328,30 +328,27 @@ public class UploadThread implements Runnable {
         Config config = ConfigParser.getConfig();
         totalTimer.start();
         backupStatus = BackupStatus.STARTING;
+
+        // 清理之前的待清理数据
         if (!locationsToBePruned.isEmpty()) {
             locationsToBePruned.clear();
         }
         if (initiator == null) {
             updateNextIntervalBackupTime();
         }
-        if (!SevenZipBackupApi.shouldStartBackup()) {
-            return;
-        }
-        if (config.backupStorage.backupsRequirePlayers && !PlayerListener.isAutoBackupsActive() && initiator == null) {
-            return;
-        }
-        boolean errorOccurred = false;
-        if(ConfigParser.getConfig().advanced.debugEnabled){
-            logger.info("备份条件已通过检查");
-        }
+        if (!SevenZipBackupApi.shouldStartBackup()) return;
+        if (config.backupStorage.backupsRequirePlayers && !PlayerListener.isAutoBackupsActive() && initiator == null) return;
+
         List<ExternalBackupSource> externalBackupList = Arrays.asList(config.externalBackups.sources);
         backupList = new ArrayList<>(Arrays.asList(config.backupList.list));
         if (externalBackupList.isEmpty() && backupList.isEmpty()) {
             logger.info(intl("backup-empty-list"));
             return;
         }
+
         logger.broadcast(intl("backup-start"));
 
+        // 处理外部备份
         for (ExternalBackupSource externalBackup : externalBackupList) {
             if (externalBackup instanceof ExternalFTPSource) {
                 makeExternalFileBackup((ExternalFTPSource) externalBackup);
@@ -363,44 +360,55 @@ public class UploadThread implements Runnable {
         logger.info(intl("backup-local-start"));
         backupStatus = BackupStatus.COMPRESSING;
         backupBackingUp = 0;
-        ServerUtil.setAutoSave(false);
 
-        totalBackupTasks = 0;
-        for (BackupListEntry set : backupList) {
-            if (set.create) {
-                totalBackupTasks += set.location.getPaths().size();
-            }
-        }
+        // 暂停自动保存并强制写入
+        ServerUtil.prepareForBackup();
 
-        totalFilesToBackup.set(0);
-        totalFilesProcessed.set(0);
-        completedBackupTasks.set(0);
-
-        if (totalBackupTasks > 0) {
-            createBossBar();
-            updateBossBarProgress();
-        }
-
+        boolean errorOccurred = false;
         try {
+            // 计算任务数，初始化 BossBar
+            totalBackupTasks = 0;
+            for (BackupListEntry set : backupList) {
+                if (set.create) {
+                    totalBackupTasks += set.location.getPaths().size();
+                }
+            }
+            totalFilesToBackup.set(0);
+            totalFilesProcessed.set(0);
+            completedBackupTasks.set(0);
+
+            if (totalBackupTasks > 0) {
+                createBossBar();
+                updateBossBarProgress();
+            }
+
+            // 异步压缩所有备份文件夹
             asyncCompressAllBackups();
+
         } catch (Exception e) {
+            errorOccurred = true;
             logger.info(intl("backup-local-failed"));
             MessageUtil.sendConsoleException(e);
-            if(ConfigParser.getConfig().advanced.debugEnabled){
+            if (ConfigParser.getConfig().advanced.debugEnabled) {
                 logger.info("异步备份任务失败！");
                 e.printStackTrace();
             }
-            errorOccurred = true;
+            // 出现异常后立即移除 BossBar，避免卡进度条
+            removeBossBar();
+        } finally {
+            // 确保自动保存被恢复，不论成功与否
+            ServerUtil.restoreAfterBackup();
+            if (ConfigParser.getConfig().advanced.debugEnabled) {
+                logger.info("备份压缩任务结束");
+            }
         }
-        if(ConfigParser.getConfig().advanced.debugEnabled){
-            logger.info("备份压缩任务完成");
-        }
-        ServerUtil.setAutoSave(true);
 
         if (!errorOccurred) {
             logger.info(intl("backup-local-complete"));
+            // 继续上传流程（其中会调用 removeBossBar）
             continueWithUploadProcess();
         }
+
         totalTimer.end();
         long totalBackupTime = totalTimer.getTime();
         long totalSeconds = Duration.of(totalBackupTime, ChronoUnit.MILLIS).getSeconds();

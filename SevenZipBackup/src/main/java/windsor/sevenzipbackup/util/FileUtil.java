@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -112,6 +113,10 @@ public class FileUtil {
         }
 
         List<String> files = fileList.getList();
+        files.removeIf(file -> {
+            File f = new File(inputFolderPath, file);
+            return !isFileReadable(f);
+        });
         Path listFile = Files.createTempFile("7zlist_", ".txt");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(listFile.toFile()))) {
             for (String file : files) {
@@ -124,7 +129,7 @@ public class FileUtil {
         String level = "-mx" + ConfigParser.getConfig().backupStorage.zipCompression;
         List<String> command = List.of(
                 exePath.toString(),
-                "a", "-t7z", level, "-ms=off", "-bsp1",
+                "a", "-t7z", level, "-ms=on", "-ssw", "-sccUTF-8", "-bsp1",
                 outputFile.getAbsolutePath(),
                 "@" + listFile.toAbsolutePath()
         );
@@ -145,7 +150,7 @@ public class FileUtil {
         int lastReportedPercent = -1;
 
         StringBuilder outputBuilder = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 outputBuilder.append(line).append("\n");
@@ -308,22 +313,47 @@ public class FileUtil {
         BasicFileAttributes fileAttributes;
         try {
             fileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-        } catch (NoSuchFileException e) {
+        } catch (java.nio.file.NoSuchFileException e) {
             return;
         }
 
         if (fileAttributes.isRegularFile()) {
+            String fileName = file.getName();
+            String lowerName = fileName.toLowerCase();
+            // 跳过所有 SQLite / H2 等嵌入式数据库文件，它们常被插件以独占模式打开
+            if (lowerName.endsWith(".db")
+                    || lowerName.endsWith(".mv.db")
+                    || lowerName.endsWith(".sqlite")
+                    || lowerName.endsWith(".db-shm")
+                    || lowerName.endsWith(".db-wal")) {
+                return;
+            }
+            // 跳过 session.lock
+            if (lowerName.equals("session.lock")) return;
+
+            // 验证是否备份了本地备份目录
             if (file.getCanonicalPath().startsWith(new File(ConfigParser.getConfig().backupStorage.localDirectory).getCanonicalPath())) {
                 fileList.incFilesInBackupFolder();
                 return;
             }
+
             Path relativePath = Paths.get(inputFolderPath).relativize(file.toPath());
+
+            // 黑名单检查
             for (BlacklistEntry blacklistEntry : fileList.getBlacklist()) {
                 if (blacklistEntry.getPathMatcher().matches(relativePath)) {
                     blacklistEntry.incBlacklistedFiles();
                     return;
                 }
             }
+
+            // 可读性检查：尝试打开文件，确保后续压缩能顺利读取
+            if (!isFileReadable(file)) {
+                // 记录无法读取的文件，但不会中断整个列表生成
+                logger.info("跳过无法读取的文件: " + file.getAbsolutePath());
+                return;
+            }
+
             fileList.appendToList(relativePath.toString());
         } else if (fileAttributes.isDirectory()) {
             String[] children = file.list();
@@ -335,6 +365,17 @@ public class FileUtil {
         } else {
             logger.info(intl("local-backup-failed-to-include"),
                     "file-path", file.getAbsolutePath());
+        }
+    }
+
+    /**
+     * 快速检查文件是否可读（通过尝试打开输入流）
+     */
+    private boolean isFileReadable(File file) {
+        try (FileInputStream ignored = new FileInputStream(file)) {
+            return true; // 成功打开即说明可读
+        } catch (IOException e) {
+            return false;
         }
     }
 

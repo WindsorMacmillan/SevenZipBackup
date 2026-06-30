@@ -2,6 +2,8 @@ package windsor.sevenzipbackup.plugin;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import windsor.sevenzipbackup.UploadThread;
 import windsor.sevenzipbackup.config.ConfigParser;
@@ -286,6 +289,49 @@ public class Scheduler {
                     task.run();
                     return null;
                 }).get();  // 旧版仍然会阻塞
+            }
+        }
+    }
+
+    /**
+     * 在指定世界的一个区域线程（Folia）或主线程（Paper）中执行任务，
+     * 并阻塞当前线程直到任务完成。
+     *
+     * @param world 目标世界
+     * @param task  要执行的任务
+     */
+    public static void runWorldTaskAndWait(World world, Runnable task) throws ExecutionException, InterruptedException {
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
+
+        if (IS_FOLIA) {
+            // 使用出生点区块坐标，确保区域处于活跃状态
+            Location spawn = world.getSpawnLocation();
+            int chunkX = spawn.getBlockX() >> 4;
+            int chunkZ = spawn.getBlockZ() >> 4;
+
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            Bukkit.getRegionScheduler().run(plugin, world, chunkX, chunkZ, scheduled -> {
+                try {
+                    task.run();
+                    future.complete(null);
+                } catch (Exception e) {
+                    future.completeExceptionally(e);
+                }
+            });
+
+            try {
+                future.get(30, TimeUnit.SECONDS); // 等待最多30秒
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                throw new RuntimeException("World task execution failed", e);
+            }
+        } else {
+            if (Bukkit.isPrimaryThread()) {
+                task.run();
+            } else {
+                Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+                    task.run();
+                    return null;
+                }).get();
             }
         }
     }
