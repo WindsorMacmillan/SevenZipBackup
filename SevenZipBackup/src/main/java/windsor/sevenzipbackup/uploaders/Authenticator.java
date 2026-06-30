@@ -5,6 +5,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import windsor.sevenzipbackup.handler.commandHandler.BasicCommands;
@@ -38,7 +39,7 @@ public class Authenticator {
      */
     private static final String CLIENT_SECRET = "fyKCRZRyJeHW5PzGJvQkL4dr2zRHRmwTaOutG7BBhQM=";
 
-    private static int taskId = -1;
+    private static ScheduledTask pollTask = null;
 
     public enum AuthenticationProvider {
         GOOGLE_DRIVE("Google Drive", "googledrive", "/GoogleDriveCredential.json", "qWd2xXC/ORzdZvUotXoWhHC0POkMNuO/xuwcKWc9s1LLodayZXvkdKimmpOQqWYS6I+qGSrYNb8UCJWMhrgDXhIWEbDvytkQTwq+uNcnfw8=", "pasQz0KvtyC7o6CrlLPSMVV9Y0RMX76cXzsAbBoCBxI="),
@@ -119,7 +120,7 @@ public class Authenticator {
                 "link-url", verificationUri,
                 "link-code", userCode,
                 "provider", provider.getName());
-            taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            pollTask = plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, scheduledTask -> {
                 try {
                     FormBody.Builder requestBody1 = new FormBody.Builder()
                         .add("device_code", deviceCode)
@@ -182,9 +183,9 @@ public class Authenticator {
     }
 
     private static void cancelPollTask() {
-        if (taskId != -1) {
-            Bukkit.getScheduler().cancelTask(taskId);
-            taskId = -1;
+        if (pollTask != null) {
+            pollTask.cancel();
+            pollTask = null;
         }
     }
 
