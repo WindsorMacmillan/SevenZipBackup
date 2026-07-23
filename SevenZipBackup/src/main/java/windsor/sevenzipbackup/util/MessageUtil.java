@@ -20,6 +20,7 @@ import windsor.sevenzipbackup.config.ConfigParser.Config;
 import windsor.sevenzipbackup.config.PermissionHandler;
 import windsor.sevenzipbackup.constants.Permission;
 import windsor.sevenzipbackup.plugin.SevenZipBackup;
+import windsor.sevenzipbackup.plugin.Scheduler;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,6 +32,8 @@ public class MessageUtil {
     private boolean addPrefix = true;
     private final List<Component> message = new ArrayList<>();
     private final Set<CommandSender> recipients = new HashSet<>();
+    private final Set<Permission> permissionRecipients = new HashSet<>();
+    private boolean allPlayers = false;
     private Boolean sendToConsole = true;
     
 
@@ -126,11 +129,7 @@ public class MessageUtil {
      * @return the calling MessageUtil's instance
      */
     public MessageUtil toPerm(Permission permission) {
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if (PermissionHandler.hasPerm(player, permission)) {
-                recipients.add(player);
-            }
-        }
+        permissionRecipients.add(permission);
         return this;
     }
 
@@ -149,12 +148,17 @@ public class MessageUtil {
      * @return the calling MessageUtil's instance
      */
     public MessageUtil all() {
-        recipients.addAll(Bukkit.getOnlinePlayers());
+        allPlayers = true;
         return this;
     }
 
     /**
-     * Sends the message to the recipients
+     * Sends the message to the recipients.
+     * <p>
+     * Console messages are always sent directly (safe from any thread), while player
+     * messages on Folia/EtheriumMC are dispatched via the appropriate region scheduler.
+     * This avoids bugs where scheduling a global region task from within a global region
+     * task may be silently dropped on Folia 26.2+, and ensures console output always appears.
      */
     public void send() {
         JoinConfiguration separator = JoinConfiguration.separator(Component.text(" "));
@@ -162,14 +166,127 @@ public class MessageUtil {
         if (addPrefix) {
             builtComponent = prefixMessage(builtComponent);
         }
-        if (sendToConsole) {
-            recipients.add(Bukkit.getConsoleSender());
+        final Component finalComponent = builtComponent;
+        final Set<CommandSender> explicitRecipients = new HashSet<>(recipients);
+        final Set<Permission> explicitPerms = new HashSet<>(permissionRecipients);
+        final boolean sendConsole = sendToConsole;
+        final boolean sendAllPlayers = allPlayers;
+
+        // --- 1. Send console message directly ---
+        // ConsoleSender is reachable from any thread on both Paper and Folia.
+        // Send if requested via sendConsole flag OR if ConsoleSender was explicitly
+        // added as a recipient via .to(sender) — even when toConsole(false) is set,
+        // explicit .to(ConsoleSender) must still work.
+        boolean needsConsole = sendConsole || explicitRecipients.contains(Bukkit.getConsoleSender());
+        if (needsConsole) {
+            sendToConsole(finalComponent);
         }
-        for (CommandSender player : recipients) {
-            if (player == null || (!getConfig().messages.sendInChat && player instanceof Player)) {
-                continue;
+
+        // --- 2. Build player dispatch ---
+        // Player messages may need region-scheduled delivery on Folia.
+        Runnable playerDispatch = () -> {
+            Set<CommandSender> playerTargets = new HashSet<>(explicitRecipients);
+            if (sendAllPlayers) {
+                playerTargets.addAll(Bukkit.getOnlinePlayers());
             }
-            SevenZipBackup.adventure.sender(player).sendMessage(builtComponent);
+            for (Permission permission : explicitPerms) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (PermissionHandler.hasPerm(player, permission)) {
+                        playerTargets.add(player);
+                    }
+                }
+            }
+            // Remove console sender from player dispatch (already handled in Step 1,
+            // either via sendConsole flag or as an explicit recipient).
+            playerTargets.remove(Bukkit.getConsoleSender());
+
+            for (CommandSender recipient : playerTargets) {
+                if (recipient == null || (!getConfig().messages.sendInChat && recipient instanceof Player)) {
+                    continue;
+                }
+                try {
+                    if (Scheduler.isFolia() && recipient instanceof Player) {
+                        // On Folia: player messages must be sent on the player's region thread
+                        final Player player = (Player) recipient;
+                        Scheduler.runPlayerTask(player, () ->
+                                sendToPlayerDirect(player, finalComponent));
+                    } else {
+                        sendToPlayerDirect(recipient, finalComponent);
+                    }
+                } catch (Exception ignored) {
+                    sendFallback(recipient, finalComponent);
+                }
+            }
+        };
+
+        // --- 3. Schedule player dispatch if needed ---
+        if (Scheduler.isFolia()) {
+            if (Bukkit.isPrimaryThread()) {
+                playerDispatch.run();
+            } else {
+                Scheduler.runSyncTask(playerDispatch);
+            }
+        } else if (!Bukkit.isPrimaryThread()) {
+            Scheduler.runSyncTask(playerDispatch);
+        } else {
+            playerDispatch.run();
+        }
+    }
+
+    /**
+     * Sends a message to the console. Uses legacy String-based sendMessage
+     * to avoid silent failures of Adventure's sendMessage(Component) on EtheriumMC 26.2.
+     */
+    private static void sendToConsole(@NotNull Component component) {
+        // Path 1: Legacy String via sendMessage(String) — reliable on all server implementations
+        try {
+            String legacy = LegacyComponentSerializer.legacySection().serialize(component);
+            Bukkit.getConsoleSender().sendMessage(legacy);
+            return;
+        } catch (Exception ignored) {}
+
+        // Path 2: Direct Component — Paper native Adventure (may silently fail on some forks)
+        try {
+            Bukkit.getConsoleSender().sendMessage(component);
+            return;
+        } catch (Exception ignored) {}
+
+        // Path 3: Plugin logger — ultimate fallback
+        try {
+            String plain = LegacyComponentSerializer.legacySection().serialize(component);
+            SevenZipBackup.getInstance().getLogger().info(
+                    ChatColor.stripColor(plain));
+        } catch (Exception ignored) {
+            Bukkit.getLogger().info("[SevenZipBackup] " +
+                    LegacyComponentSerializer.legacySection().serialize(component));
+        }
+    }
+
+    /**
+     * Sends a Component to a non-console recipient (player).
+     * Uses Component-based sendMessage for rich formatting.
+     */
+    private static void sendToPlayerDirect(@NotNull CommandSender recipient, @NotNull Component component) {
+        recipient.sendMessage(component);
+    }
+
+    /**
+     * Fallback path when direct message sending fails.
+     * Tries legacy String-based sendMessage, then the plugin logger as last resort.
+     */
+    private static void sendFallback(@NotNull CommandSender recipient, @NotNull Component component) {
+        try {
+            String legacy = LegacyComponentSerializer.legacySection().serialize(component);
+            recipient.sendMessage(legacy);
+        } catch (Exception ignored2) {
+            try {
+                SevenZipBackup.getInstance().getLogger().info(
+                        ChatColor.stripColor(
+                                LegacyComponentSerializer.legacySection().serialize(component)));
+            } catch (Exception ignored3) {
+                // Absolute last resort
+                Bukkit.getLogger().info("[SevenZipBackup] " + LegacyComponentSerializer.legacySection().serialize(component));
+            }
         }
     }
 

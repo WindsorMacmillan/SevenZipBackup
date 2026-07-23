@@ -1,5 +1,6 @@
 package windsor.sevenzipbackup.plugin;
 
+import org.bukkit.Bukkit;
 import windsor.sevenzipbackup.SevenZipBackupApi;
 import windsor.sevenzipbackup.UploadThread;
 import windsor.sevenzipbackup.util.*;
@@ -59,6 +60,8 @@ public class SevenZipBackup extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        // Direct logger output — bypasses MessageUtil to confirm plugin loads
+        getLogger().info("Enabling SevenZipBackup v" + getPluginMeta().getVersion() + " on " + Bukkit.getServer().getName() + " ...");
         httpClient = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .writeTimeout(3, TimeUnit.MINUTES)

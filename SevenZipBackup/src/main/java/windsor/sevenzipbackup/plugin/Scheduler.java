@@ -4,6 +4,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -57,10 +58,18 @@ public class Scheduler {
         boolean folia = false;
         boolean asyncScheduler = false;
         try {
-            // 检测 Folia
+            // 检测 Folia: io.papermc.paper.threadedregions.RegionizedServer
+            // 注意: EtheriumMC 等兼容分支可能使用不同的内部类名，
+            // 如果检测失败会退化为 Paper/Bukkit 调度模式。
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             folia = true;
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+            // Fallback: 尝试另一种 Folia 识别方式
+            try {
+                Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
+                // 该类在 Paper 1.18+ 也存在（不做 Folia 判定），但可以辅助判断
+            } catch (ClassNotFoundException ignored2) {}
+        }
         try {
             // Paper 1.18+ 存在 AsyncScheduler，Folia 也有
             Bukkit.class.getMethod("getAsyncScheduler");
@@ -228,10 +237,28 @@ public class Scheduler {
      */
     public static void runPlayerTask(Player player, Runnable task) {
         if (IS_FOLIA) {
-            player.getScheduler().run(SevenZipBackup.getInstance(), scheduled -> task.run(), null);
+            if (player == null || !player.isOnline()) return;
+            try {
+                player.getScheduler().run(SevenZipBackup.getInstance(), scheduled -> task.run(), null);
+            } catch (Exception e) {
+                // 如果 player.getScheduler() 不可用（如 EtheriumMC 兼容层），退化为同步任务
+                runSyncTask(task);
+            }
         } else {
             Bukkit.getScheduler().runTask(SevenZipBackup.getInstance(), task);
         }
+    }
+
+    public static void runSenderTask(CommandSender sender, Runnable task) {
+        if (IS_FOLIA && sender instanceof Player) {
+            runPlayerTask((Player) sender, task);
+        } else {
+            runSyncTask(task);
+        }
+    }
+
+    public static boolean isFolia() {
+        return IS_FOLIA;
     }
 
     /**
