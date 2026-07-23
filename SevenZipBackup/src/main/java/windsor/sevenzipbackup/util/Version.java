@@ -17,12 +17,12 @@ public class Version {
     @NotNull
     @Contract ("_ -> new")
     public static Version parse(@NotNull String version) throws ArrayIndexOutOfBoundsException, NumberFormatException {
-        String[] splitVersion = version.split("\\.");
+        String[] splitVersion = version.split("\\.", -1);
 
         return new Version(
             Integer.parseInt(splitVersion[0]), 
             Integer.parseInt(splitVersion[1]), 
-            Integer.parseInt(splitVersion[2])
+            splitVersion.length > 2 ? Integer.parseInt(splitVersion[2]) : 0
         );
     }
 
