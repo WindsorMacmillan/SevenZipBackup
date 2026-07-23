@@ -286,13 +286,19 @@ public class UploadThread implements Runnable {
     }
 
     public static void cleanupBossBar() {
-        Scheduler.runSyncTask(() -> {
+        Runnable cleanupTask = () -> {
             if (backupBossBar != null) {
                 backupBossBar.removeAll();
                 backupBossBar = null;
             }
             taskProgressMap.clear();
-        });
+        };
+
+        if (ConfigParser.getPluginInstance().isEnabled()) {
+            Scheduler.runSyncTask(cleanupTask);
+        } else {
+            cleanupTask.run();
+        }
     }
 
     @Override
