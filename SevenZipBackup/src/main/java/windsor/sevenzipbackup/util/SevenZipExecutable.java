@@ -17,7 +17,7 @@ public final class SevenZipExecutable {
 
     public static void extract() throws Exception {
         SevenZipBackup plugin = SevenZipBackup.getInstance();
-        Path dataFolder = plugin.getDataFolder().toPath();
+        Path dataFolder = plugin.getDataFolder().toPath().toAbsolutePath().normalize();
         Path binDir = dataFolder.resolve("7zr");
         Files.createDirectories(binDir);
 
@@ -35,7 +35,7 @@ public final class SevenZipExecutable {
             throw new UnsupportedOperationException("Unsupported operating system: " + os);
         }
 
-        Path destPath = binDir.resolve(binaryName);
+        Path destPath = binDir.resolve(binaryName).toAbsolutePath().normalize();
         try (InputStream in = SevenZipExecutable.class.getResourceAsStream(resourceName)) {
             if (in == null) {
                 throw new RuntimeException("Missing native 7zr binary in plugin resources: " + resourceName);

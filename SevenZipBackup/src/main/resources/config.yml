@@ -22,12 +22,25 @@ local-keep-count: -1
 # 7z压缩级别[0-9]，0代表最快速度，9代表极限压缩。提高此值可以获得更小体积的备份。
 # 经过实测强烈建议选用5及以下，超过此值压缩率不会显著改善，但消耗时间和内存成倍增加。
 # 警告：过高的值可能会消耗巨量内存和CPU资源。
-7z-compression-level: 1
+7z-compression-level: 5
 # Compressing thread counts. Each thread can process backups creation in parallel.
 # Default is 4. Based on directories you need to create backups. (0 means keep same as CPU cores count)
 # 压缩线程数量。每个线程可以并行地创建备份文件。
 # 默认值为4。此值基于你需要创建备份的文件夹数量。(0表示与CPU核心数保持一致)
 backup-thread-counts: 4
+
+# Whether to enable CPU affinity to specify which CPU cores are used during compression.
+# The 7zr executable uses the -stm{HexMask} switch; the plugin converts the configured
+# core list into this hex affinity mask. When disabled, no parameter is added (all cores used).
+# 是否启用CPU亲和性，以指定压缩时使用哪些CPU核心。
+# 7zr 使用 -stm{HexMask} 参数；插件会将配置的核心列表转换为该十六进制亲和掩码。
+# 关闭时，不添加参数，即使用全部核心。
+enable-specify-cpu-cores: false
+# Bind to specific CPU cores (comma-separated, 0 to N-1). "-1" means auto (use all cores).
+# If any number is an invalid core id, the plugin falls back to the default (all cores).
+# 绑定到特定CPU核心（逗号分隔，0到N-1）。"-1"表示自动（使用全部核心）。
+# 如果其中有无效的CPU核心编号，则回退至默认（使用全部核心）。
+cpu-cores-list: "-1"
 
 #只在有玩家在线时启用备份
 backups-require-players: true

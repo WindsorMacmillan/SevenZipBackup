@@ -20,6 +20,8 @@ public class BackupStorage {
     public final boolean disableSavingDuringBackups;
     public final String localDirectory;
     public final String remoteDirectory;
+    public final boolean enableSpecifyCpuCores;
+    public final String cpuCoresList;
 
     public BackupStorage(
             long delay,
@@ -30,7 +32,9 @@ public class BackupStorage {
             boolean backupsRequirePlayers,
             boolean disableSavingDuringBackups,
             String localDirectory,
-            String remoteDirectory
+            String remoteDirectory,
+            boolean enableSpecifyCpuCores,
+            String cpuCoresList
     ) {
         this.delay = delay;
         this.threadCounts = threadCounts;
@@ -41,6 +45,8 @@ public class BackupStorage {
         this.disableSavingDuringBackups = disableSavingDuringBackups;
         this.localDirectory = localDirectory;
         this.remoteDirectory = remoteDirectory;
+        this.enableSpecifyCpuCores = enableSpecifyCpuCores;
+        this.cpuCoresList = cpuCoresList;
     }
 
     @NotNull
@@ -85,7 +91,11 @@ public class BackupStorage {
             localDirectory = localDirectory.substring(1);
         }
         String remoteDirectory = config.getString("remote-save-directory");
+        // CPU 亲和性配置
+        boolean enableSpecifyCpuCores = config.getBoolean("enable-specify-cpu-cores", false);
+        String cpuCoresList = config.getString("cpu-cores-list", "-1");
         return new BackupStorage(delay, threadCounts, keepCount, localKeepCount, zipCompression,
-                backupsRequirePlayers, disableSavingDuringBackups, localDirectory, remoteDirectory);
+                backupsRequirePlayers, disableSavingDuringBackups, localDirectory, remoteDirectory,
+                enableSpecifyCpuCores, cpuCoresList);
     }
 }

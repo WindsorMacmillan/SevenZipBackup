@@ -127,12 +127,17 @@ public class FileUtil {
 
         Path exePath = SevenZipExecutable.getExecutablePath();
         String level = "-mx" + ConfigParser.getConfig().backupStorage.zipCompression;
-        List<String> command = List.of(
+        List<String> command = new ArrayList<>(List.of(
                 exePath.toString(),
-                "a", "-t7z", level, "-ms=on", "-ssw", "-sccUTF-8", "-bsp1",
-                outputFile.getAbsolutePath(),
-                "@" + listFile.toAbsolutePath()
-        );
+                "a", "-t7z", level, "-ms=on", "-ssw", "-sccUTF-8", "-bsp1"
+        ));
+        // CPU 亲和性：如果启用，附加 -stm{HexMask} 参数以绑定到指定 CPU 核心
+        String affinityArg = buildCpuAffinityArg();
+        if (affinityArg != null) {
+            command.add(affinityArg);
+        }
+        command.add(outputFile.getAbsolutePath());
+        command.add("@" + listFile.toAbsolutePath());
 
         if (ConfigParser.getConfig().advanced.debugEnabled) {
             logger.info("执行命令: " + String.join(" ", command));
@@ -203,6 +208,56 @@ public class FileUtil {
         if (callback != null) {
             callback.onProgress(totalFiles, totalFiles);
         }
+    }
+
+    /**
+     * 根据配置构建 7zr 的 CPU 亲和性参数 {@code -stm{HexMask}}。
+     * <p>
+     * 规则：
+     * <ul>
+     *   <li>未启用（{@code enable-specify-cpu-cores: false}）→ 返回 {@code null}，不附加参数，使用全部核心</li>
+     *   <li>列表为 {@code "-1"}（自动）→ 返回 {@code null}，使用全部核心</li>
+     *   <li>列表包含逗号分隔的核心编号（0 到 N-1）→ 将每个核心对应的位（1 &lt;&lt; core）置入掩码，
+     *       格式化为十六进制附加到命令</li>
+     *   <li>任一编号无法解析或超出有效范围（含混合出现的 {@code -1}）→ 回退至默认，返回 {@code null}</li>
+     * </ul>
+     *
+     * @return {@code -stm0x...} 亲和性参数，或 {@code null}（使用全部核心 / 回退默认）
+     */
+    private static String buildCpuAffinityArg() {
+        Config config = ConfigParser.getConfig();
+        if (config == null || !config.backupStorage.enableSpecifyCpuCores) {
+            return null;
+        }
+        String rawList = config.backupStorage.cpuCoresList;
+        if (rawList == null || rawList.trim().isEmpty()) {
+            return null;
+        }
+        // "-1" 表示自动 → 使用全部核心
+        if (rawList.trim().equals("-1")) {
+            return null;
+        }
+
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        long mask = 0L;
+        for (String part : rawList.split(",")) {
+            String trimmed = part.trim();
+            // 混合出现 "-1"（如 "0,-1,3"）按无效处理 → 回退默认
+            if (trimmed.equals("-1")) {
+                return null;
+            }
+            int core;
+            try {
+                core = Integer.parseInt(trimmed);
+            } catch (NumberFormatException e) {
+                return null; // 无法解析 → 回退默认
+            }
+            if (core < 0 || core >= availableProcessors) {
+                return null; // 无效核心编号 → 回退默认
+            }
+            mask |= (1L << core);
+        }
+        return "-stm0x" + Long.toHexString(mask);
     }
 
     public static class BackupFileList {
