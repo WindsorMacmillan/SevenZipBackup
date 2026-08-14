@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import windsor.sevenzipbackup.SevenZipBackupApi;
 import windsor.sevenzipbackup.UploadThread;
 import windsor.sevenzipbackup.util.*;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import okhttp3.OkHttpClient;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -40,11 +39,6 @@ public class SevenZipBackup extends JavaPlugin {
     public static Updater updater;
 
     /**
-     * Global instance of Adventure audience
-     */
-    public static BukkitAudiences adventure;
-
-    /**
      * A list of players who are currently waiting to reply.
      */
     public static List<CommandSender> chatInputPlayers;
@@ -68,7 +62,6 @@ public class SevenZipBackup extends JavaPlugin {
                 .readTimeout(3, TimeUnit.MINUTES)
                 .addInterceptor(new HttpLogger())
                 .build();
-        adventure = BukkitAudiences.create(plugin);
         chatInputPlayers = new ArrayList<>(1);
         List<CommandSender> configPlayers = PermissionHandler.getPlayersWithPerm(Permission.RELOAD_CONFIG);
         saveDefaultConfig();

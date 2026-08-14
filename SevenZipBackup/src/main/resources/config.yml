@@ -6,7 +6,7 @@
 #   ╚═╝  ╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     
 # SevenZipBackup   -   by Windsor Macmillan
 
-version: 4
+version: 5
 
 # Backup interval in minutes.
 # 备份间隔，单位分钟
@@ -24,9 +24,9 @@ local-keep-count: -1
 # 警告：过高的值可能会消耗巨量内存和CPU资源。
 7z-compression-level: 5
 # Compressing thread counts. Each thread can process backups creation in parallel.
-# Default is 4. Based on directories you need to create backups. (0 means keep same as CPU cores count)
+# Default is 4. Based on directories you need to create backups.
 # 压缩线程数量。每个线程可以并行地创建备份文件。
-# 默认值为4。此值基于你需要创建备份的文件夹数量。(0表示与CPU核心数保持一致)
+# 默认值为4。此值基于你需要创建备份的文件夹数量。
 backup-thread-counts: 4
 
 # Whether to enable CPU affinity to specify which CPU cores are used during compression.
@@ -83,6 +83,11 @@ remote-save-directory: "backups"
 googledrive:
   enabled: false
   shared-drive-id: ""
+  # OAuth client ID for a Google Cloud "TVs and Limited Input devices" client.
+  # Google Drive account linking requires this client type. Do not enter a client secret here.
+  # Google Drive 账户链接需要 Google Cloud 中“电视和受限输入设备”类型的 OAuth 客户端 ID。
+  # 此处无需填写客户端密钥。
+  oauth-device-client-id: ""
 onedrive:
   enabled: false
 dropbox:

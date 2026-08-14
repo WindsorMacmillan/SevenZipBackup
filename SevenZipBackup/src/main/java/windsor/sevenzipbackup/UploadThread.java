@@ -54,7 +54,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -109,12 +108,13 @@ public class UploadThread implements Runnable {
     }
 
     private ArrayList<Uploader> uploaders;
-    private final Map<String, LocalDateTimeFormatter> locationsToBePruned = new HashMap<>(10);
+    private final ConcurrentHashMap<String, LocalDateTimeFormatter> locationsToBePruned = new ConcurrentHashMap<>(10);
     private List<BackupListEntry> backupList;
     private static BackupStatus backupStatus = BackupStatus.NOT_RUNNING;
     private static LocalDateTime nextIntervalBackupTime;
     private static boolean lastBackupSuccessful = true;
-    private static int backupBackingUp = 0;
+    private static volatile int backupBackingUp = 0;
+    private static volatile String backupCurrentLocation = "";
 
 
     public abstract static class UploadLogger implements Logger {
@@ -366,6 +366,7 @@ public class UploadThread implements Runnable {
         logger.info(intl("backup-local-start"));
         backupStatus = BackupStatus.COMPRESSING;
         backupBackingUp = 0;
+        backupCurrentLocation = "";
 
         // 暂停自动保存并强制写入
         ServerUtil.prepareForBackup();
@@ -459,7 +460,7 @@ public class UploadThread implements Runnable {
                             @Override public void onError(Throwable throwable) {}
                         });
                 int fileCount = fileList.getList().size();
-                tasks.add(new CompressTask(location, outputPath, blacklist, formatter));
+                tasks.add(new CompressTask(tasks.size() + 1, location, outputPath, blacklist, formatter));
                 taskProgressMap.put(location, new TaskProgress(fileCount));
                 initialTotal += fileCount;
             }
@@ -478,6 +479,9 @@ public class UploadThread implements Runnable {
         try {
             for (CompressTask task : tasks) {
                 Future<Void> future = executor.submit(() -> {
+                    backupBackingUp = task.index;
+                    backupCurrentLocation = task.location;
+
                     // 重新扫描实际文件列表，修正数量
                     BackupFileList actualFileList;
                     try {
@@ -571,12 +575,14 @@ public class UploadThread implements Runnable {
     }
 
     private static class CompressTask {
+        final int index;
         final String location;
         final String outputPath;
         final List<String> blacklist;
         final LocalDateTimeFormatter formatter;
 
-        CompressTask(String location, String outputPath, List<String> blacklist, LocalDateTimeFormatter formatter) {
+        CompressTask(int index, String location, String outputPath, List<String> blacklist, LocalDateTimeFormatter formatter) {
+            this.index = index;
             this.location = location;
             this.outputPath = outputPath;
             this.blacklist = blacklist;
@@ -588,6 +594,7 @@ public class UploadThread implements Runnable {
         logger.info(intl("backup-upload-start"));
         backupStatus = BackupStatus.UPLOADING;
         backupBackingUp = 0;
+        backupCurrentLocation = "";
 
         uploaders = new ArrayList<>(5);
         ensureMethodsAuthenticated();
@@ -630,6 +637,7 @@ public class UploadThread implements Runnable {
     private void uploadBackupFiles(List<Uploader> uploaders) {
         for (BackupListEntry set : backupList) {
             backupBackingUp++;
+            backupCurrentLocation = set.location.toString();
             for (Path folder : set.location.getPaths()) {
                 uploadFile(folder.toString(), set.formatter, uploaders);
             }
@@ -813,14 +821,20 @@ public class UploadThread implements Runnable {
         BackupListEntry[] backupList = config.backupList.list;
 
         int backupNumber = Math.max(0, backupBackingUp - 1);
+        int backupCount = backupStatus == BackupStatus.COMPRESSING && totalBackupTasks > 0
+                ? totalBackupTasks
+                : backupList.length;
         int backupIndex = Math.min(backupNumber, backupList.length - 1);
 
-        String backupSetName = backupList[backupIndex].location.toString();
+        String backupSetName = backupCurrentLocation;
+        if (backupSetName.isEmpty() && backupList.length > 0) {
+            backupSetName = backupList[backupIndex].location.toString();
+        }
 
         return message
                 .replace("<set-name>", backupSetName)
                 .replace("<set-num>", String.valueOf(backupNumber+1))
-                .replace("<set-count>", String.valueOf(backupList.length));
+                .replace("<set-count>", String.valueOf(backupCount));
     }
 
     public static String getNextAutoBackup() {

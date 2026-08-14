@@ -39,10 +39,12 @@ public class ConfigMigrator {
         if (backupThreadPriority < 1) config.set("backup-thread-priority", 1);
         else if(backupThreadPriority > 10)config.set("backup-thread-priority", 10);
 
-        int zipCompression = config.getInt("7z-compression");
-        if (zipCompression < 0)config.set("7z-compression-level", 0);
-        else config.set("7z-compression-level", Math.min(zipCompression, 9));
-        config.set("7z-compression", null);
+        if (config.isSet("7z-compression")) {
+            int zipCompression = config.getInt("7z-compression");
+            if (zipCompression < 0) config.set("7z-compression-level", 0);
+            else config.set("7z-compression-level", Math.min(zipCompression, 9));
+            config.set("7z-compression", null);
+        }
 
         // 添加BossBar配置的默认值
         if (!config.isSet("show-bossbar-progress")) {
@@ -55,6 +57,10 @@ public class ConfigMigrator {
 
         if (!config.isSet("bossbar-style")) {
             config.set("bossbar-style", "SOLID");
+        }
+
+        if (!config.isSet("googledrive.oauth-device-client-id")) {
+            config.set("googledrive.oauth-device-client-id", "");
         }
 
         SevenZipBackup.getInstance().saveConfig();

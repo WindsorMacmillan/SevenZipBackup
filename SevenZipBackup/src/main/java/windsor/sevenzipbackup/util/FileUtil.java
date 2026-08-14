@@ -207,6 +207,7 @@ public class FileUtil {
         // 确保最终进度为 100%
         if (callback != null) {
             callback.onProgress(totalFiles, totalFiles);
+            callback.onBackupComplete();
         }
     }
 
@@ -222,7 +223,7 @@ public class FileUtil {
      *   <li>任一编号无法解析或超出有效范围（含混合出现的 {@code -1}）→ 回退至默认，返回 {@code null}</li>
      * </ul>
      *
-     * @return {@code -stm0x...} 亲和性参数，或 {@code null}（使用全部核心 / 回退默认）
+     * @return {@code -stm...} 亲和性参数，或 {@code null}（使用全部核心 / 回退默认）
      */
     private static String buildCpuAffinityArg() {
         Config config = ConfigParser.getConfig();
@@ -257,7 +258,7 @@ public class FileUtil {
             }
             mask |= (1L << core);
         }
-        return "-stm0x" + Long.toHexString(mask);
+        return "-stm" + Long.toHexString(mask);
     }
 
     public static class BackupFileList {

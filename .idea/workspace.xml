@@ -4,12 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="">
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="CPU Affinity and executable path bug fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Authenticator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Authenticator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/SevenZipExecutable.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/SevenZipExecutable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr.exe" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -360,7 +366,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784792177898</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="CPU Affinity and executable path bug fix">
+      <option name="closed" value="true" />
+      <created>1785992753822</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1785992753823</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -390,7 +404,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Reconstructed code" />
     <MESSAGE value="Update plugin config" />
     <MESSAGE value="Update maven config" />
     <MESSAGE value="Update file renaming" />
@@ -415,6 +428,7 @@
     <MESSAGE value="Experimental: Alternate Java library with 7z command-line tool" />
     <MESSAGE value="Feature: Compressing task now skip database and locked files." />
     <MESSAGE value="Fixed plugin text missing on Folia 26.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed plugin text missing on Folia 26.2" />
+    <MESSAGE value="CPU Affinity and executable path bug fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="CPU Affinity and executable path bug fix" />
   </component>
 </project>
