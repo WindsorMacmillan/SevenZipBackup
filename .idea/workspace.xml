@@ -4,18 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="CPU Affinity and executable path bug fix">
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Fixed Google drive authentication, backup status &amp; purging">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Authenticator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Authenticator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr.exe" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -374,7 +365,15 @@
       <option name="project" value="LOCAL" />
       <updated>1785992753823</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Fixed Google drive authentication, backup status &amp; purging">
+      <option name="closed" value="true" />
+      <created>1786685582238</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1786685582238</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -404,7 +403,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Update plugin config" />
     <MESSAGE value="Update maven config" />
     <MESSAGE value="Update file renaming" />
     <MESSAGE value="Fixed directory structures" />
@@ -429,6 +427,7 @@
     <MESSAGE value="Feature: Compressing task now skip database and locked files." />
     <MESSAGE value="Fixed plugin text missing on Folia 26.2" />
     <MESSAGE value="CPU Affinity and executable path bug fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="CPU Affinity and executable path bug fix" />
+    <MESSAGE value="Fixed Google drive authentication, backup status &amp; purging" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Google drive authentication, backup status &amp; purging" />
   </component>
 </project>

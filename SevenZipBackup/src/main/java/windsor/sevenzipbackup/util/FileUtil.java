@@ -1,6 +1,5 @@
 package windsor.sevenzipbackup.util;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
@@ -20,11 +19,14 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
 
 public class FileUtil {
     private static final String NAME_KEYWORD = "%NAME";
+    private static final Pattern PROGRESS_PERCENT = Pattern.compile("(?<!\\d)(\\d{1,3})%");
 
     private final UploadLogger logger;
 
@@ -155,35 +157,42 @@ public class FileUtil {
         int lastReportedPercent = -1;
 
         StringBuilder outputBuilder = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                outputBuilder.append(line).append("\n");
+        StringBuilder progressBuffer = new StringBuilder();
+        try (InputStreamReader reader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
+            char[] chars = new char[1024];
+            int read;
+            while ((read = reader.read(chars)) != -1) {
+                String output = new String(chars, 0, read);
+                outputBuilder.append(output);
+                progressBuffer.append(output);
 
-                // 尝试解析百分比（格式如 " 15% 123 - file.txt"）
-                int percentIdx = line.indexOf('%');
-                if (percentIdx > 0) {
-                    // 往前找数字
-                    int start = percentIdx - 1;
-                    while (start >= 0 && Character.isDigit(line.charAt(start))) {
-                        start--;
+                Matcher matcher = PROGRESS_PERCENT.matcher(progressBuffer);
+                int consumed = 0;
+                while (matcher.find()) {
+                    int percent = Integer.parseInt(matcher.group(1));
+                    consumed = matcher.end();
+                    if (percent > 100 || percent == lastReportedPercent) {
+                        continue;
                     }
-                    start++; // 移到第一个数字
-                    try {
-                        int percent = Integer.parseInt(line.substring(start, percentIdx).trim());
-                        if (percent != lastReportedPercent) {
-                            lastReportedPercent = percent;
-                            long now = System.currentTimeMillis();
-                            // 速率限制：至少间隔 200ms，或者 100% 时立即更新
-                            if (percent == 100 || (now - lastProgressUpdate) >= 200) {
-                                if (callback != null) {
-                                    int processed = (int)(totalFiles * (percent / 100.0));
-                                    callback.onProgress(processed, totalFiles);
-                                }
-                                lastProgressUpdate = now;
-                            }
+
+                    lastReportedPercent = percent;
+                    long now = System.currentTimeMillis();
+                    // Rate-limit updates to five per second, except for completion.
+                    if (percent == 100 || (now - lastProgressUpdate) >= 200) {
+                        if (callback != null) {
+                            int processed = (int) (totalFiles * (percent / 100.0));
+                            callback.onProgress(processed, totalFiles);
                         }
-                    } catch (NumberFormatException ignored) { }
+                        lastProgressUpdate = now;
+                    }
+                }
+
+                if (consumed > 0) {
+                    progressBuffer.delete(0, consumed);
+                }
+                // Keep enough trailing characters to match a percentage split across reads.
+                if (progressBuffer.length() > 32) {
+                    progressBuffer.delete(0, progressBuffer.length() - 32);
                 }
             }
         }
