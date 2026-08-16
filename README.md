@@ -2,6 +2,8 @@
 
 # SevenZipBackup
 
+中文|[English](/docs/README-English.md)
+
 第一个支持7-zip压缩格式的Minecraft服务器备份插件。 
 
 Minecraft存档文件多且零碎，这使得它们非常适合固实压缩。  
