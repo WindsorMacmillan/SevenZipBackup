@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Fixed Google drive authentication, backup status &amp; purging">
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Fixed 7z progress output on Linux">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/SevenZipExecutable.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/SevenZipExecutable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr_Linux" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +57,13 @@
         &quot;number&quot;: 8
       },
       &quot;lastSeen&quot;: 1784791383800
+    },
+    {
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOQCAaF87_p0_O&quot;,
+        &quot;number&quot;: 15
+      },
+      &quot;lastSeen&quot;: 1786896860455
     }
   ]
 }</component>
@@ -373,7 +383,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786685582238</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Fixed 7z progress output on Linux">
+      <option name="closed" value="true" />
+      <created>1786896964505</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1786896964505</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -403,7 +421,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Update maven config" />
     <MESSAGE value="Update file renaming" />
     <MESSAGE value="Fixed directory structures" />
     <MESSAGE value="Fixed compression level" />
@@ -428,6 +445,7 @@
     <MESSAGE value="Fixed plugin text missing on Folia 26.2" />
     <MESSAGE value="CPU Affinity and executable path bug fix" />
     <MESSAGE value="Fixed Google drive authentication, backup status &amp; purging" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed Google drive authentication, backup status &amp; purging" />
+    <MESSAGE value="Fixed 7z progress output on Linux" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed 7z progress output on Linux" />
   </component>
 </project>

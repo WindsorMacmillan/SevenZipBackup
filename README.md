@@ -2,7 +2,7 @@
 
 # SevenZipBackup
 
-中文|[English](/docs/README-English.md)
+中文 | [English](/docs/README-English.md)
 
 第一个支持7-zip压缩格式的Minecraft服务器备份插件。 
 
