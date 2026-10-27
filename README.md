@@ -26,13 +26,20 @@ Minecraft存档文件多且零碎，这使得它们非常适合固实压缩。
 ## 使用需求
 ### 环境要求
 
-- Java 8及以上
-- **建议使用**Java 21及以上以带来更好的压缩性能！
+- **Java 21 及以上**（插件字节码目标为 Java 21，低版本 JVM 无法加载）
 
 ### 平台要求
 
-- Bukkit/Spigot/Paper/Purpur
-- Minecraft 1.8 - 1.21.X
+- **Paper 1.20.5 及以上**，或基于 Folia 的服务端（如 Luminol）1.20.5 及以上
+- 需要服务端内置 Adventure 4.17 及以上（Paper 1.20.5+ 均已满足）
+
+> 为什么不再支持更早版本：插件使用了 Paper/Folia 的区域化调度 API
+> （`getAsyncScheduler`、`getGlobalRegionScheduler`、`getRegionScheduler`，
+> 用于在 Folia 下正确地把任务投递到对应线程），并对世界保存、BossBar 等操作
+> 做了区域线程适配。这些 API 在 1.20 系列才稳定，加上 Java 21 的硬性要求，
+> 实际可运行的下限为 1.20.5。
+>
+> Spigot / Purpur 等非 Paper 系核心不在支持范围内：插件依赖 Paper 特有的调度 API。
 
 ## 插件安装
 下载插件并放入服务器的`plugins`文件夹  
@@ -51,7 +58,34 @@ Minecraft存档文件多且零碎，这使得它们非常适合固实压缩。
 仅需执行 `/7zbackup linkaccount onedrive` 并按照屏幕指示操作即可
 
 ### DropBox
-仅需执行 `/7zbackup linkaccount dropbox` 并按照屏幕指示操作即可
+Dropbox 不支持设备码授权，且早期的在线授权中转服务已停止运行，因此需要手动获取 `refresh_token`：
+
+1. 打开 <https://www.dropbox.com/developers/apps>，创建或选择你的 App
+2. 在 **Permissions** 中勾选 `files.content.write` 与 `files.content.read`，然后 Submit
+3. 在 **Settings** 页记下 App key 与 App secret
+4. 浏览器访问（替换 `<APP_KEY>`）：
+   `https://www.dropbox.com/oauth2/authorize?client_id=<APP_KEY>&token_access_type=offline&response_type=code`
+5. 记下页面给出的授权码，换取 refresh_token：
+   ```bash
+   curl https://api.dropboxapi.com/oauth2/token \
+     -d code=<授权码> -d grant_type=authorization_code \
+     -d client_id=<APP_KEY> -d client_secret=<APP_SECRET>
+   ```
+6. 把响应中的 `refresh_token` 填入 `plugins/SevenZipBackup/DropboxCredential.json`：
+   ```json
+   { "refresh_token": "你的 refresh_token" }
+   ```
+7. 在 `config.yml` 中填写你自己的 App 凭据，并启用 Dropbox：
+   ```yaml
+   dropbox:
+     enabled: true
+     client-id: "你的 App key"
+     client-secret: "你的 App secret"
+   ```
+8. 执行 `/7zbackup reloadconfig`，再用 `/7zbackup test dropbox` 验证连接
+
+> `refresh_token` 与签发它的 App 绑定，**必须**在第 7 步填入同一套 `client-id` / `client-secret`。
+> 两项留空时会回退到插件内置凭据，那套凭据属于原作者的 App，仅对通过该 App 签发的令牌有效。
 
 ## Advanced Setup 高级设置
 <img width="576" height="310" alt="level-time-size" src="https://github.com/user-attachments/assets/3f1e0ab5-2671-437b-b2ec-7eb679e4887e" />

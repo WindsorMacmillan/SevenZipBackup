@@ -88,6 +88,9 @@ public class Scheduler {
         cancelAll();
 
         if (config.backupScheduling.enabled) {
+            // 重建下次备份时间列表，供 /7zbackup nextbackup 展示。
+            // 该列表此前从未被填充，导致 getNextAutoBackup() 抛 NoSuchElementException。
+            backupDatesList.clear();
             for (BackupScheduleEntry entry : config.backupScheduling.schedule) {
                 ZoneId timezone = config.advanced.dateTimezone;
                 for (DayOfWeek day : entry.days) {
@@ -102,6 +105,7 @@ public class Scheduler {
                     if (now.isAfter(startingOccurrence)) {
                         startingOccurrence = startingOccurrence.plusWeeks(1);
                     }
+                    backupDatesList.add(startingOccurrence);
 
                     long initialDelayTicks = SchedulerUtil.sToTicks(ChronoUnit.SECONDS.between(now, startingOccurrence));
                     ZonedDateTime previousOccurrence = ZonedDateTime.now(timezone)
@@ -221,6 +225,22 @@ public class Scheduler {
     }
 
     /**
+     * 在异步线程池中执行一次性任务。
+     * <p>
+     * 优先使用服务端托管的异步调度器，这样任务会随插件卸载被取消，
+     * 避免裸线程（{@code new Thread}）在热重载后继续运行并持有旧实例。
+     */
+    public static void runAsyncTask(Runnable task) {
+        SevenZipBackup plugin = SevenZipBackup.getInstance();
+        if (HAS_ASYNC_SCHEDULER) {
+            Bukkit.getAsyncScheduler().runNow(plugin, scheduled -> task.run());
+        } else {
+            // 极旧版本没有 AsyncScheduler，退回裸线程
+            new Thread(task).start();
+        }
+    }
+
+    /**
      * 执行一次性同步任务，指定插件实例
      */
     public static void runSyncTask(SevenZipBackup plugin, Runnable task) {
@@ -293,29 +313,42 @@ public class Scheduler {
     public static void runSyncTaskAndWait(Runnable task) throws ExecutionException, InterruptedException {
         SevenZipBackup plugin = SevenZipBackup.getInstance();
         if (IS_FOLIA) {
-            // 使用 CompletableFuture 进行等待
+            // 无法直接判断当前是否在全局区域线程（isGlobalTickThread 是较新才有的 API），
+            // 故统一带超时等待：若调用方本身就在全局区域线程，超时后会抛错而非永久挂起。
             CompletableFuture<Void> future = new CompletableFuture<>();
             Bukkit.getGlobalRegionScheduler().run(plugin, scheduled -> {
                 try {
                     task.run();
-                } finally {
                     future.complete(null);
+                } catch (Throwable t) {
+                    future.completeExceptionally(t);
                 }
             });
             try {
-                future.get();  // 阻塞异步线程
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+                // 必须有超时：区域线程被挤占或插件正在卸载时，无超时等待会让调用线程永久挂起
+                future.get(30, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new ExecutionException("Sync task interrupted", e);
+            } catch (TimeoutException e) {
+                throw new ExecutionException("Sync task timed out after 30s", e);
             }
         } else {
             // 旧版使用 callSyncMethod 或直接同步调用（如果已在主线程）
             if (Bukkit.isPrimaryThread()) {
                 task.run();
             } else {
-                Bukkit.getScheduler().callSyncMethod(plugin, () -> {
-                    task.run();
-                    return null;
-                }).get();  // 旧版仍然会阻塞
+                try {
+                    Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+                        task.run();
+                        return null;
+                    }).get(30, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new ExecutionException("Sync task interrupted", e);
+                } catch (TimeoutException e) {
+                    throw new ExecutionException("Sync task timed out after 30s", e);
+                }
             }
         }
     }
@@ -331,10 +364,19 @@ public class Scheduler {
         SevenZipBackup plugin = SevenZipBackup.getInstance();
 
         if (IS_FOLIA) {
-            // 使用出生点区块坐标，确保区域处于活跃状态
+            // 使用出生点区块坐标，确保区域处于活跃状态。
+            // 注意：Folia 的区域线程由区块活跃度驱动，出生点无玩家时该区域可能不 tick，
+            // 因此这里保留超时并抛错，由调用方决定是否降级，而不是无限等待。
             Location spawn = world.getSpawnLocation();
             int chunkX = spawn.getBlockX() >> 4;
             int chunkZ = spawn.getBlockZ() >> 4;
+
+            // 若当前就在该世界的区域线程上，同步等待会死锁（自己等自己），
+            // 直接抛错让调用方感知，而不是静默卡满超时。
+            if (Bukkit.isOwnedByCurrentRegion(world, chunkX, chunkZ)) {
+                throw new IllegalStateException(
+                        "runWorldTaskAndWait 不能在目标世界的区域线程上同步调用，否则会死锁");
+            }
 
             CompletableFuture<Void> future = new CompletableFuture<>();
             Bukkit.getRegionScheduler().run(plugin, world, chunkX, chunkZ, scheduled -> {
@@ -348,8 +390,11 @@ public class Scheduler {
 
             try {
                 future.get(30, TimeUnit.SECONDS); // 等待最多30秒
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new RuntimeException("World task execution failed", e);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new ExecutionException("World task interrupted", e);
+            } catch (TimeoutException e) {
+                throw new ExecutionException("World task timed out after 30s", e);
             }
         } else {
             if (Bukkit.isPrimaryThread()) {

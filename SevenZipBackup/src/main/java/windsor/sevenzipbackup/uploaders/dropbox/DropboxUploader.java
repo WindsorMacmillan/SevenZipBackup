@@ -290,11 +290,25 @@ public class DropboxUploader extends Uploader {
 
     /**
      * Gets a new Dropbox access token for the authenticated user
+     * <p>
+     * refresh_token 与签发它的 App 绑定，必须用同一套 client_id/client_secret 刷新。
+     * 因此优先使用 config.yml 中 dropbox.client-id / client-secret 配置的自建 App 凭据，
+     * 未配置时才回退到插件内置值（内置值只对原作者注册的 App 有效）。
      */
     private void retrieveNewAccessToken() throws Exception {
+        Config config = ConfigParser.getConfig();
+        String configuredId = config == null ? null : config.backupMethods.dropbox.clientId;
+        String configuredSecret = config == null ? null : config.backupMethods.dropbox.clientSecret;
+        String clientId = configuredId == null || configuredId.trim().isEmpty()
+                ? Obfusticate.decrypt(AuthenticationProvider.DROPBOX.getClientId())
+                : configuredId.trim();
+        String clientSecret = configuredSecret == null || configuredSecret.trim().isEmpty()
+                ? Obfusticate.decrypt(AuthenticationProvider.DROPBOX.getClientSecret())
+                : configuredSecret.trim();
+
         RequestBody requestBody = new FormBody.Builder()
-            .add("client_id", Obfusticate.decrypt(AuthenticationProvider.DROPBOX.getClientId()))
-            .add("client_secret", Obfusticate.decrypt(AuthenticationProvider.DROPBOX.getClientSecret()))
+            .add("client_id", clientId)
+            .add("client_secret", clientSecret)
             .add("refresh_token", refreshToken)
             .add("grant_type", "refresh_token")
             .build();

@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
 
@@ -324,10 +325,7 @@ public class FileUtil {
     // 仅生成文件列表，不压缩，并通过回调通知文件数量
     public BackupFileList prepareFileList(String inputFolderPath, List<String> blacklistGlobs,
                                           BackupProgressCallback callback) throws Exception {
-        List<BlacklistEntry> blacklist = new ArrayList<>();
-        for (String glob : blacklistGlobs) {
-            blacklist.add(new BlacklistEntry(glob, FileSystems.getDefault().getPathMatcher("glob:" + glob)));
-        }
+        List<BlacklistEntry> blacklist = buildBlacklist(blacklistGlobs);
         BackupFileList fileList = new BackupFileList(blacklist);
         generateFileList(new File(inputFolderPath), inputFolderPath, fileList);
 
@@ -355,13 +353,32 @@ public class FileUtil {
      * 仅生成文件列表，不做日志统计，用于重新扫描
      */
     public BackupFileList prepareFileList(String inputFolderPath, List<String> blacklistGlobs) throws Exception {
-        List<BlacklistEntry> blacklist = new ArrayList<>();
-        for (String glob : blacklistGlobs) {
-            blacklist.add(new BlacklistEntry(glob, FileSystems.getDefault().getPathMatcher("glob:" + glob)));
-        }
+        List<BlacklistEntry> blacklist = buildBlacklist(blacklistGlobs);
         BackupFileList fileList = new BackupFileList(blacklist);
         generateFileList(new File(inputFolderPath), inputFolderPath, fileList);
         return fileList;
+    }
+
+    /**
+     * 按当前配置的正则开关把配置串编译成黑名单条目。
+     * <p>
+     * 关闭正则时按 glob 解释；无论哪种模式都要求完整匹配，不做子串包含判断。
+     * 单条规则语法非法时只跳过该条并记录日志，不影响其余规则。
+     */
+    private List<BlacklistEntry> buildBlacklist(List<String> patterns) {
+        Config config = ConfigParser.getConfig();
+        boolean regex = config == null || config.advanced.blacklistRegex;
+        List<BlacklistEntry> blacklist = new ArrayList<>();
+        for (String pattern : patterns) {
+            try {
+                blacklist.add(BlacklistEntry.compile(pattern, regex));
+            } catch (PatternSyntaxException e) {
+                logger.log(intl("local-backup-blacklist-invalid"),
+                        "glob-pattern", pattern,
+                        "error", e.getDescription());
+            }
+        }
+        return blacklist;
     }
 
     // 直接压缩给定的文件列表
@@ -406,7 +423,7 @@ public class FileUtil {
 
             // 黑名单检查
             for (BlacklistEntry blacklistEntry : fileList.getBlacklist()) {
-                if (blacklistEntry.getPathMatcher().matches(relativePath)) {
+                if (blacklistEntry.matches(relativePath)) {
                     blacklistEntry.incBlacklistedFiles();
                     return;
                 }
@@ -450,40 +467,45 @@ public class FileUtil {
         return location.replace("../", "");
     }
 
+    /**
+     * 找出顶层目录中与给定模式匹配的文件夹。
+     * <p>
+     * 只扫描 {@code rootPath} 的直接子目录，不递归，因此不会误收
+     * {@code plugins/WorldEdit}、{@code backups/world} 这类深层目录。
+     * <p>
+     * {@code advanced.blacklist-regex} 开启时（默认）{@code glob} 按正则解释，
+     * 与目录名做整串匹配；关闭时按 glob 解释（{@code *} 不跨目录分隔符）。
+     */
     public static List<Path> generateGlobFolderList(String glob, String rootPath) {
-        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:./" + glob);
         List<Path> list = new ArrayList<>();
         try {
-            Files.walkFileTree(Paths.get(rootPath), new SimpleFileVisitor<Path>() {
-                @Override
-                public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public @NotNull FileVisitResult preVisitDirectory(@NotNull Path dir, @NotNull BasicFileAttributes attrs) {
-                    try {
-                        if (pathMatcher.matches(dir)) {
-                            list.add(dir);
-                        }
-                        return FileVisitResult.CONTINUE;
-                    } catch (Exception e) {
-                        System.err.println("Warning: Skipping directory due to access issue: " + dir + " - " + e.getMessage());
-                        return FileVisitResult.CONTINUE;
+            Config config = ConfigParser.getConfig();
+            boolean regex = config == null || config.advanced.blacklistRegex;
+            Pattern regexPattern = regex ? Pattern.compile(glob) : null;
+            // glob 分支匹配的是 relativize 之后的相对路径（如 "world"），不能再加 "./" 前缀，
+            // 否则永远匹配不上。
+            PathMatcher pathMatcher = regex
+                    ? null
+                    : FileSystems.getDefault().getPathMatcher("glob:" + glob);
+            Path root = Paths.get(rootPath);
+            File[] dirs = new File(rootPath).listFiles(File::isDirectory);
+            if (dirs != null) {
+                for (File dir : dirs) {
+                    Path path = dir.toPath();
+                    boolean matched;
+                    if (regexPattern != null) {
+                        // 只取文件夹名参与匹配，避免把父路径带进正则
+                        matched = regexPattern.matcher(path.getFileName().toString()).matches();
+                    } else {
+                        matched = pathMatcher.matches(root.relativize(path));
+                    }
+                    if (matched) {
+                        list.add(path);
                     }
                 }
-
-                @Override
-                public @NotNull FileVisitResult visitFileFailed(@NotNull Path file, @NotNull IOException exc) {
-                    System.err.println("Warning: Failed to visit path: " + file + " - " + exc.getMessage());
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException exception) {
-            System.err.println("Error generating glob folder list for glob: " + glob + " at root: " + rootPath);
-            System.err.println("Error message: " + exception.getMessage());
+            }
         } catch (Exception exception) {
-            System.err.println("Unexpected error generating glob folder list for glob: " + glob + " at root: " + rootPath);
+            System.err.println("Error generating glob folder list for glob: " + glob + " at root: " + rootPath);
             System.err.println("Error message: " + exception.getMessage());
         }
         return list;
@@ -501,22 +523,5 @@ public class FileUtil {
             }
         }
         folder.delete();
-    }
-
-    private static class BlacklistEntry {
-        private final String globPattern;
-        private final PathMatcher pathMatcher;
-        private int blacklistedFiles;
-
-        public BlacklistEntry(String globPattern, PathMatcher pathMatcher) {
-            this.globPattern = globPattern;
-            this.pathMatcher = pathMatcher;
-            this.blacklistedFiles = 0;
-        }
-
-        public String getGlobPattern() { return globPattern; }
-        public PathMatcher getPathMatcher() { return pathMatcher; }
-        public int getBlacklistedFiles() { return blacklistedFiles; }
-        public void incBlacklistedFiles() { blacklistedFiles++; }
     }
 }

@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import windsor.sevenzipbackup.config.ConfigParser;
 import windsor.sevenzipbackup.config.ConfigParser.Config;
+import windsor.sevenzipbackup.plugin.Scheduler;
 import windsor.sevenzipbackup.plugin.SevenZipBackup;
 import windsor.sevenzipbackup.util.MessageUtil;
 
@@ -50,7 +51,7 @@ public class SevenZipBackupApi {
      */
     static void backupDone() {
         for (Runnable runnable : onBackupDoneRunnables) {
-            new Thread(runnable).start();
+            Scheduler.runAsyncTask(runnable);
         }
     }
 
@@ -59,7 +60,7 @@ public class SevenZipBackupApi {
      */
     static void backupError() {
         for (Runnable runnable : onBackupErrorRunnables) {
-            new Thread(runnable).start();
+            Scheduler.runAsyncTask(runnable);
         }
     }
 
@@ -123,7 +124,7 @@ public class SevenZipBackupApi {
      * Behaves identically to running {@code /7zbackup backup}
      */
     public static void startBackup() {
-        new Thread(new UploadThread()).start();
+        Scheduler.runAsyncTask(new UploadThread());
     }
 
     /**

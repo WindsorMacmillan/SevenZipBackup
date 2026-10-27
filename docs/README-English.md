@@ -27,13 +27,22 @@ Take care of your server data and be well!
 ## Requirements
 ### General Requirements
 
-- Java 8 or higher
-- Java 21 or higher **recommended** for compressing performance!
+- **Java 21 or higher** (the plugin is compiled to Java 21 bytecode; older JVMs cannot load it)
 
 ### Platform Specific Requirements
 
-- Bukkit/Spigot/Paper/Purpur
-- Minecraft 1.8 - 1.21.X
+- **Paper 1.20.5 or higher**, or a Folia-based server (e.g. Luminol) 1.20.5 or higher
+- Adventure 4.17+ bundled with the server (all Paper 1.20.5+ builds qualify)
+
+> Why older versions are no longer supported: the plugin uses Paper/Folia's
+> regionised scheduler APIs (`getAsyncScheduler`, `getGlobalRegionScheduler`,
+> `getRegionScheduler`) to dispatch work onto the correct thread under Folia,
+> and adapts world saving and BossBar updates to run on region threads. These
+> APIs only stabilised in the 1.20 line, and combined with the Java 21
+> requirement the practical minimum is 1.20.5.
+>
+> Spigot / Purpur and other non-Paper forks are not supported: the plugin
+> depends on Paper-specific scheduler APIs.
 
 ## Basic Setup
 Download the plugin and copy it to the `plugins` folder on your server.  

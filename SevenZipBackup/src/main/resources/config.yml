@@ -61,19 +61,19 @@ backup-schedule-list:
 
 backup-list:
   # Backup all kinds of world
-  # 备份所有世界文件夹
-  - glob: "*world*"
+  # 备份所有世界文件夹（按正则匹配顶层文件夹名）
+  - glob: ".*world.*"
     format: "Backup-%NAME-%FORMAT.zip"
     create: true
-  # Backup plugins' data, but exclude jar files and cache
-  # 备份插件数据，但不包含插件本体和缓存文件
+  # Backup plugins' data, but exclude jars, remapped jars and cache files
+  # 备份插件数据，但不包含插件本体、重映射缓存和缓存文件
   - path: "plugins"
     format: "Backup-plugins-%FORMAT.zip"
     create: true
     blacklist:
-      - "*jar"
-      - ".paper-remapped/**"
-      - "*cache*"
+      - "^[^/]*\\.jar$"
+      - "\\.paper-remapped/.*"
+      - ".*cache.*"
 
 external-backup-list:
 
@@ -92,6 +92,18 @@ onedrive:
   enabled: false
 dropbox:
   enabled: false
+  # Dropbox does NOT support the device-code flow, and the plugin's original online
+  # authorization relay (drivebackup.com) has expired. You must create your own App at
+  # https://www.dropbox.com/developers/apps and fill in the credentials + refresh_token
+  # manually. See README "DropBox" section for step-by-step instructions.
+  # Leave both empty to fall back to the built-in App of the original author
+  # (only works if your refresh_token was issued by that App).
+  # Dropbox 不支持设备码流程，且原有的在线授权中转服务（drivebackup.com）域名已过期。
+  # 需要自行在 https://www.dropbox.com/developers/apps 创建 App，并手动填写凭据与 refresh_token，
+  # 详细步骤见 README 的「DropBox」小节。留空则回退到原作者内置的 App
+  #（仅当你的 refresh_token 由该 App 签发时才可用）。
+  client-id: ""
+  client-secret: ""
 webdav:
   enabled: false
   hostname: "http://example.com/directory"
@@ -136,3 +148,16 @@ advanced:
   # UTC
   date-timezone: "+08:00"
   ftp-file-separator: "/"
+  # Whether backup locations (glob:) and blacklist entries are interpreted as REGEX.
+  # true  -> the string is a Java regex, matched against the whole relative path
+  #          (e.g. ".*\.jar$" excludes jars at any depth, "spark/.*\.hprof" targets one folder).
+  # false -> the string is a glob, also required to match the whole name/path
+  #          ("*" does NOT cross directory separators, use "**" for that).
+  # Backslashes in regex must be doubled in YAML, or use single quotes: '.*\.hprof'
+  # 备份位置（glob:）与黑名单条目是否按「正则」解释。
+  # true  -> 按 Java 正则处理，与整条相对路径做完整匹配
+  #          （如 ".*\.jar$" 排除任意层级的 jar，"spark/.*\.hprof" 只针对单个目录）。
+  # false -> 按 glob 处理，同样要求完整匹配文件名/路径
+  #          （glob 的 "*" 不跨越目录分隔符，跨层级请用 "**"）。
+  # 注意：正则里的反斜杠在 YAML 中需要双写，或改用单引号：'.*\.hprof'
+  blacklist-regex: true

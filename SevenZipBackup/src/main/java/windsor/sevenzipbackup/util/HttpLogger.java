@@ -47,7 +47,8 @@ public class HttpLogger implements Interceptor {
         if (Objects.requireNonNull(responseBodyContentType).equals(jsonMediaType)) {
             try {
                 JSONObject responseBodyJson = new JSONObject(responseBodyString);
-                if (responseBodyJson.getString("msg").equals("code_not_authenticated")) {
+                // 兼容旧认证服务的轮询占位响应；用 optString 避免缺少 msg 字段时抛异常。
+                if ("code_not_authenticated".equals(responseBodyJson.optString("msg"))) {
                     return response.newBuilder().body(ResponseBody.create(responseBodyString, responseBodyContentType)).build();
                 }
                 MessageUtil.Builder().text("Resp: " + responseBodyJson).toConsole(true).send();

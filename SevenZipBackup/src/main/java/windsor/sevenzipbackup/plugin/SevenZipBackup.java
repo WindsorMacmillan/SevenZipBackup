@@ -20,10 +20,12 @@ import windsor.sevenzipbackup.handler.listeners.ChatInputListener;
 import windsor.sevenzipbackup.handler.listeners.PlayerListener;
 import windsor.sevenzipbackup.plugin.updater.UpdateChecker;
 import windsor.sevenzipbackup.plugin.updater.Updater;
+import windsor.sevenzipbackup.uploaders.Authenticator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
@@ -39,9 +41,11 @@ public class SevenZipBackup extends JavaPlugin {
     public static Updater updater;
 
     /**
-     * A list of players who are currently waiting to reply.
+     * Players currently waiting to reply in chat (e.g. picking a Google shared drive).
+     * <p>
+     * 用线程安全集合：写入发生在全局区域线程，读取可能来自异步聊天事件。
      */
-    public static List<CommandSender> chatInputPlayers;
+    public static Set<CommandSender> chatInputPlayers;
 
     /**
      * A global instance of OkHTTP client
@@ -62,7 +66,7 @@ public class SevenZipBackup extends JavaPlugin {
                 .readTimeout(3, TimeUnit.MINUTES)
                 .addInterceptor(new HttpLogger())
                 .build();
-        chatInputPlayers = new ArrayList<>(1);
+        chatInputPlayers = ConcurrentHashMap.newKeySet();
         List<CommandSender> configPlayers = PermissionHandler.getPlayersWithPerm(Permission.RELOAD_CONFIG);
         saveDefaultConfig();
         localizationConfig = new CustomConfig("intl.yml");
@@ -115,6 +119,7 @@ public class SevenZipBackup extends JavaPlugin {
     public void onDisable() {
         Scheduler.stopBackupThread();
         UploadThread.cleanupBossBar(); // 清理BossBar
+        Authenticator.shutdown(); // 取消 OAuth 轮询任务，避免热重载后残留
         SevenZipBackupApi.shutdown();
         MessageUtil.Builder().mmText(intl("plugin-stop")).send();
     }

@@ -25,10 +25,13 @@ public class BackupMethods {
 
     public static class GoogleDriveBackupMethod extends BackupMethod {
         public final String sharedDriveId;
+        /** 设备码流程所需的 OAuth 客户端 ID，为空时不允许发起链接 */
+        public final String oauthDeviceClientId;
 
-        public GoogleDriveBackupMethod(boolean enabled, String sharedDriveId) {
+        public GoogleDriveBackupMethod(boolean enabled, String sharedDriveId, String oauthDeviceClientId) {
             super(enabled);
             this.sharedDriveId = sharedDriveId;
+            this.oauthDeviceClientId = oauthDeviceClientId;
         }
     }
 
@@ -39,8 +42,15 @@ public class BackupMethods {
     }
 
     public static class DropboxBackupMethod extends BackupMethod {
-        public DropboxBackupMethod(boolean enabled) {
+        /** 自建 Dropbox App 的 App key；为空时回退到插件内置值 */
+        public final String clientId;
+        /** 自建 Dropbox App 的 App secret；为空时回退到插件内置值 */
+        public final String clientSecret;
+
+        public DropboxBackupMethod(boolean enabled, String clientId, String clientSecret) {
             super(enabled);
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
         }
     }
 
@@ -155,13 +165,16 @@ public class BackupMethods {
         }
         GoogleDriveBackupMethod googleDriveMethod = new GoogleDriveBackupMethod(
             config.getBoolean("googledrive.enabled"),
-            googleSharedDriveId
+            googleSharedDriveId,
+            config.getString("googledrive.oauth-device-client-id", "")
             );
         OneDriveBackupMethod oneDriveMethod = new OneDriveBackupMethod(
             config.getBoolean("onedrive.enabled")
             );
         DropboxBackupMethod dropboxMethod = new DropboxBackupMethod(
-            config.getBoolean("dropbox.enabled")
+            config.getBoolean("dropbox.enabled"),
+            config.getString("dropbox.client-id", ""),
+            config.getString("dropbox.client-secret", "")
             );
         WebDAVBackupMethod webdavMethod = new WebDAVBackupMethod(
             config.getBoolean("webdav.enabled"), 

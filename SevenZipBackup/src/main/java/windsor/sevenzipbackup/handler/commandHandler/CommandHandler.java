@@ -130,15 +130,19 @@ public class CommandHandler implements CommandExecutor {
                     BasicCommands.sendNoPerms(sender);
                     break;
                 }
+                // 用异步调度器托管，而不是裸线程：Folia/Paper 下都能随插件卸载被正确取消
                 Runnable testThread = new TestThread(sender, args);
-                new Thread(testThread).start();
+                Bukkit.getAsyncScheduler().runNow(SevenZipBackup.getInstance(),
+                        scheduledTask -> testThread.run());
                 break;
             case "update":
                 if (!PermissionHandler.hasPerm(sender, Permission.BACKUP)) {
                     BasicCommands.sendNoPerms(sender);
                     break;
                 }
-                SevenZipBackup.updater.runUpdater(sender);
+                // 下载 jar 是阻塞网络 IO，必须放到异步线程，否则会卡住主线程/区域线程
+                Bukkit.getAsyncScheduler().runNow(SevenZipBackup.getInstance(),
+                        scheduledTask -> SevenZipBackup.updater.runUpdater(sender));
                 break;
             case "commands":
             default:

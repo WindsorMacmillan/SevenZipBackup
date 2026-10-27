@@ -22,6 +22,12 @@ public class Advanced {
     public final Locale dateLanguage;
     public final ZoneId dateTimezone;
     public final String fileSeparator;
+    /**
+     * 黑名单（以及备份位置 glob）是否按正则表达式解释。
+     * 默认 {@code true}：启用后严格按正则对相对路径做整串匹配；
+     * 关闭后按 glob 解释，同样要求完整匹配文件名/路径。
+     */
+    public final boolean blacklistRegex;
 
     public Advanced(
         boolean metricsEnabled,
@@ -30,9 +36,10 @@ public class Advanced {
         boolean debugEnabled,
         Locale dateLanguage,
         ZoneId dateTimezone,
-        String fileSeparator
+        String fileSeparator,
+        boolean blacklistRegex
         ) {
-            
+
         this.metricsEnabled = metricsEnabled;
         this.updateCheckEnabled = updateCheckEnabled;
         this.suppressErrors = suppressErrors;
@@ -40,6 +47,7 @@ public class Advanced {
         this.dateLanguage = dateLanguage;
         this.dateTimezone = dateTimezone;
         this.fileSeparator = fileSeparator;
+        this.blacklistRegex = blacklistRegex;
     }
 
     @NotNull
@@ -59,14 +67,17 @@ public class Advanced {
             dateTimezone = ZoneOffset.of("Z");
         }
         String fileSeparator = config.getString("advanced.ftp-file-separator");
+        // 未显式配置时默认启用正则，保证与默认配置一致
+        boolean blacklistRegex = config.getBoolean("advanced.blacklist-regex", true);
         return new Advanced(
-            metrics, 
-            updateCheck, 
+            metrics,
+            updateCheck,
             suppressErrors,
             debugEnabled,
             dateLanguage,
-            dateTimezone, 
-            fileSeparator
+            dateTimezone,
+            fileSeparator,
+            blacklistRegex
         );
     }
 }

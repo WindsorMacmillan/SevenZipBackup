@@ -4,12 +4,58 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Fixed 7z progress output on Linux">
+    <list default="true" id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="Updated Linux executable to 7zzs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/app.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/dev.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/css/bootstrap.min.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/google164716649844201a.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/images/checked.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/images/discord.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/images/failed.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/images/github.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/images/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/images/patreon.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/js/bootstrap.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/js/main.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/public/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/routes/callback.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/routes/pin.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/routes/provider.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/routes/token.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/views/about.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/views/fail.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/views/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/views/privacy-policy.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Authenticator/views/success.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/SevenZipBackupApi.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/SevenZipBackupApi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/UploadThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/ConfigMigrator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/Advanced.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/Advanced.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/config/configSections/BackupMethods.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/commandHandler/CommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/commandHandler/CommandHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/listeners/ChatInputListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/handler/listeners/ChatInputListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/Scheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/Scheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/SevenZipBackup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/updater/Updater.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/plugin/updater/Updater.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Authenticator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/Authenticator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/dropbox/DropboxUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/uploaders/dropbox/DropboxUploader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/BlacklistEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/BlacklistEntry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/FileUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/HttpLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/HttpLogger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/ServerUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/ServerUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/SevenZipExecutable.java" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/java/windsor/sevenzipbackup/util/SevenZipExecutable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/7z/7zr_Linux" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/intl.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/SevenZipBackup/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/README-English.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/README-English.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,6 +165,13 @@
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.27258.48" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="默认任务">
       <changelist id="4aab1079-d5df-4f0e-a46d-0c93d5a669aa" name="更改" comment="" />
@@ -391,7 +444,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786896964505</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Updated Linux executable to 7zzs">
+      <option name="closed" value="true" />
+      <created>1788140481829</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1788140481829</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -421,7 +482,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Update file renaming" />
     <MESSAGE value="Fixed directory structures" />
     <MESSAGE value="Fixed compression level" />
     <MESSAGE value="Fixed update checker" />
@@ -446,6 +506,7 @@
     <MESSAGE value="CPU Affinity and executable path bug fix" />
     <MESSAGE value="Fixed Google drive authentication, backup status &amp; purging" />
     <MESSAGE value="Fixed 7z progress output on Linux" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed 7z progress output on Linux" />
+    <MESSAGE value="Updated Linux executable to 7zzs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated Linux executable to 7zzs" />
   </component>
 </project>

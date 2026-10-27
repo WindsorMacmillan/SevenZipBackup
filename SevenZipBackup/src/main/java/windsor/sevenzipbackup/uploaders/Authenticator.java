@@ -3,22 +3,25 @@ package windsor.sevenzipbackup.uploaders;
 import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
+import windsor.sevenzipbackup.config.ConfigParser;
 import windsor.sevenzipbackup.handler.commandHandler.BasicCommands;
+import windsor.sevenzipbackup.plugin.Scheduler;
 import windsor.sevenzipbackup.plugin.SevenZipBackup;
 import windsor.sevenzipbackup.util.Logger;
 import windsor.sevenzipbackup.util.MessageUtil;
 import windsor.sevenzipbackup.util.NetUtil;
-import windsor.sevenzipbackup.util.SchedulerUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static windsor.sevenzipbackup.config.Localization.intl;
 
@@ -26,21 +29,24 @@ public class Authenticator {
     /**
      * Endpoints
      */
-    private static final String DRIVEBACKUP_AUTH_URL = "https://auth.drivebackup.com";
-    private static final String REQUEST_CODE_ENDPOINT = DRIVEBACKUP_AUTH_URL + "/pin";
-    private static final String POLL_VERIFICATION_ENDPOINT = DRIVEBACKUP_AUTH_URL + "/token";
     private static final String GOOGLE_REQUEST_CODE_ENDPOINT = "https://oauth2.googleapis.com/device/code";
     private static final String GOOGLE_POLL_VERIFICATION_ENDPOINT = "https://oauth2.googleapis.com/token";
     private static final String GOOGLE_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive";
     private static final String ONEDRIVE_REQUEST_CODE_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/devicecode";
     private static final String ONEDRIVE_POLL_VERIFICATION_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
 
-    /**
-     * Authenticator client secret
-     */
-    private static final String CLIENT_SECRET = "fyKCRZRyJeHW5PzGJvQkL4dr2zRHRmwTaOutG7BBhQM=";
-
     private static ScheduledTask pollTask = null;
+
+    /**
+     * OAuth 设备码流程中，这些错误只表示「还没处理完」，必须继续轮询而不能中止：
+     * <ul>
+     *   <li>{@code authorization_pending}：用户还没完成授权</li>
+     *   <li>{@code slow_down}：轮询过快，服务端要求降低频率</li>
+     * </ul>
+     */
+    private static boolean isRetryableOAuthError(String error) {
+        return "authorization_pending".equals(error) || "slow_down".equals(error);
+    }
 
     public enum AuthenticationProvider {
         GOOGLE_DRIVE("Google Drive", "googledrive", "/GoogleDriveCredential.json", "qWd2xXC/ORzdZvUotXoWhHC0POkMNuO/xuwcKWc9s1LLodayZXvkdKimmpOQqWYS6I+qGSrYNb8UCJWMhrgDXhIWEbDvytkQTwq+uNcnfw8=", "pasQz0KvtyC7o6CrlLPSMVV9Y0RMX76cXzsAbBoCBxI="),
@@ -90,13 +96,29 @@ public class Authenticator {
      * @param initiator user who initiated the authentication
      */
     public static void authenticateUser(final AuthenticationProvider provider, final CommandSender initiator) {
+        // 设备码申请是阻塞网络 IO，放在异步线程执行，避免卡住命令所在的主线程/区域线程。
+        Scheduler.runAsyncTask(() -> authenticateUserAsync(provider, initiator));
+    }
+
+    private static void authenticateUserAsync(final AuthenticationProvider provider, final CommandSender initiator) {
         SevenZipBackup plugin = SevenZipBackup.getInstance();
         Logger logger = (input, placeholders) -> MessageUtil.Builder().mmText(input, placeholders).to(initiator).toConsole(false).send();
+
+        // Dropbox 不支持设备码流程，且原中转服务（drivebackup.com）域名已过期失效，
+        // 无法再走在线授权。改为引导用户手动填写 refresh_token。
+        if (provider == AuthenticationProvider.DROPBOX) {
+            logger.log(intl("dropbox-manual-auth-required"));
+            return;
+        }
+
         cancelPollTask();
         try {
             String configuredGoogleDeviceClientId = "";
             if (provider == AuthenticationProvider.GOOGLE_DRIVE) {
-                configuredGoogleDeviceClientId = plugin.getConfig().getString("googledrive.oauth-device-client-id", "").trim();
+                // 此处已在异步线程，不能调用 JavaPlugin.getConfig()（非线程安全）；
+                // 改读插件启动时解析好的内存快照。
+                String rawId = ConfigParser.getConfig().backupMethods.googleDrive.oauthDeviceClientId;
+                configuredGoogleDeviceClientId = rawId == null ? "" : rawId.trim();
                 if (configuredGoogleDeviceClientId.isEmpty()) {
                     logger.log(intl("google-drive-oauth-client-id-required"));
                     return;
@@ -110,15 +132,12 @@ public class Authenticator {
                 requestBody.add("client_id", googleDeviceClientId);
                 requestBody.add("scope", GOOGLE_DRIVE_SCOPE);
                 requestEndpoint = GOOGLE_REQUEST_CODE_ENDPOINT;
-            } else if (provider == AuthenticationProvider.ONEDRIVE) {
+            } else {
+                // 走到这里只剩 OneDrive：Dropbox 已在方法开头改为手动配置
                 requestBody.add("type", provider.getId());
                 requestBody.add("client_id", Obfusticate.decrypt(provider.getClientId()));
                 requestBody.add("scope", "offline_access Files.ReadWrite");
                 requestEndpoint = ONEDRIVE_REQUEST_CODE_ENDPOINT;
-            } else {
-                requestBody.add("type", provider.getId());
-                requestBody.add("client_secret", Obfusticate.decrypt(CLIENT_SECRET));
-                requestEndpoint = REQUEST_CODE_ENDPOINT;
             }
             Request request = new Request.Builder()
                 .url(requestEndpoint)
@@ -132,13 +151,18 @@ public class Authenticator {
             if (verificationUri.isEmpty()) {
                 throw new IOException("OAuth response did not contain a verification URL");
             }
-            long responseCheckDelay = SchedulerUtil.sToTicks(parsedResponse.optLong("interval", 5));
+            long pollIntervalSeconds = parsedResponse.optLong("interval", 5);
+            if (pollIntervalSeconds <= 0) {
+                pollIntervalSeconds = 5;
+            }
             logger.log(
                 intl("link-account-code"),
                 "link-url", verificationUri,
                 "link-code", userCode,
                 "provider", provider.getName());
-            pollTask = plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, scheduledTask -> {
+            // 轮询里是阻塞式 HTTP 请求，直接挂在异步调度器上，不占用全局区域线程。
+            // 只有写配置、刷新调度这类必须主线程的操作才切回全局区域线程。
+            pollTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, asyncTask -> {
                 try {
                     FormBody.Builder requestBody1 = new FormBody.Builder()
                         .add("device_code", deviceCode);
@@ -147,15 +171,12 @@ public class Authenticator {
                         requestBody1.add("client_id", googleDeviceClientId);
                         requestBody1.add("grant_type", "urn:ietf:params:oauth:grant-type:device_code");
                         requestEndpoint1 = GOOGLE_POLL_VERIFICATION_ENDPOINT;
-                    } else if (provider == AuthenticationProvider.ONEDRIVE) {
+                    } else {
+                        // 只剩 OneDrive：Dropbox 已改为手动配置，不再进入轮询
                         requestBody1.add("user_code", userCode);
                         requestBody1.add("client_id", Obfusticate.decrypt(provider.getClientId()));
                         requestBody1.add("grant_type", "urn:ietf:params:oauth:grant-type:device_code");
                         requestEndpoint1 = ONEDRIVE_POLL_VERIFICATION_ENDPOINT;
-                    } else {
-                        requestBody1.add("user_code", userCode);
-                        requestBody1.add("client_secret", Obfusticate.decrypt(CLIENT_SECRET));
-                        requestEndpoint1 = POLL_VERIFICATION_ENDPOINT;
                     }
                     Request request1 = new Request.Builder()
                         .url(requestEndpoint1)
@@ -164,17 +185,14 @@ public class Authenticator {
                     JSONObject parsedResponse1 = executeJsonRequest(request1, requestEndpoint1);
                     if (parsedResponse1.has("refresh_token")) {
                         saveRefreshToken(provider, (String) parsedResponse1.get("refresh_token"));
-                        linkSuccess(initiator, provider, logger);
-                        cancelPollTask();
-                    } else if (
-                        (provider == AuthenticationProvider.ONEDRIVE && !parsedResponse1.getString("error").equals("authorization_pending")) ||
-                        (provider == AuthenticationProvider.GOOGLE_DRIVE
-                                && !parsedResponse1.getString("error").equals("authorization_pending")
-                                && !parsedResponse1.getString("error").equals("slow_down")) ||
-                        (provider == AuthenticationProvider.DROPBOX && !parsedResponse1.get("msg").equals("code_not_authenticated"))
-                        ) {
-                        MessageUtil.Builder().text(parsedResponse1.toString()).send();
-                        throw new UploadException();
+                        Scheduler.runSyncTask(() -> {
+                            linkSuccess(initiator, provider, logger);
+                            cancelPollTask();
+                        });
+                    } else if (!isRetryableOAuthError(parsedResponse1.optString("error"))) {
+                        // OneDrive / Google：authorization_pending 与 slow_down 都继续等待，
+                        // 其余错误（access_denied、expired_token、invalid_grant 等）才是真的失败
+                        failPolling(provider, parsedResponse1, logger);
                     }
                 } catch (Exception exception) {
                     NetUtil.catchException(exception, getPollEndpoint(provider), logger);
@@ -182,13 +200,38 @@ public class Authenticator {
                     MessageUtil.sendConsoleException(exception);
                     cancelPollTask();
                 }
-            }, responseCheckDelay, responseCheckDelay);
+            }, pollIntervalSeconds, pollIntervalSeconds, TimeUnit.SECONDS);
         } catch (Exception exception) {
             NetUtil.catchException(exception, provider == AuthenticationProvider.GOOGLE_DRIVE
-                    ? GOOGLE_REQUEST_CODE_ENDPOINT : DRIVEBACKUP_AUTH_URL, logger);
+                    ? GOOGLE_REQUEST_CODE_ENDPOINT : ONEDRIVE_REQUEST_CODE_ENDPOINT, logger);
             logger.log(intl("link-provider-failed"), "provider", provider.getName());
             MessageUtil.sendConsoleException(exception);
         }
+    }
+
+    /**
+     * 轮询遇到不可恢复的错误时统一处理：告知用户、必要时打印服务端返回的详情、停止轮询。
+     * <p>
+     * 服务端返回的错误信息（{@code error}/{@code error_description}）对排查授权问题至关重要，
+     * 例如 {@code expired_token}（码已过期）、{@code access_denied}（用户拒绝了授权）、
+     * {@code invalid_grant}（客户端配置与授权不匹配）。
+     */
+    private static void failPolling(@NotNull AuthenticationProvider provider,
+                                    @NotNull JSONObject response,
+                                    @NotNull Logger logger) {
+        String error = response.optString("error", response.optString("msg", "unknown_error"));
+        String description = response.optString("error_description", response.optString("error", ""));
+        MessageUtil.Builder()
+                .text(intl("link-provider-failed-detail")
+                        .replace("<provider>", provider.getName())
+                        .replace("<error>", error)
+                        .replace("<error-description>", abbreviateResponse(description)))
+                .send();
+        logger.log(intl("link-provider-failed"), "provider", provider.getName());
+        if (SevenZipBackup.getInstance().getConfig().getBoolean("advanced.debug", false)) {
+            MessageUtil.sendConsoleException(new IOException("OAuth polling failed: " + response));
+        }
+        cancelPollTask();
     }
 
     @NotNull
@@ -218,10 +261,7 @@ public class Authenticator {
         if (provider == AuthenticationProvider.GOOGLE_DRIVE) {
             return GOOGLE_POLL_VERIFICATION_ENDPOINT;
         }
-        if (provider == AuthenticationProvider.ONEDRIVE) {
-            return ONEDRIVE_POLL_VERIFICATION_ENDPOINT;
-        }
-        return POLL_VERIFICATION_ENDPOINT;
+        return ONEDRIVE_POLL_VERIFICATION_ENDPOINT;
     }
 
     @NotNull
@@ -252,8 +292,18 @@ public class Authenticator {
         }
     }
 
+    /**
+     * 关闭插件时清理轮询任务。静态字段持有 {@link ScheduledTask}，
+     * 若不显式取消，PlugmanX 热重载后旧任务仍会继续轮询并引用旧插件实例，造成内存泄漏。
+     */
+    public static void shutdown() {
+        cancelPollTask();
+    }
+
     public static void linkSuccess(CommandSender initiator, @NotNull AuthenticationProvider provider, @NotNull Logger logger) {
         logger.log(intl("link-provider-complete"), "provider", provider.getName());
+        // enableBackupMethod 会写配置并 saveConfig，必须先把 enabled=true 落盘，
+        // 否则随后的 reloadLocalConfig 会从磁盘重新读取，把刚改的值覆盖回 false。
         enableBackupMethod(provider, logger);
         SevenZipBackup.reloadLocalConfig();
         BasicCommands.sendBriefBackupList(initiator);

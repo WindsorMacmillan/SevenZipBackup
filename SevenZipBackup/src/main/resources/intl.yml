@@ -72,6 +72,16 @@ link-account-code: "要链接 <provider> 账户, 请前往 <gold><click:open_url
 link-provider-failed: "无法链接 <provider> 账户, 请再试试吧"
 google-drive-oauth-client-id-required: "Google Drive 账户链接需要先在 config.yml 的 googledrive.oauth-device-client-id 中配置 Google Cloud 的 OAuth 设备客户端 ID。"
 link-provider-complete: "你的 <provider> 账户已链接！"
+link-provider-failed-detail: "无法链接 <provider> 账户：<error>（<error-description>）"
+dropbox-manual-auth-required: |-
+  Dropbox 不支持设备码授权，且原有的在线授权服务已停止运行，无法在此直接完成授权。
+  请手动获取 refresh_token：
+    1. 打开 https://www.dropbox.com/developers/apps ，创建或选择你的 App
+    2. 在 Permissions 中勾选 files.content.write 与 files.content.read 并 Submit
+    3. 在 Settings 页找到 App key 与 App secret
+    4. 用浏览器访问：https://www.dropbox.com/oauth2/authorize?client_id=<APP_KEY>&token_access_type=offline&response_type=code
+    5. 记下页面显示的授权码，执行：curl https://api.dropboxapi.com/oauth2/token -d code=<授权码> -d grant_type=authorization_code -d client_id=<APP_KEY> -d client_secret=<APP_SECRET>
+    6. 把响应中的 refresh_token 写入 plugins/SevenZipBackup/DropboxCredential.json
 unlink-provider-failed: "无法取消链接 <provider> 账户, 请再试试吧"
 unlink-provider-complete: "你的 <provider> 账户已断开链接！"
 google-pick-shared-drive: "您可以已链接一个或多个云端账户，如果您想使用其中一个，请选择它或在聊天中回复它的编号。"
@@ -97,6 +107,7 @@ local-backup-date-format-invalid: |-
   无法解析备份 "<file-name>" 的日期格式，这可能是由于日期格式在 config.yml 中被更新。
   此备份会被删除
 local-backup-backlisted: "备份列表中未包含 <blacklisted-files-count> 文件，因为它们已被 \"<glob-pattern>\" 列入黑名单"
+local-backup-blacklist-invalid: "黑名单规则 \"<glob-pattern>\" 无效（<error>），已忽略该条规则"
 local-backup-in-backup-folder: "在备份列表中未包括 <files-in-backup-folder-count> 文件，因为它们在用于备份的文件夹中。"
 local-backup-failed-to-include: "未能在备份列表中包含 \"<file-path>\"，是否已锁定？ 你有访问权限吗？"
 local-backup-limit-reached: "已存在 <backup-count> 个备份文件，已超过 <backup-limit> 个的限制，删除最旧的"
@@ -134,6 +145,7 @@ backup-status-uploading: "上传 \"<set-name>\" 中, <set-count> 个中的第 <s
 next-backup: "下次备份将在 %TIME 分钟后运行"
 next-schedule-backup: "下次备份将在 %DATE 运行"
 next-schedule-backup-format: "h:mm a EEE, MMM d O"
+next-schedule-backup-unknown: "下次备份时间尚未确定"
 auto-backups-disabled: "自动备份已关闭"
 test-method-not-specified: "请指定要测试的备份策略"
 test-method-invalid: "\"<specified-method>\" 不是一个有效的策略"

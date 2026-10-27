@@ -15,6 +15,10 @@ public final class SevenZipExecutable {
     private static final String RESOURCE_BASE = "/7z/";
     private static final String WIN_BINARY = "7za.exe";
     private static final String LINUX_BINARY = "7zzs";
+    /**
+     * 旧版本曾解压到数据目录的二进制名。启动时一并删除，避免残留文件继续占用磁盘。
+     * 注意：这些名字在 resources 中已不存在，此处仅用于清理用户的旧部署。
+     */
     private static final String[] LEGACY_BINARY_NAMES = {"7zr.exe", "7zr_Linux"};
 
     private static Path executablePath;

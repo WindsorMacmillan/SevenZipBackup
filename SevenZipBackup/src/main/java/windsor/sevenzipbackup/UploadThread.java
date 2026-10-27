@@ -41,7 +41,7 @@ import windsor.sevenzipbackup.util.FileUtil.BackupFileList;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
+import java.util.regex.PatternSyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -72,7 +72,8 @@ public class UploadThread implements Runnable {
     private final FileUtil fileUtil;
     private final Timer totalTimer;
 
-    private static BossBar backupBossBar;
+    // 跨线程读写：备份线程/全局区域线程写入，玩家区域线程（PlayerListener）读取，需 volatile
+    private static volatile BossBar backupBossBar;
     private static final AtomicInteger totalFilesToBackup = new AtomicInteger(0);
     private static final AtomicInteger totalFilesProcessed = new AtomicInteger(0);
     private static int totalBackupTasks = 0;
@@ -110,9 +111,9 @@ public class UploadThread implements Runnable {
     private ArrayList<Uploader> uploaders;
     private final ConcurrentHashMap<String, LocalDateTimeFormatter> locationsToBePruned = new ConcurrentHashMap<>(10);
     private List<BackupListEntry> backupList;
-    private static BackupStatus backupStatus = BackupStatus.NOT_RUNNING;
+    private static volatile BackupStatus backupStatus = BackupStatus.NOT_RUNNING;
     private static LocalDateTime nextIntervalBackupTime;
-    private static boolean lastBackupSuccessful = true;
+    private static volatile boolean lastBackupSuccessful = true;
     private static volatile int backupBackingUp = 0;
     private static volatile String backupCurrentLocation = "";
 
@@ -187,8 +188,14 @@ public class UploadThread implements Runnable {
                     config.bossBarConfig.bossBarStyle
             );
             backupBossBar.setProgress(0.0);
+            // Folia 下 BossBar 与玩家连接绑定，addPlayer 必须在该玩家自己的区域线程执行；
+            // runPlayerTask 在 Paper 上等价于主线程执行，两端都安全。
             for (Player player : Bukkit.getOnlinePlayers()) {
-                backupBossBar.addPlayer(player);
+                Scheduler.runPlayerTask(player, () -> {
+                    if (backupBossBar != null && player.isOnline()) {
+                        backupBossBar.addPlayer(player);
+                    }
+                });
             }
         });
         logger.info("开始备份，共 " + totalBackupTasks + " 个文件夹需要备份");
@@ -442,7 +449,15 @@ public class UploadThread implements Runnable {
         taskProgressMap.clear();
 
         for (BackupListEntry set : backupList) {
-            for (Path folder : set.location.getPaths()) {
+            List<Path> matchedPaths = set.location.getPaths();
+            // 备份位置一条都没匹配到就静默跳过，很容易让人误以为备份正常
+            if (matchedPaths.isEmpty()) {
+                logger.info("备份位置 \"" + set.location + "\" 未匹配到任何文件夹，已跳过。"
+                        + "请检查该条目的写法（当前 advanced.blacklist-regex="
+                        + ConfigParser.getConfig().advanced.blacklistRegex + "）");
+                continue;
+            }
+            for (Path folder : matchedPaths) {
                 if (!set.create) continue;
                 String location = folder.toString();
                 LocalDateTimeFormatter formatter = set.formatter;
@@ -700,12 +715,14 @@ public class UploadThread implements Runnable {
         }
         for (ExternalBackupListEntry backup : externalBackup.backupList) {
             ArrayList<BlacklistEntry> blacklist = new ArrayList<>();
+            boolean blacklistRegex = ConfigParser.getConfig().advanced.blacklistRegex;
             for (String blacklistGlob : backup.blacklist) {
-                BlacklistEntry blacklistEntry = new BlacklistEntry(
-                        blacklistGlob,
-                        FileSystems.getDefault().getPathMatcher("glob:" + blacklistGlob)
-                );
-                blacklist.add(blacklistEntry);
+                try {
+                    blacklist.add(BlacklistEntry.compile(blacklistGlob, blacklistRegex));
+                } catch (PatternSyntaxException e) {
+                    logger.log(intl("external-backup-list-blacklist-invalid"),
+                            "entry-backup", blacklistGlob);
+                }
             }
             String baseDirectory;
             if (Strings.isNullOrEmpty(externalBackup.baseDirectory)) {
@@ -717,7 +734,7 @@ public class UploadThread implements Runnable {
                 String filePath = baseDirectory + "/" + relativeFilePath;
 
                 for (BlacklistEntry blacklistEntry : blacklist) {
-                    if (blacklistEntry.getPathMatcher().matches(Paths.get(relativeFilePath))) {
+                    if (blacklistEntry.matches(Paths.get(relativeFilePath))) {
                         blacklistEntry.incBlacklistedFiles();
                     }
                 }
@@ -841,10 +858,15 @@ public class UploadThread implements Runnable {
         Config config = ConfigParser.getConfig();
         if (config.backupScheduling.enabled) {
             ZonedDateTime now = ZonedDateTime.now(config.advanced.dateTimezone);
+            // 首次调度尚未填充列表、或本周期的所有时间点都已过去时，
+            // 这里曾经直接 orElseThrow 抛给命令线程，导致 /7zbackup nextbackup 报错。
             ZonedDateTime nextBackupDate = Scheduler.getBackupDatesList().stream()
                     .filter(zdt -> zdt.isAfter(now))
                     .min(Comparator.naturalOrder())
-                    .orElseThrow(NoSuchElementException::new);
+                    .orElse(null);
+            if (nextBackupDate == null) {
+                return intl("next-schedule-backup-unknown");
+            }
             DateTimeFormatter backupDateFormatter = DateTimeFormatter.ofPattern(intl("next-schedule-backup-format"), config.advanced.dateLanguage);
             return intl("next-schedule-backup").replaceAll("%DATE", nextBackupDate.format(backupDateFormatter));
         } else if (config.backupStorage.delay != -1) {
